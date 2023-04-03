@@ -1,7 +1,7 @@
-const Role = require("../../models/Role");
-const error = require("../../helpers/error");
-const Permission = require("../../models/Permission");
-const checkAssociateService = require('../common/checkAssociateService');
+const Role = require("../../../models/Role");
+const error = require("../../../helpers/error");
+const Permission = require("../../../models/Permission");
+const checkAssociateService = require('../../common/checkAssociateService');
 const roleFindByProperty = (key, value)=>{
     if (key === '_id'){
         return Role.findById(value);

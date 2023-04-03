@@ -4,8 +4,8 @@ const FormHelper = require("../helpers/FormHelper");
 
 exports.register = async (req, res, next) => {
   try {
-    const { email, mobile, firstName, lastName, password, confirmPassword } =
-      req.body;
+
+    const { email, firstName, lastName, password, confirmPassword } = req.body;
     if (FormHelper.isEmpty(email)) {
       return res.status(400).json({
         error: "Email is required",
@@ -24,16 +24,6 @@ exports.register = async (req, res, next) => {
     if (FormHelper.isEmpty(lastName)) {
       return res.status(400).json({
         error: "Last Name is required",
-      });
-    }
-    if (FormHelper.isEmpty(mobile)) {
-      return res.status(400).json({
-        error: "Mobile number is required",
-      });
-    }
-    if (!FormHelper.isMobile(mobile)) {
-      return res.status(400).json({
-        error: "Provide a valid mobile number",
       });
     }
 
@@ -61,7 +51,6 @@ exports.register = async (req, res, next) => {
 
     await authService.registerService({
       email,
-      mobile,
       firstName,
       lastName,
       password,
