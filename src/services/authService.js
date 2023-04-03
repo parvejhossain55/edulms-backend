@@ -3,17 +3,17 @@ const error = require("../helpers/error");
 const otpService = require("./otpService");
 const sendOTP = require("../helpers/sendOTP");
 const authHelper = require("../helpers/authHelper");
-const rolePermissionService = require("../services/admin/rolePermissionService");
+const rolePermissionService = require("./admin/userManage/rolePermissionService");
 
 const registerService = async ({
   email,
-  mobile,
   firstName,
   lastName,
   password,
   confirmPassword,
   role = "user",
 }) => {
+
   const isMatch = await userService.findUserByProperty("email", email);
   if (isMatch) throw error("Email already taken", 400);
 
@@ -41,7 +41,6 @@ const registerService = async ({
     }
     return await userService.createNewUser({
       email,
-      mobile,
       firstName,
       lastName,
       password,

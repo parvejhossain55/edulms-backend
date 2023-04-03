@@ -46,8 +46,8 @@ function checkPermissions(permission) {
 
 const isSuperAdmin = async (req, res, next)=>{
     try {
-        const user = await User.findById(req.auth._id).populate('roles');
-        if (user?.role.name !== 'superadmin'){
+        const user = await User.findById(req.auth._id).populate('roleId');
+        if (user?.roleId.name !== 'superadmin'){
             return res.status(403).json({ message: 'Forbidden' });
         }
         next();
