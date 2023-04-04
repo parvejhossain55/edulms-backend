@@ -27,7 +27,6 @@ const getAllUsersService = () => {
 const userCreateService = async (
     {
         email,
-        mobile,
         firstName,
         lastName,
         password,
@@ -50,12 +49,11 @@ const userCreateService = async (
     if (send[0].statusCode === 202) {
         return await userService.createNewUser({
             email,
-            mobile,
             firstName,
             lastName,
             password,
             confirmPassword,
-            roleId,
+            roleId
         });
 }
 }

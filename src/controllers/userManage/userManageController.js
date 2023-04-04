@@ -12,7 +12,7 @@ const getAllUsers = async (req, res, next)=>{
 
 const createUser = async (req, res, next)=>{
     try {
-        const { email, mobile, firstName, lastName, password, confirmPassword, roleId } = req.body;
+        const { email, firstName, lastName, password, confirmPassword, roleId } = req.body;
         if (FormHelper.isEmpty(email)) {
             return res.status(400).json({
                 error: "Email is required",
@@ -64,7 +64,6 @@ const createUser = async (req, res, next)=>{
 
         await userManageService.userCreateService({
             email,
-            mobile,
             firstName,
             lastName,
             password,
