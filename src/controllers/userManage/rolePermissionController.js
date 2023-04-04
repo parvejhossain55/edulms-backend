@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const rolePermissionService = require("../../services/admin/userManage/rolePermissionService");
+const rolePermissionService = require("../../services/userManage/rolePermissionService");
 
 const getRoles = async (req, res, next) => {
     try {

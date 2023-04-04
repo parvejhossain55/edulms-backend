@@ -1,4 +1,4 @@
-const courseCategoryService = require('../../services/admin/course/courseCategoryService');
+const courseCategoryService = require('../../services/course/courseCategoryService');
 const FormHelper = require('../../helpers/FormHelper');
 const createCategory = async (req, res, next)=>{
     try {

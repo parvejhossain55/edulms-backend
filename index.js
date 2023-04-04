@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const app = express();
 require('dotenv').config();
 const {readdirSync} = require('fs');
+const multer = require("multer");
 
 
 app.use(helmet());
@@ -32,9 +33,17 @@ app.use((err, req, res, next) => {
     const message = err.message ? err.message : 'Server Error Occurred';
     const status = err.status ? err.status : 500;
 
+    if (err instanceof multer.MulterError){
+       return res.status(400).json({
+            error: err.message
+        })
+    }
     res.status(status).json({
         error: status === 500 ? 'Server Error Occurred' : message,
     });
+
+
+
 });
 
 

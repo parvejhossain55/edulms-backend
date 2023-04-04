@@ -29,15 +29,18 @@ const courseSchema = new Schema({
     },
     teacherId: {
         type: ObjectId,
-        ref: 'Teacher'
+        ref: 'Teacher',
+        required: [true, 'teacher is required'],
     },
     categoryId: {
         type: ObjectId,
-        ref: 'Category'
+        ref: 'Category',
+        required: [true, 'category is required'],
     },
     benefit: [String],
     thumbnail: {
-        type: String
+        type: String,
+        required: [true, 'thumbnail is required'],
     }
 
 }, {versionKey: false, timestamps: true});

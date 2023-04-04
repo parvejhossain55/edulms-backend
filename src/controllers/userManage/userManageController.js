@@ -1,6 +1,6 @@
-const manageUserService = require('../../services/admin/userManage/manageUserService');
+const manageUserService = require('../../services/userManage/manageUserService');
 const FormHelper = require("../../helpers/FormHelper");
-const userManageService = require("../../services/admin/userManage/manageUserService");
+const userManageService = require("../../services/userManage/manageUserService");
 const getAllUsers = async (req, res, next)=>{
     try {
         const users = await manageUserService.getAllUsersService();
