@@ -1,9 +1,9 @@
-const User = require('../../../models/User');
-const userService = require("../../userService");
-const error = require("../../../helpers/error");
-const sendEmail = require("../../../helpers/sendEmail");
+const User = require('../../models/User');
+const userService = require("../userService");
+const error = require("../../helpers/error");
+const sendEmail = require("../../helpers/sendEmail");
 const rolePermissionService = require("./rolePermissionService");
-const newUserEmailTemplate = require('../../../emailTemplate/forNewUser');
+const newUserEmailTemplate = require('../../emailTemplate/forNewUser');
 const getAllUsersService = () => {
     return User.aggregate([
         {$match: {}},

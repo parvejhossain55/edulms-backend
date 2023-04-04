@@ -3,7 +3,7 @@ const error = require("../helpers/error");
 const otpService = require("./otpService");
 const sendOTP = require("../helpers/sendOTP");
 const authHelper = require("../helpers/authHelper");
-const rolePermissionService = require("./admin/userManage/rolePermissionService");
+const rolePermissionService = require("./userManage/rolePermissionService");
 
 const registerService = async ({
   email,

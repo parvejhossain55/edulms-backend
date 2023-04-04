@@ -1,14 +1,14 @@
-const findOneByProperty = require("../../common/findOneByProperty");
-const CourseCategoryModel = require('../../../models/CourseCategory');
-const error = require('../../../helpers/error');
-const {createService} = require("../../common/createService");
+const findOneByProperty = require("../common/findOneByProperty");
+const CourseCategoryModel = require('../../models/CourseCategory');
+const error = require('../../helpers/error');
+const {createService} = require("../common/createService");
 const mongoose = require('mongoose');
-const updateService = require("../../common/updateService");
+const updateService = require("../common/updateService");
 const ObjectId = mongoose.Types.ObjectId;
-const FormHelper = require('../../../helpers/FormHelper');
-const checkAssociateService = require("../../common/checkAssociateService");
-const CourseModel = require('../../../models/Course');
-const deleteService = require("../../common/deleteServide");
+const FormHelper = require('../../helpers/FormHelper');
+const checkAssociateService = require("../common/checkAssociateService");
+const CourseModel = require('../../models/Course');
+const deleteService = require("../common/deleteServide");
 const slugify = require("slugify");
 
 const createCategory = async ({name})=>{
