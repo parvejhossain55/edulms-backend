@@ -7,7 +7,7 @@ const manageUserController = require("../controllers/userManage/userManageContro
 
 router.patch('/users', authMiddleware.authVerifyMiddleware, userController.patchUser);
 router.get('/users', authMiddleware.authVerifyMiddleware, userController.getUserProfile);
-router.post('/users', authMiddleware.checkPermissions('can_create_users'), manageUserController.createUser);
+router.post('/users', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_create_users'), manageUserController.createUser);
 
 
 module.exports = router;

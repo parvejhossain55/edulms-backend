@@ -26,7 +26,7 @@ const authVerifyMiddleware = async (req, res, next)=>{
 
 function checkPermissions(permission) {
     return async function (req, res, next) {
-        const userId = req.auth._id;
+        const userId = req.auth?._id;
 
         const user = await User.findById(userId).populate('roleId');
 
@@ -35,7 +35,7 @@ function checkPermissions(permission) {
         }
         const roles = await Role.findById(user?.roleId._id).populate('permissions');
 
-        const authorized = roles.permissions.some(item => item.name === permission);
+        const authorized = roles?.permissions.some(item => item.name === permission);
 
         if (!authorized) {
             return res.status(403).json({ message: 'Forbidden' });
