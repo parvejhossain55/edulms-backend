@@ -2,26 +2,26 @@ const router = require('express').Router();
 const authController = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-router.get('/auth/auth-check', authMiddleware.authVerifyMiddleware, (req, res)=>{
+router.get('/auth-check', authMiddleware.authVerifyMiddleware, (req, res)=>{
     res.status(200).json({ok: true});
 });
-router.get('/auth/superadmin-check', authMiddleware.authVerifyMiddleware, authMiddleware.isSuperAdmin, (req, res)=>{
-    res.status(200).json({ok: true});
-});
-
-router.get('/auth/permission-check', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_delete_user'), (req, res)=>{
-    res.status(200).json({ok: true});
-});
-router.get('/auth/admin-check', authMiddleware.authVerifyMiddleware, authMiddleware.isAdmin, (req, res)=>{
+router.get('/superadmin-check', authMiddleware.authVerifyMiddleware, authMiddleware.isSuperAdmin, (req, res)=>{
     res.status(200).json({ok: true});
 });
 
-router.post('/auth/register', authController.register);
-router.post('/auth/login', authController.login);
-router.get('/auth/:email/:otp', authController.verifyOTP);
-router.patch('/auth/:email/:otp', authController.resetPassword);
-router.get('/auth/:email', authController.sendOtp);
-router.patch('/auth/password', authMiddleware.authVerifyMiddleware , authController.passwordChange);
-router.post("/auth/social-login", authController.socialLogin)
+router.get('/permission-check', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_delete_user'), (req, res)=>{
+    res.status(200).json({ok: true});
+});
+router.get('/admin-check', authMiddleware.authVerifyMiddleware, authMiddleware.isAdmin, (req, res)=>{
+    res.status(200).json({ok: true});
+});
+
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.get('/:email/:otp', authController.verifyOTP);
+router.patch('/:email/:otp', authController.resetPassword);
+router.get('/:email', authController.sendOtp);
+router.patch('/password', authMiddleware.authVerifyMiddleware , authController.passwordChange);
+router.post("/social-login", authController.socialLogin)
 
 module.exports = router;
