@@ -5,9 +5,9 @@ const userController = require('../controllers/userController');
 const authMiddleware = require("../middleware/authMiddleware");
 const manageUserController = require("../controllers/userManage/userManageController");
 
-router.patch('/users', authMiddleware.authVerifyMiddleware, userController.patchUser);
-router.get('/users', authMiddleware.authVerifyMiddleware, userController.getUserProfile);
-router.post('/users', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_create_users'), manageUserController.createUser);
+router.patch('/', authMiddleware.authVerifyMiddleware, userController.patchUser);
+router.get('/', authMiddleware.authVerifyMiddleware, userController.getUserProfile);
+router.post('/', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_create_users'), manageUserController.createUser);
 
 
 module.exports = router;
