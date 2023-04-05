@@ -26,6 +26,10 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+app.get('/', (req, res)=>{
+    res.send(`<div style="text-align: center"><h3>Welcome to OSTAD LMS Backend. <a href="${process.env.FONTEND_URL}">Visit our site</a></h3></div>`)
+})
+
 readdirSync('./src/routes').map(r => app.use('/api/v1', require(`./src/routes/${r}`)));
 
 app.use((err, req, res, next) => {
