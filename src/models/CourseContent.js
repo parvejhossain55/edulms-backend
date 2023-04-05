@@ -1,7 +1,7 @@
 const {Schema, model} = require('mongoose');
 
 const courseContentSchema = new Schema({
-    courseModuleId: {
+    moduleId: {
         type: Schema.Types.ObjectId,
         ref: 'CourseModule'
     },
