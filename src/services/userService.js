@@ -2,6 +2,9 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
+const findUserByEmail = async ({email})=>{
+    return User.findOne({email});
+}
 const findUserByProperty = async (key, value, projection = null) => {
     if (projection !== null){
         const user = await User.aggregate([
@@ -60,5 +63,5 @@ const userUpdateService = async (query, updateObj, options = null)=>{
 }
 
 module.exports = {
-    findUserByProperty, createNewUser, passwordUpdateService, userProfileUpdateService, userUpdateService
+    findUserByProperty, createNewUser, passwordUpdateService, userProfileUpdateService, userUpdateService, findUserByEmail
 }

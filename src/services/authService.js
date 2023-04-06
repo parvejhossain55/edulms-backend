@@ -14,7 +14,7 @@ const registerService = async ({
   role = "user",
 }) => {
 
-  const isMatch = await userService.findUserByProperty("email", email);
+  const isMatch = await userService.findUserByEmail({email});
   if (isMatch) throw error("Email already taken", 400);
 
   const isOtp = await otpService.findOptByProperty({ email: email });
