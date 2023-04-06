@@ -7,14 +7,7 @@ const courseModuleSchema = new Schema({
         ref: 'Course',
         required: [true, 'course required']
     },
-    assignmentId: {
-      type: ObjectId,
-      ref: 'Assignment'
-    },
-    quizId: {
-      type: ObjectId,
-      ref: 'Quiz'
-    },
+
     title: {
         type: String,
         trim: true,
