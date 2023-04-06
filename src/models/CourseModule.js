@@ -4,7 +4,8 @@ const {ObjectId} = Schema.Types;
 const courseModuleSchema = new Schema({
     courseId: {
         type: ObjectId,
-        ref: 'Course'
+        ref: 'Course',
+        required: [true, 'course required']
     },
     assignmentId: {
       type: ObjectId,
@@ -16,10 +17,12 @@ const courseModuleSchema = new Schema({
     },
     title: {
         type: String,
-        trim: true
+        trim: true,
+        required: [true, 'module name required']
     },
     moduleNo: {
-        type: Number
+        type: Number,
+        required: [true, 'module number required']
     }
 }, {versionKey: false, timestamps: true});
 
