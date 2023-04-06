@@ -4,5 +4,4 @@ deployment:
     - /bin/cp -rf $APP_SHORTNAME/* $DEPLOYPATH/
     - cd $DEPLOYPATH
     - yarn install
-    - yarn run dev
     - NODE_ENV=production pm2 startOrRestart ecosystem.config.js
