@@ -18,9 +18,10 @@ const createCategory = async ({name})=>{
 }
 
 const getCategories = ()=>{
-       return CourseCategoryModel.aggregate([
-                {$lookup: {from: 'courses', localField: '_id', foreignField: 'courseId', as: 'course'}}
-        ])
+       // return CourseCategoryModel.aggregate([
+       //          {$lookup: {from: 'courses', localField: '_id', foreignField: 'courseId', as: 'course'}}
+       //  ])
+    return CourseCategoryModel.find({});
 }
 
 const updateCategory = async (catId, name)=>{
