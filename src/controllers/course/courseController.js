@@ -67,9 +67,10 @@ const getAllCourse = async (req, res, next)=>{
 
 }
 const getSingleCourse = async (req, res, next)=>{
-
     try {
-
+        const id = req.params.id;
+        const course = await courseService.getSingleCourse(id);
+        res.status(200).json(course);
     }catch (e) {
         next(e)
     }

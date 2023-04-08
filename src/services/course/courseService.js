@@ -1,5 +1,7 @@
 const CourseModel = require('../../models/Course');
 const error = require("../../helpers/error");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const createCourse = async (
     {name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail}
@@ -13,6 +15,13 @@ const createCourse = async (
 }
 const getAllCourse = async ()=>{
     return CourseModel.aggregate([
+        {$match: {}}
+    ])
+
+}
+const getSingleCourse = async (id)=>{
+    return CourseModel.aggregate([
+        {$match: {_id: new ObjectId(id) }},
         {$lookup: {from: 'coursecategories', foreignField: '_id', localField: 'categoryId', as: 'category'}},
         {$lookup: {from: 'users', foreignField: '_id', localField: 'teacherId', as: 'teacher'}},
         {$unwind: '$teacher'},
@@ -62,10 +71,6 @@ const getAllCourse = async ()=>{
             }
         }
     ])
-
-}
-const getSingleCourse = async (key, value)=>{
-
 }
 const updateCourse = async ()=>{
 

@@ -4,6 +4,7 @@ const courseController = require('../controllers/course/courseController');
 const upload = require('../helpers/fileUpload');
 const permissions = require('../helpers/permissions');
 
+router.get('/:id',  courseController.getSingleCourse)
 router.get('/',  courseController.getAllCourse)
 router.post('/',
     authMiddleware.authVerifyMiddleware,
