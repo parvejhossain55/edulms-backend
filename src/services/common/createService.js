@@ -8,4 +8,4 @@ const createService = (dataObj, createModel, options = null)=>{
 
 }
 
-module.exports = {createService}
+module.exports = createService

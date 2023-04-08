@@ -16,6 +16,12 @@ const permissions = {
         can_view_course: 'can_view_course',
         can_delete_course: 'can_delete_course',
     },
+    courseContent: {
+        can_create_content: 'can_create_content',
+        can_edit_content: 'can_edit_content',
+        can_view_content: 'can_view_content',
+        can_delete_content: 'can_delete_content',
+    },
     roles: {
         can_create_role: 'can_create_role',
         can_edit_role: 'can_edit_role',

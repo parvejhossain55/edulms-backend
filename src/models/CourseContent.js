@@ -10,7 +10,7 @@ const courseContentSchema = new Schema({
         trim: true
     },
     videoUrl: {
-        type: URL,
+        type: String,
         trim: true
     }
 }, {versionKey: false, timestamps: true});
