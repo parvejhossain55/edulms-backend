@@ -16,8 +16,8 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       maxLength: 11,
-      validate: [validator.isMobilePhone, 'Provide a valid mobile number'],
-      unique: true
+      validate: [validator.isMobilePhone, "Provide a valid mobile number"],
+      unique: true,
     },
     firstName: {
       type: String,
@@ -51,7 +51,8 @@ const userSchema = new Schema(
       // },
     },
     picture: {
-      type: String,
+      public_id: { type: String },
+      secure_url: { type: String },
     },
     confirmPassword: {
       type: String,
@@ -70,7 +71,7 @@ const userSchema = new Schema(
       enum: ["active", "inactive", "blocked"],
       default: "active",
     },
-    
+
     verified: {
       type: Boolean,
       default: false,

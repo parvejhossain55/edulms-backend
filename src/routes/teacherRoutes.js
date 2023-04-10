@@ -1,7 +1,11 @@
 const router = require("express").Router();
 const teacherController = require("../controllers/teacherController");
-const upload = require("../helpers/fileUpload");
+const {
+  upload,
+  uploadToCloudinary,
+} = require("../middleware/cloudinaryUpload");
 
-router.post("/teacher", upload.single("picture"), teacherController.applyTeacher);
+router.post("/", upload, uploadToCloudinary, teacherController.applyTeacher);
+router.post("/agree-teacher", upload,teacherController.agreeTeacher);
 
-module.exports = router
+module.exports = router;

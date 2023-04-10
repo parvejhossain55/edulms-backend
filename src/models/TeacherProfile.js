@@ -1,21 +1,23 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require("mongoose");
 
-const teacherProfileSchema = new Schema({
+const teacherProfileSchema = new Schema(
+  {
     userId: {
-      type: Schema.Types.ObjectId
+      type: Schema.Types.ObjectId,
     },
     designation: {
-      type: String
+      type: String,
     },
     about: {
-        type: String
+      type: String,
     },
-    avatar: {
-        type: String,
-        default: ''
-    }
-}, {versionKey: false, timestamps: true});
+    categoryId: {
+      type: String,
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
-const TeacherProfile = model('TeacherProfile', teacherProfileSchema);
+const TeacherProfile = model("TeacherProfile", teacherProfileSchema);
 
 module.exports = TeacherProfile;
