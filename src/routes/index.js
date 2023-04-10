@@ -9,9 +9,9 @@ const courseContentRoutes = require('./courseContentRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/course', courseRoutes);
-router.use('/course', courseCategoryRoutes);
 router.use('/course', courseModuleRoutes);
 router.use('/course', courseContentRoutes);
+router.use('/course', courseCategoryRoutes);
 router.use('/roles', rolePermissionRoutes);
 router.use('/users', userRoutes);
 
