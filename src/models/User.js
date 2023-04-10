@@ -70,7 +70,7 @@ const userSchema = new Schema(
       enum: ["active", "inactive", "blocked"],
       default: "active",
     },
-
+    
     verified: {
       type: Boolean,
       default: false,

@@ -14,9 +14,9 @@ const getRoleService = ()=>{
         {$match: {}}
     ])
 }
-const createNewRoleService = async ({roleName})=>{
+const createNewRoleService = async ({roleName}, session = null)=>{
     const role = new Role({name: roleName});
-    return await role.save();
+    return await role.save({session});
 }
 
 const deleteRoleService = async (id)=>{

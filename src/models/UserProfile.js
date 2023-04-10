@@ -5,10 +5,10 @@ const userProfileSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
-    avatar: {
-        type: String,
-        default: ''
-    }
+    // avatar: {
+    //     type: String,
+    //     default: ''
+    // }
 }, {versionKey: false, timestamps: true});
 
 const UserProfile = model('UserProfile', userProfileSchema);

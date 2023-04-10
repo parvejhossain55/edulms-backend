@@ -1,6 +1,7 @@
 const imagemin = require("imagemin");
 const imageminMozjpeg = require("imagemin-mozjpeg");
 const imageminPngquant = require("imagemin-pngquant");
+
 const imageCompress = (filename)=>{
     return imagemin(['public/media/'+filename], {
         destination: 'public/media',
