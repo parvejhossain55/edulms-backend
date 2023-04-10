@@ -25,11 +25,18 @@ const createCourse = async (req, res, next) => {
         error: "Regular price is required",
       });
     }
-    if (FormHelper.isEmpty(regularPrice)) {
+    if (!FormHelper.isIdValid(teacherId)) {
       return res.status(400).json({
-        error: "Regular price is required",
+        error: "provide a valid teacher",
       });
     }
+    if (!FormHelper.isIdValid(categoryId)) {
+      return res.status(400).json({
+        error: "provide a valid category",
+      });
+    }
+    const course = await courseService.createCourse({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail})
+    res.status(201).json(course);
   } catch (e) {
     next(e);
   }

@@ -23,7 +23,6 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-<<<<<<< HEAD
 app.get('/', (req, res)=>{
     res.send(`<div style="text-align: center"><h3>Welcome to Lead Educare LMS Backend. <a href="${process.env.FONTEND_URL}">Visit our site</a></h3></div>`)
 })
@@ -34,8 +33,8 @@ app.use((err, req, res, next) => {
     const message = err.message ? err.message : 'Server Error Occurred';
     const status = err.status ? err.status : 500;
 
-    if (err instanceof multer.MulterError){
-       return res.status(400).json({
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({
             error: err.message
         })
     }
@@ -43,31 +42,8 @@ app.use((err, req, res, next) => {
         error: status === 500 ? 'Server Error Occurred' : message,
     });
 
-
-
-=======
-app.get("/", (req, res) => {
-  res.send(
-    `<div style="text-align: center"><h3>Welcome to Lead Educare LMS Backend. <a href="${process.env.FONTEND_URL}">Visit our site</a></h3></div>`
-  );
->>>>>>> 76294c9 (apply teacher api create)
 });
 
-app.use("/api/v1", require("./src/routes"));
-app.use((err, req, res, next) => {
-  console.log(err);
-  const message = err.message ? err.message : "Server Error Occurred";
-  const status = err.status ? err.status : 500;
-
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({
-      error: err.message,
-    });
-  }
-  res.status(status).json({
-    error: status === 500 ? "Server Error Occurred" : message,
-  });
-});
 
 const port = process.env.PORT || 8000;
 // DB Connection
