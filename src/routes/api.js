@@ -7,10 +7,13 @@ const permissions = require("../helpers/permissions");
 const manageUserController = require("../controllers/userManage/userManageController");
 const rolePermissionController = require("../controllers/userManage/rolePermissionController");
 const courseController = require("../controllers/course/courseController");
-const upload = require("../helpers/fileUpload");
 const courseCategoryController = require("../controllers/course/courseCategoryController");
 const courseModuleController = require("../controllers/course/courseModuleController");
 const courseContentController = require("../controllers/course/courseContentController");
+const {
+    upload,
+    uploadToCloudinary,
+} = require("../middleware/cloudinaryUpload");
 
 /**
  * Auth Routes
@@ -30,20 +33,20 @@ router.get('/admin-check', authMiddleware.authVerifyMiddleware, authMiddleware.i
     res.status(200).json({ok: true});
 });
 
-router.post('auth/register', authController.register);
-router.post('auth/login', authController.login);
-router.get('auth/:email/:otp', authController.verifyOTP);
-router.patch('auth/:email/:otp', authController.resetPassword);
-router.get('auth/:email', authController.sendOtp);
-router.patch('auth/password', authMiddleware.authVerifyMiddleware , authController.passwordChange);
-router.post("auth/social-login", authController.socialLogin)
+router.post('/auth/register', authController.register);
+router.post('/auth/login', authController.login);
+router.get('/auth/:email/:otp', authController.verifyOTP);
+router.patch('/auth/:email/:otp', authController.resetPassword);
+router.get('/auth/:email', authController.sendOtp);
+router.patch('/auth/password', authMiddleware.authVerifyMiddleware , authController.passwordChange);
+router.post("/auth/social-login", authController.socialLogin)
 
 
 /**
  * User Routes
  */
 
-router.patch('/users', authMiddleware.authVerifyMiddleware, userController.patchUser);
+router.patch('/users', upload.single('picture'), uploadToCloudinary, authMiddleware.authVerifyMiddleware, userController.patchUser);
 router.get('/users', authMiddleware.authVerifyMiddleware, userController.getUserProfile);
 router.post('/users', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.user.can_create_user), manageUserController.createUser);
 
@@ -105,14 +108,14 @@ router.post('/courses/contents',
 );
 
 /**
- * Course Routesgit
+ * Course Routes
  */
 router.get('/courses/:id',  courseController.getSingleCourse)
 router.get('/courses',  courseController.getAllCourse)
 router.post('/courses',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.course.can_create_course),
-    upload.single('thumbnail'),
+    upload.single('thumbnail'), uploadToCloudinary,
     courseController.createCourse
 );
 

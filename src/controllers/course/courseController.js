@@ -3,7 +3,7 @@ const courseService = require("../../services/course/courseService");
 const imageCompress = require("../../helpers/imageCompress");
 const createCourse = async (req, res, next) => {
   try {
-    await imageCompress(req.file.filename);
+    // await imageCompress(req.file.filename);
     const {
       name,
       description,
@@ -14,6 +14,11 @@ const createCourse = async (req, res, next) => {
       benefit,
       thumbnail,
     } = req.body;
+
+    const filename = {
+      public_id: req?.file?.cloudinaryId,
+      secure_url: req?.file?.cloudinaryUrl,
+    };
 
     if (FormHelper.isEmpty(name)) {
       return res.status(400).json({
@@ -35,7 +40,7 @@ const createCourse = async (req, res, next) => {
         error: "provide a valid category",
       });
     }
-    const course = await courseService.createCourse({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail})
+    const course = await courseService.createCourse({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, filename})
     res.status(201).json(course);
   } catch (e) {
     next(e);

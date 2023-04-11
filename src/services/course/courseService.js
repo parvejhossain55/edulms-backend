@@ -4,13 +4,13 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const createCourse = async (
-    {name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail}
+    {name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, filename}
 )=>{
     const isMatch = await CourseModel.findOne({name});
 
     if (isMatch) throw error('Course name already exits', 400);
 
-    const course = new CourseModel({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail});
+    const course = new CourseModel({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail: filename});
     return await course.save();
 }
 const getAllCourse = async ()=>{

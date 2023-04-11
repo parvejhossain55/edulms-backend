@@ -21,8 +21,8 @@ const upload = multer({
       cb(new Error("Only images are allowed"));
     }
   },
-  limits: { fileSize: 1024 * 1024 },
-}).single("picture");
+  limits: 2 * 1024 * 1024,
+});
 
 // Middleware function to upload file to Cloudinary
 const uploadToCloudinary = (req, res, next) => {

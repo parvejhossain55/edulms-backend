@@ -39,9 +39,9 @@ const courseSchema = new Schema({
     },
     benefit: [String],
     thumbnail: {
-        type: String,
-        required: [true, 'thumbnail is required'],
-    }
+        public_id: { type: String },
+        secure_url: { type: String },
+    },
 
 }, {versionKey: false, timestamps: true});
 

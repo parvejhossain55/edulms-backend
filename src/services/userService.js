@@ -5,6 +5,9 @@ const ObjectId = mongoose.Types.ObjectId;
 const findUserByEmail = async ({email})=>{
     return User.findOne({email});
 }
+const findUserById = (id)=> {
+  return User.findById(id);
+}
 const findUserByProperty = async (key, value, projection = null) => {
   if (projection !== null) {
     const user = await User.aggregate([
@@ -81,13 +84,14 @@ const passwordUpdateService = async ({ email, hash, options = null }) => {
   );
 };
 
-const userProfileUpdateService = async (_id, firstName, lastName) => {
+const userProfileUpdateService = async (_id, firstName, lastName, filename) => {
   return User.updateOne(
-    { _id: ObjectId(_id) },
+    { _id: new ObjectId(_id) },
     {
       $set: {
         firstName,
         lastName,
+        picture: filename
       },
     },
     { runValidators: true }
@@ -105,5 +109,5 @@ const userUpdateService = async (query, updateObj, options = null) => {
 };
 
 module.exports = {
-    findUserByProperty, createNewUser, passwordUpdateService, userProfileUpdateService, userUpdateService, findUserByEmail
+    findUserByProperty, createNewUser, passwordUpdateService, userProfileUpdateService, userUpdateService, findUserByEmail, findUserById
 }
