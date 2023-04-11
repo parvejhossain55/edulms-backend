@@ -71,6 +71,14 @@ const passwordUpdateService = async ({ email, hash, options = null }) => {
       { options }
     );
   }
+  return User.updateOne(
+      { email: email },
+      {
+        $set: {
+          password: hash,
+        },
+      },
+  );
 };
 
 const userProfileUpdateService = async (_id, firstName, lastName) => {
