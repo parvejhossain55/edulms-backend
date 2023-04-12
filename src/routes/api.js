@@ -124,8 +124,9 @@ router.patch('/courses/teacher/:courseId',
 /**
  * Course Routes
  */
+router.get('/courses/published/:id',  courseController.getPublishedSingleCourse);
 router.get('/courses/published',  courseController.getAllPublishedCourse);
-router.get('/courses/:id',  courseController.getSingleCourse);
+router.get('/courses/:id', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.course.can_view_course),  courseController.getSingleCourse);
 router.post('/courses',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.course.can_create_course),

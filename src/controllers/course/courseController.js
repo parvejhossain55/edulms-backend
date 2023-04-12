@@ -95,6 +95,16 @@ const getSingleCourse = async (req, res, next) => {
     next(e);
   }
 };
+const getPublishedSingleCourse = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const query = {_id: new objectId(id), status: 'published'}
+    const course = await courseService.getSingleCourse(query);
+    res.status(200).json({course});
+  } catch (e) {
+    next(e);
+  }
+};
 const getSingleCourseByTeacher = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -172,5 +182,6 @@ module.exports = {
   deleteCourse,
   getAllCourseByTeacher,
   getSingleCourseByTeacher,
-  getAllPublishedCourse
+  getAllPublishedCourse,
+  getPublishedSingleCourse
 };
