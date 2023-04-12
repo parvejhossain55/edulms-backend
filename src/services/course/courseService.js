@@ -13,15 +13,15 @@ const createCourse = async (
     const course = new CourseModel({name, description, regularPrice, sellPrice, teacherId, categoryId, benefit, thumbnail: filename});
     return await course.save();
 }
-const getAllCourse = async ()=>{
+const getAllCourse = async (query)=>{
     return CourseModel.aggregate([
-        {$match: {}}
+        {$match: query}
     ])
 
 }
-const getSingleCourse = async (id)=>{
-    return CourseModel.aggregate([
-        {$match: {_id: new ObjectId(id) }},
+const getSingleCourse = async (query)=>{
+    const course = await CourseModel.aggregate([
+        {$match: query},
         {$lookup: {from: 'coursecategories', foreignField: '_id', localField: 'categoryId', as: 'category'}},
         {$lookup: {from: 'users', foreignField: '_id', localField: 'teacherId', as: 'teacher'}},
         {$unwind: '$teacher'},
@@ -70,10 +70,13 @@ const getSingleCourse = async (id)=>{
                 category: {$first: "$category.name"},
             }
         }
-    ])
+    ]);
+    return course[0]
 }
-const updateCourse = async ()=>{
-
+const updateCourse = async (
+    { name, description,  categoryId, benefit, thumbnail },  id, teacherId
+)=>{
+    return CourseModel.updateOne({_id: new ObjectId(id), teacherId: new ObjectId(teacherId)}, {$set: { name, description,  categoryId, benefit, thumbnail } })
 }
 const deleteCourse = async ()=>{
 

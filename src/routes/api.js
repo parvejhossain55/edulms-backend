@@ -53,10 +53,12 @@ router.post('/users', authMiddleware.authVerifyMiddleware, authMiddleware.checkP
 /**
  * Role Permissions routes
  */
+router.get('/roles/permissions/:roleId',authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.roles.can_view_role), rolePermissionController.getPermissionsByRole);
 router.get('/roles/', authMiddleware.authVerifyMiddleware,  authMiddleware.checkPermissions(permissions.roles.can_view_role), rolePermissionController.getRoles);
 router.post('/roles/', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.roles.can_create_role), rolePermissionController.createRole);
 router.delete('/roles/:id', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.roles.can_delete_role), rolePermissionController.deleteRole);
-router.post('/roles/permissions',authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions('can_create_permission'), rolePermissionController.createPermission);
+router.patch('/roles/permissions/:roleId',authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.roles.can_edit_role), rolePermissionController.assignPermissions);
+router.get('/permissions',authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.roles.can_view_role), rolePermissionController.getAllPermissions);
 
 
 /**
@@ -108,15 +110,31 @@ router.post('/courses/contents',
 );
 
 /**
+ * Teacher course routes
+ */
+router.get('/courses/teacher/:id/:teacherId',  courseController.getSingleCourseByTeacher);
+router.get('/courses/teacher/:teacherId',  courseController.getAllCourseByTeacher);
+router.patch('/courses/teacher/:courseId',
+    upload.single("thumbnail"),
+    uploadToCloudinary,
+    authMiddleware.authVerifyMiddleware,
+    authMiddleware.checkPermissions(permissions.course.can_edit_course),
+    courseController.updateCourse);
+
+/**
  * Course Routes
  */
-router.get('/courses/:id',  courseController.getSingleCourse)
-router.get('/courses',  courseController.getAllCourse)
+router.get('/courses/published',  courseController.getAllPublishedCourse);
+router.get('/courses/:id',  courseController.getSingleCourse);
 router.post('/courses',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.course.can_create_course),
     upload.single('thumbnail'), uploadToCloudinary,
     courseController.createCourse
 );
+router.get('/courses',  authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.course.can_view_course),  courseController.getAllCourse)
+
+
+
 
 module.exports = router;

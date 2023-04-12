@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const rolePermissionService = require("../../services/userManage/rolePermissionService");
-
+const FormHelper = require('../../helpers/FormHelper');
 const getRoles = async (req, res, next) => {
     try {
         const roles = await rolePermissionService.getRoleService();
@@ -42,26 +42,47 @@ const deleteRole = async (req, res, next) => {
     }
 }
 
-const createPermission = async (req, res, next) => {
-    const {permission, roleId} = req.body;
-    const session = await mongoose.startSession();
-    await session.startTransaction();
+const assignPermissions = async (req, res, next) => {
     try {
-        const options = {session};
-        const result = await rolePermissionService.createNewPermissionService({
-            permissionName: permission,
-            roleId,
-            options
-        });
-        await session.commitTransaction();
-        session.endSession();
+        const {permissions} = req.body;
+        const roleId = req.params.roleId;
+        if (!FormHelper.isIdValid(roleId)){
+           return res.status(400).json({
+               error: 'provide a valid role ID'
+           })
+        }
+        const result = await rolePermissionService.assignPermissionsService({permissions, roleId});
+
         res.status(200).json(result);
     } catch (e) {
-        await session.abortTransaction();
-        session.endSession();
         next(e)
     }
-
 }
 
-module.exports = {getRoles, createRole, createPermission, deleteRole}
+const getAllPermissions = async (req, res,next)=>{
+    try {
+        const permissions = await rolePermissionService.getAllPermissionsService();
+        res.status(200).json(permissions);
+    }catch (e) {
+        next(e)
+    }
+}
+const getPermissionsByRole = async (req, res,next)=>{
+    try {
+        const roleId = req.params.roleId;
+
+        const role = await rolePermissionService.getPermissionsByRoleService(roleId);
+        res.status(200).json(role);
+    }catch (e) {
+        next(e)
+    }
+}
+
+module.exports = {
+    getRoles,
+    createRole,
+    assignPermissions,
+    deleteRole,
+    getAllPermissions,
+    getPermissionsByRole
+}

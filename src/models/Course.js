@@ -42,6 +42,11 @@ const courseSchema = new Schema({
         public_id: { type: String },
         secure_url: { type: String },
     },
+    status: {
+        type: String,
+        enum: ['draft', 'pending', 'published'],
+        default: 'draft'
+    }
 
 }, {versionKey: false, timestamps: true});
 
