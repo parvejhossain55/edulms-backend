@@ -2,7 +2,7 @@ const userService = require("./userService");
 const error = require("../helpers/error");
 const otpService = require("./otpService");
 const sendOTP = require("../helpers/sendOTP");
-const authHelper = require("../../../../../hf-consultansy/HFConsultancy-server/utils/authHelper");
+const authHelper = require("../helpers/authHelper");
 const rolePermissionService = require("./userManage/rolePermissionService");
 
 const registerService = async ({
