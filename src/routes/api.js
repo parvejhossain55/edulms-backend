@@ -119,7 +119,9 @@ router.patch('/courses/teacher/:courseId',
     uploadToCloudinary,
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.course.can_edit_course),
-    courseController.updateCourse);
+    courseController.teacherUpdateCourse);
+
+
 
 /**
  * Course Routes
@@ -133,6 +135,13 @@ router.post('/courses',
     upload.single('thumbnail'), uploadToCloudinary,
     courseController.createCourse
 );
+// admin update routes
+router.patch('/courses/:courseId',
+    upload.single("thumbnail"),
+    uploadToCloudinary,
+    authMiddleware.authVerifyMiddleware,
+    authMiddleware.checkPermissions(permissions.course.can_edit_course),
+    courseController.updateCourse);
 router.get('/courses',  authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.course.can_view_course),  courseController.getAllCourse)
 
 
