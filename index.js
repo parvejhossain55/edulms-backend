@@ -8,6 +8,10 @@ const morgan = require("morgan");
 const app = express();
 require("dotenv").config();
 const multer = require("multer");
+const RoleModel = require('./src/models/Role');
+const projectRoles = require('./src/dbSeed/projectRoles');
+const PermissionModel = require('./src/models/Permission');
+const {permissionsDocuments} = require('./src/dbSeed/projectPermissions');
 
 app.use(helmet());
 app.use(express.json());
@@ -52,6 +56,13 @@ mongoose
   .connect(process.env.DATABASE)
   .then(() => {
     console.log("DB Connected");
+
+ 	projectRoles.map(async role => {
+           await RoleModel.updateOne({name: role.name}, {$set: {name: role.name}}, {upsert: true});
+        });
+         permissionsDocuments.map(async permission => {
+            await PermissionModel.updateOne({name: permission.name}, {$set: {name: permission.name}}, {upsert: true});
+        });
     // Server Listen
     app.listen(port, () => {
       console.log(`Server run success on port ${port}`);

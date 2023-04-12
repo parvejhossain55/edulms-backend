@@ -30,7 +30,16 @@ const permissions = {
     }
 }
 
-module.exports = permissions;
+const permissionsDocuments = Object.keys(permissions).reduce((acc, category) => {
+    const categoryPermissions = permissions[category];
+    return acc.concat(
+        Object.keys(categoryPermissions).map(permission => ({
+            name: categoryPermissions[permission]
+        }))
+    );
+}, []);
+
+module.exports = {permissions, permissionsDocuments};
 
 
 
