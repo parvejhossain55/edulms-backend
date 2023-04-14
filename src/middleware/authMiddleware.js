@@ -20,7 +20,7 @@ const authVerifyMiddleware = async (req, res, next)=>{
         req.auth = user;
         next();
     } catch (e) {
-        return res.status(400).json({ message: 'Invalid token' });
+        return res.status(401).json({ message: 'Invalid token' });
     }
 }
 
