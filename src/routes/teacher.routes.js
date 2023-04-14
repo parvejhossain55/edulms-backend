@@ -6,5 +6,5 @@ const {
 } = require("../middleware/cloudinaryUpload");
 
 router.post("/teachers", upload.single("picture"), uploadToCloudinary, teacherController.applyTeacher);
-router.post("/agree-teacher", upload.single("picture"), teacherController.agreeTeacher);
+router.post("/teacher/agree", upload.none(), teacherController.agreeTeacher);
 module.exports = router;

@@ -32,8 +32,7 @@ exports.applyTeacherService = async (teacherData, filename) => {
         "teacher"
       );
 
-      console.log('isRole exisit', isRole)
-      
+      console.log("isRole exisit", isRole);
 
       if (!isRole) {
         isRole = await rolePermissionService.createNewRoleService(
@@ -133,4 +132,20 @@ const sendEmailToTeacher = async (userId, { email, password, subject }) => {
   const body = emailTemplate(userId, email, password);
   const mailSend = await sendEmail(email, body, subject);
   return mailSend;
+};
+
+exports.agreeTeacher = async ({ userId }) => {
+  try {
+    const user = await findUserByProperty("_id", userId, User);
+
+    if (!user) {
+      return error("Invalid User Id", 404);
+    }
+    user.verified = true;
+
+    await user.save();
+    return { message: "Teacher Successfully Verified" };
+  } catch (error) {
+    error("Invalid User Id", 404);
+  }
 };

@@ -42,7 +42,7 @@ const forNewTeacher = (userId, email, password) => {
                                                         Password : ${password}
                                                   </pre>
                                               </p>
-                                              <a href='${process.env.FONTEND_URL}/agree-teacher/${userId}}'
+                                              <a href='${process.env.FONTEND_URL}agree-teacher/${userId}}'
                                                   style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">
                                                   Agree to join
                                                   </a>

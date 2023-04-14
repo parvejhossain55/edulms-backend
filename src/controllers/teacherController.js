@@ -56,7 +56,14 @@ exports.applyTeacher = async (req, res, next) => {
   }
 };
 
-exports.agreeTeacher = async (req, res, next) => {};
+exports.agreeTeacher = async (req, res, next) => {
+  try {
+    const agreeteacher = await teacherService.agreeTeacher(req.body);
+    res.json(agreeteacher);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // exports.applyTeacher = async (req, res, next) => {
 //   const { firstName, lastName, mobile, email, qualification, about } = req.body;
