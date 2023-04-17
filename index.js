@@ -7,12 +7,12 @@ const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 const app = express();
 require("dotenv").config();
-const {readdirSync} = require('fs');
+const { readdirSync } = require("fs");
 
-const RoleModel = require('./src/models/Role');
-const projectRoles = require('./src/dbSeed/projectRoles');
-const PermissionModel = require('./src/models/Permission');
-const {permissionsDocuments} = require('./src/dbSeed/projectPermissions');
+const RoleModel = require("./src/models/Role");
+const projectRoles = require("./src/dbSeed/projectRoles");
+const PermissionModel = require("./src/models/Permission");
+const { permissionsDocuments } = require("./src/dbSeed/projectPermissions");
 
 app.use(helmet());
 app.use(express.json());
@@ -28,24 +28,25 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.get('/', (req, res)=>{
-    res.send(`<div style="text-align: center"><h3>Welcome to Lead Educare LMS Backend. <a href="${process.env.FONTEND_URL}">Visit our site</a></h3></div>`)
-})
-
-
-// app.use('/api/v1', require('./src/routes/auth.route'));
-readdirSync('./src/routes').map(r => app.use('/api/v1', require('./src/routes/'+r)));
-
-app.use((err, req, res, next) => {
-    console.log(err);
-    const message = err.message ? err.message : 'Server Error Occurred';
-    const status = err.status ? err.status : 500;
-    res.status(status).json({
-        error: status === 500 ? 'Server Error Occurred' : message,
-    });
-
+app.get("/", (req, res) => {
+  res.send(
+    `<div style="text-align: center"><h3>Welcome to Lead Educare LMS Backend. <a href="${process.env.FONTEND_URL}">Visit our site</a></h3></div>`
+  );
 });
 
+// app.use('/api/v1', require('./src/routes/auth.route'));
+readdirSync("./src/routes").map((r) =>
+  app.use("/api/v1", require("./src/routes/" + r))
+);
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  const message = err.message ? err.message : "Server Error Occurred";
+  const status = err.status ? err.status : 500;
+  res.status(status).json({
+    error: status === 500 ? "Server Error Occurred" : message,
+  });
+});
 
 const port = process.env.PORT || 8000;
 // DB Connection
@@ -55,12 +56,20 @@ mongoose
   .then(() => {
     console.log("DB Connected");
 
- 	projectRoles.map(async role => {
-           await RoleModel.updateOne({name: role.name}, {$set: {name: role.name}}, {upsert: true});
-        });
-         permissionsDocuments.map(async permission => {
-            await PermissionModel.updateOne({name: permission.name}, {$set: {name: permission.name}}, {upsert: true});
-        });
+    projectRoles.map(async (role) => {
+      await RoleModel.updateOne(
+        { name: role.name },
+        { $set: { name: role.name } },
+        { upsert: true }
+      );
+    });
+    permissionsDocuments.map(async (permission) => {
+      await PermissionModel.updateOne(
+        { name: permission.name },
+        { $set: { name: permission.name } },
+        { upsert: true }
+      );
+    });
     // Server Listen
     app.listen(port, () => {
       console.log(`Server run success on port ${port}`);
