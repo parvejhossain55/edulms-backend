@@ -1,60 +1,66 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require("mongoose");
 const slugify = require("slugify");
 
-const {ObjectId} = Schema.Types;
-const courseSchema = new Schema({
+const { ObjectId } = Schema.Types;
+const courseSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: [true, 'Course name is required'],
-        minLength: [3, 'Course name must be 3 character'],
-        maxLength: [300, 'Course name is too large'],
-        trim: true,
-        lowercase: true,
-        unique: true
+      type: String,
+      required: [true, "Course name is required"],
+      minLength: [3, "Course name must be 3 character"],
+      maxLength: [300, "Course name is too large"],
+      trim: true,
+      lowercase: true,
+      unique: true,
     },
     slug: {
-        type: String,
-        trim: true,
-        lowercase: true,
+      type: String,
+      trim: true,
+      lowercase: true,
     },
     description: {
-      type: String
+      type: String,
     },
     regularPrice: {
-        type: Number,
-        required: [true, 'price is required'],
+      type: Number,
+      required: [true, "price is required"],
     },
     sellPrice: {
-        type: Number
+      type: Number,
+    },
+    sold: {
+      type: Number,
+      default: 0,
     },
     teacherId: {
-        type: ObjectId,
-        ref: 'Teacher',
-        required: [true, 'teacher is required'],
+      type: ObjectId,
+      ref: "Teacher",
+      required: [true, "teacher is required"],
     },
     categoryId: {
-        type: ObjectId,
-        ref: 'Category',
-        required: [true, 'category is required'],
+      type: ObjectId,
+      ref: "Category",
+      required: [true, "category is required"],
     },
     benefit: [String],
     thumbnail: {
-        public_id: { type: String },
-        secure_url: { type: String },
+      public_id: { type: String },
+      secure_url: { type: String },
     },
     status: {
-        type: String,
-        enum: ['draft', 'pending', 'published'],
-        default: 'draft'
-    }
+      type: String,
+      enum: ["draft", "pending", "published"],
+      default: "draft",
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
-}, {versionKey: false, timestamps: true});
+courseSchema.pre("save", function (next) {
+  this.slug = slugify(this.name);
+  next();
+});
 
-courseSchema.pre('save', function (next) {
-    this.slug = slugify(this.name);
-    next();
-})
-
-const course = model('Course', courseSchema);
+const course = model("Course", courseSchema);
 
 module.exports = course;

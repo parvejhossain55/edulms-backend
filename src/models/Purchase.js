@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
-const cartSchema = new mongoose.Schema(
+const purchaseSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    payment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
       required: true,
     },
     courses: [
@@ -20,20 +25,8 @@ const cartSchema = new mongoose.Schema(
         },
       },
     ],
-    total: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    couponApplied: {
-      type: Boolean,
-      default: false,
-    },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
+  { timestamps: true, versionKey: false }
 );
 
-module.exports = mongoose.model("Cart", cartSchema);
+module.exports = mongoose.model("Purchase", purchaseSchema);
