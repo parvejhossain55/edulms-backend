@@ -21,12 +21,8 @@ exports.checkoutSuccess = async (req, res) => {
 
 exports.checkoutCancel = async (req, res, next) => {
   try {
-    const { status, url } = await CheckoutService.checkoutCart(
-      req.auth._id,
-      req.body
-    );
-    // console.log(url);
-    res.status(status).json(url);
+    // provide cancel route link
+    res.redirect("http://google.com");
   } catch (err) {
     next(err);
   }
@@ -34,12 +30,8 @@ exports.checkoutCancel = async (req, res, next) => {
 
 exports.checkoutFail = async (req, res, next) => {
   try {
-    const { status, url } = await CheckoutService.checkoutCart(
-      req.auth._id,
-      req.body
-    );
-    // console.log(url);
-    res.status(status).json(url);
+    // provide fail route link
+    res.redirect("http://google.com");
   } catch (err) {
     next(err);
   }
