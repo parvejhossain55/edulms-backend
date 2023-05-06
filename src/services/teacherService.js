@@ -32,8 +32,6 @@ exports.applyTeacherService = async (teacherData, filename) => {
         "teacher"
       );
 
-      console.log("isRole exisit", isRole);
-
       if (!isRole) {
         isRole = await rolePermissionService.createNewRoleService(
           {
@@ -116,22 +114,28 @@ exports.applyTeacherService = async (teacherData, filename) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession;
-    console.log("error ", error);
-
-    return error;
+    throw error("Teacher Application Failed", error.status);
   }
 };
 
 const createTeacherProfile = async (teacherData, session = null) => {
-  const teacher = new TeacherProfile(teacherData);
-  await teacher.save({ session });
-  return teacher;
+  try {
+    const teacher = new TeacherProfile(teacherData);
+    await teacher.save({ session });
+    return teacher;
+  } catch (error) {
+    throw error("Failed To Create Teacher Profile", error.status);
+  }
 };
 
 const sendEmailToTeacher = async (userId, { email, password, subject }) => {
-  const body = emailTemplate(userId, email, password);
-  const mailSend = await sendEmail(email, body, subject);
-  return mailSend;
+  try {
+    const body = emailTemplate(userId, email, password);
+    const mailSend = await sendEmail(email, body, subject);
+    return mailSend;
+  } catch (error) {
+    throw error("Failed to Send Email in Teaher", error.status);
+  }
 };
 
 exports.agreeTeacher = async ({ userId }) => {
@@ -139,13 +143,14 @@ exports.agreeTeacher = async ({ userId }) => {
     const user = await findUserByProperty("_id", userId, User);
 
     if (!user) {
-      return error("Invalid User Id", 404);
+      throw error("Invalid User Id", 404);
     }
+
     user.verified = true;
 
     await user.save();
     return { message: "Teacher Successfully Verified" };
   } catch (error) {
-    error("Invalid User Id", 404);
+    throw error("Invalid User Id", error.status);
   }
 };

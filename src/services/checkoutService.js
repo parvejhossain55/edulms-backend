@@ -1,5 +1,5 @@
 const purchaseTemplate = require("../emailTemplate/purchaseCourse");
-const sendError = require("../helpers/error");
+const error = require("../helpers/error");
 const sendEmail = require("../helpers/sendEmail");
 const transactionId = require("../helpers/transactionId");
 const Cart = require("../models/Cart");
@@ -30,7 +30,7 @@ exports.checkoutCart = async (userId, courseData) => {
     const cart = await Cart.findOne({ user: userId });
 
     if (!cart) {
-      return sendError("Cart Not Found");
+      throw error("Cart Not Found", 404);
     }
 
     const data = {
@@ -74,7 +74,7 @@ exports.checkoutCart = async (userId, courseData) => {
       url: payment.GatewayPageURL,
     };
   } catch (error) {
-    console.error(error);
+    throw error("Failed to chekcout cart", error.status);
   }
 };
 
@@ -98,7 +98,7 @@ exports.checkoutSuccess = async (success) => {
     } = validate;
 
     if (status !== "VALID") {
-      sendError("Payment validation failed.", 400);
+      throw error("Payment validation failed.", 400);
     }
 
     // Retrieve the user's cart
@@ -184,8 +184,7 @@ exports.checkoutSuccess = async (success) => {
       info
     )}`;
   } catch (error) {
-    console.error(error);
-    sendError("Invalid Payment. Can't create order", 400);
+    throw error("Invalid Payment. Can't create order", error.status);
   }
 };
 

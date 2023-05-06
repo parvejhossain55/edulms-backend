@@ -1,4 +1,4 @@
-const sendError = require("../helpers/error");
+const error = require("../helpers/error");
 const Cart = require("../models/Cart");
 const Coupon = require("../models/Coupon");
 
@@ -9,7 +9,7 @@ exports.createCoupon = async (couponData) => {
     await coupon.save();
     return { message: "Coupon Successfully Created" };
   } catch (error) {
-    sendError(error.message);
+    throw error("Coupon Create Failed", error.status);
   }
 };
 
@@ -72,7 +72,7 @@ exports.applyCouponCode = async (code, userid) => {
 
     return { status: 400, message: "You are not eligible for this coupon" };
   } catch (error) {
-    sendError(error.message, 500);
+    throw error("Coupon Applied Failed", error.status);
   }
 };
 
@@ -92,7 +92,7 @@ exports.getAllCoupons = async () => {
     const coupons = await Coupon.find();
     return coupons;
   } catch (error) {
-    sendError(error.message);
+    throw error("Coupon Find Failed", error.status);
   }
 };
 
@@ -104,7 +104,7 @@ exports.updateCouponByCode = async (code, couponData) => {
     });
     return coupon;
   } catch (error) {
-    sendError(error.message);
+    throw error("Coupno Update Failed", error.status);
   }
 };
 
@@ -114,6 +114,6 @@ exports.deleteCouponByCode = async (code) => {
     const result = await Coupon.findOneAndDelete({ code });
     return result;
   } catch (error) {
-    sendError(error.message);
+    throw error("Coupon Delete Failed", error.status);
   }
 };
