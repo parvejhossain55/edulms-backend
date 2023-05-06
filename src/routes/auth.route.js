@@ -9,6 +9,10 @@ router.get('/auth/admin-check', authMiddleware.authVerifyMiddleware, authMiddlew
     res.status(200).json({ok: true});
 });
 
+router.get('/auth/check-permission/:permission', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissionForFrontend, async (req, res) => {
+    res.status(200).json({ ok: true });
+});
+
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
 router.get('/auth/:email/:otp', authController.verifyOTP);

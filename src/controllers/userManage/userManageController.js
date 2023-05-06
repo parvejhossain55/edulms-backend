@@ -1,18 +1,30 @@
 const manageUserService = require('../../services/userManage/manageUserService');
 const FormHelper = require("../../helpers/FormHelper");
 const userManageService = require("../../services/userManage/manageUserService");
-const getAllUsers = async (req, res, next)=>{
+const getAllEmployees = async (req, res, next)=>{
     try {
-        const users = await manageUserService.getAllUsersService();
-        res.status(200).json(users)
-    }catch (e) {
-        next(e);
+        const pageNo = Number(req.params.pageNo);
+        const perPage = Number(req.params.perPage);
+        const keyword = req.params.keyword;
+        const skipRow = (pageNo - 1) * perPage;
+
+        const employees = await manageUserService.getAllEmployeeService({ perPage, keyword, skipRow, auth: req.auth });
+        res.status(200).json(
+            { employees }
+        )
+
+
+    } catch (e) {
+        next(e)
     }
 }
 
-const createUser = async (req, res, next)=>{
+const createEmployee = async (req, res, next)=>{
     try {
-        const { email, firstName, lastName, password, confirmPassword, roleId } = req.body;
+        const { email, firstName, lastName,mobile, roleId } = req.body;
+        const authId = req?.auth?._id;
+        const authUser = req?.auth;
+
         if (FormHelper.isEmpty(email)) {
             return res.status(400).json({
                 error: "Email is required",
@@ -34,42 +46,20 @@ const createUser = async (req, res, next)=>{
             });
         }
 
-        if (FormHelper.isEmpty(password)) {
-            return res.status(400).json({
-                error: "Password is required",
-            });
-        }
-        if (!FormHelper.isPasswordValid(password)) {
-            return res.status(400).json({
-                error:
-                    "Password must contain at least 8 characters long, one uppercase letter, one lowercase letter, one digit and one special character",
-            });
-        }
-        if (FormHelper.isEmpty(confirmPassword)) {
-            return res.status(400).json({
-                error: "Confirm password is required",
-            });
-        }
-        if (!FormHelper.comparePassword(password, confirmPassword)) {
-            return res.status(400).json({
-                error: "Password doesn't match",
-            });
-        }
-
         if (!FormHelper.isIdValid(roleId)){
             return res.status(400).json({
                 error: "provide a valid role",
             });
         }
 
-        await userManageService.userCreateService({
+        await userManageService.employeeCreateService({
             email,
             firstName,
             lastName,
-            password,
-            confirmPassword,
-            roleId
-        });
+            mobile,
+            roleId,
+            createdBy: authId
+        }, authUser);
 
         res.status(201).json({
             message: "Account create success and send email to "+ email,
@@ -79,4 +69,4 @@ const createUser = async (req, res, next)=>{
     }
 }
 
-module.exports = {getAllUsers, createUser}
+module.exports = {getAllEmployees, createEmployee}

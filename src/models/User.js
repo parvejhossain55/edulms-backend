@@ -66,6 +66,10 @@ const userSchema = new Schema(
     },
 
     roleId: { type: Schema.Types.ObjectId, ref: "Role" },
+      createdBy: {
+          type: Schema.Types.ObjectId,
+          ref: "User"
+      },
     status: {
       type: String,
       enum: ["active", "inactive", "blocked"],
@@ -76,6 +80,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+      confirmationToken: {
+          type: String
+      },
+      confirmationTokenExpires: {
+          type: Date,
+      },
   },
   { versionKey: false, timestamps: true }
 );

@@ -8,6 +8,5 @@ const router = require('express').Router();
 
 router.patch('/users', upload.single('picture'), uploadToCloudinary, authMiddleware.authVerifyMiddleware, userController.patchUser);
 router.get('/users', authMiddleware.authVerifyMiddleware, userController.getUserProfile);
-router.post('/users', authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.user.can_create_user), manageUserController.createUser);
 
 module.exports = router;

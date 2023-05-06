@@ -46,6 +46,25 @@ function checkPermissions(permission) {
   };
 }
 
+const checkPermissionForFrontend = async (req, res, next) => {
+  const userId = req.auth?._id;
+  const permission = req.params.permission;
+
+  const user = await User.findById(userId).populate('roleId');
+
+  if (user?.roleId.name === 'superadmin') {
+    return next();
+  }
+  const roles = await Role.findById(user?.roleId._id).populate('permissions');
+
+  const authorized = roles?.permissions.some(item => item.name === permission);
+
+  if (!authorized) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
+}
+
 const isSuperAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.auth._id).populate("roleId");
@@ -79,4 +98,5 @@ module.exports = {
   checkPermissions,
   isSuperAdmin,
   isAdmin,
+  checkPermissionForFrontend
 };

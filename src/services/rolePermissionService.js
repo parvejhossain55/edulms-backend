@@ -1,8 +1,8 @@
-const Role = require("../../models/Role");
-const error = require("../../helpers/error");
-const PermissionModel = require("../../models/Permission");
-const UserModel = require("../../models/User");
-const checkAssociateService = require('../common/checkAssociateService');
+const Role = require("../models/Role");
+const error = require("../helpers/error");
+const PermissionModel = require("../models/Permission");
+const UserModel = require("../models/User");
+const checkAssociateService = require('./common/checkAssociateService');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const roleFindByProperty = (key, value)=>{
@@ -12,10 +12,40 @@ const roleFindByProperty = (key, value)=>{
     return Role.findOne({[key]: value});
 }
 
-const getRoleService = ()=>{
+const getRoleService = (query = {})=>{
     return Role.aggregate([
-        {$match: {}}
+        {$match: query}
     ])
+}
+const getRolesPaginationService = ({page, perPage, keyword})=>{
+    const skipRow = (page - 1) * perPage;
+    if (keyword  !== '0'){
+        return Role.aggregate([
+            {$match: {name: {$regex: keyword, $options: 'xi'}}},
+            {$facet: {
+                    total:[{$count: "count"}],
+                    rows: [
+                        {$project: {totalPermission: {$size: '$permissions'}, name: 1}},
+                        {$skip: skipRow},
+                        {$limit: perPage}
+                    ]
+                }},
+        ])
+    }else {
+        return Role.aggregate([
+            {$match: {}},
+            {$facet: {
+                    total:[{$count: "count"}],
+                    rows: [
+                        {$project: {totalPermission: {$size: '$permissions'}, name: 1}},
+                        {$skip: skipRow},
+                        {$limit: perPage}
+                    ]
+                }},
+
+        ])
+    }
+
 }
 const createNewRoleService = async ({roleName}, session = null)=>{
     const role = new Role({name: roleName});
@@ -35,7 +65,7 @@ const assignPermissionsService = async ({permissions, roleId})=>{
     const role = await Role.findById(roleId);
     if (!role)throw error('Role not found', 400);
 
-  return Role.findByIdAndUpdate(roleId, {permissions});
+    return Role.findByIdAndUpdate(roleId, {permissions},{new: true});
 
 
 }
@@ -56,5 +86,6 @@ module.exports = {
     roleFindByProperty,
     deleteRoleService,
     getAllPermissionsService,
-    getPermissionsByRoleService
+    getPermissionsByRoleService,
+    getRolesPaginationService
 }

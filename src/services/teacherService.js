@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const findUserByProperty = require("../services/common/findOneByProperty");
-const rolePermissionService = require("./userManage/rolePermissionService");
+const rolePermissionService = require("./rolePermissionService");
 const userService = require("./userService");
 const TeacherProfile = require("../models/TeacherProfile");
 const User = require("../models/User");

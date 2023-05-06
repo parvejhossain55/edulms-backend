@@ -56,20 +56,13 @@ mongoose
   .then(() => {
     console.log("DB Connected");
 
-    projectRoles.map(async (role) => {
-      await RoleModel.updateOne(
-        { name: role.name },
-        { $set: { name: role.name } },
-        { upsert: true }
-      );
-    });
-    permissionsDocuments.map(async (permission) => {
-      await PermissionModel.updateOne(
-        { name: permission.name },
-        { $set: { name: permission.name } },
-        { upsert: true }
-      );
-    });
+      projectRoles.map(async role => {
+          await RoleModel.updateOne({name: role.name}, {$set: {name: role.name}}, {upsert: true});
+      });
+      permissionsDocuments.map(async permission => {
+          await PermissionModel.updateOne({name: permission.name}, {$set: {name: permission.name}}, {upsert: true});
+      });
+
     // Server Listen
     app.listen(port, () => {
       console.log(`Server run success on port ${port}`);
