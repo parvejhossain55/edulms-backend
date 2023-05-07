@@ -1,5 +1,8 @@
 const courseCategoryService = require('../../services/course/courseCategoryService');
 const FormHelper = require('../../helpers/FormHelper');
+const listService = require('../../services/common/listService')
+const DataModel = require('../../models/CourseCategory');
+const dropDownService = require('../../services/common/dropDownService')
 const createCategory = async (req, res, next)=>{
     try {
         const {name} = req.body;
@@ -20,7 +23,22 @@ const createCategory = async (req, res, next)=>{
 
 const getCategories = async (req, res, next)=>{
     try {
-        const categories = await courseCategoryService.getCategories();
+        let SearchRgx = {$regex: req.params.searchKeyword, $options: "i"};
+        let SearchArray = [
+            {name: SearchRgx},
+        ];
+        const categories = await listService(req, DataModel, SearchArray);
+        res.status(200).json({categories});
+    }catch (e) {
+        next(e);
+    }
+}
+const dropDownCategories = async (req, res, next)=>{
+    try {
+        const projection = {
+            name: 1
+        }
+        const categories = await dropDownService(DataModel, projection);
         res.status(200).json({categories});
     }catch (e) {
         next(e);
@@ -53,4 +71,4 @@ const deleteCategory = async (req, res, next)=>{
     }
 }
 
-module.exports = {createCategory, getCategories, updateCategory, deleteCategory}
+module.exports = {createCategory, getCategories, updateCategory, deleteCategory, dropDownCategories}

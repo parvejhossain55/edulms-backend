@@ -17,7 +17,7 @@ const createCategory = async ({name})=>{
         return createService({name}, CourseCategoryModel);
 }
 
-const getCategories = ()=>{
+const getCategories = (pageNo, perPage, searchKeyword)=>{
     return CourseCategoryModel.find({});
 }
 
