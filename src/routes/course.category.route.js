@@ -4,6 +4,7 @@ const {permissions} = require("../dbSeed/projectPermissions");
 const router = require('express').Router();
 
 router.get('/courses/categories/:pageNo/:perPage/:searchKeyword', courseCategoryController.getCategories);
+router.get('/courses/categories/:id', courseCategoryController.getCategorybyID);
 router.get('/courses/categories', courseCategoryController.dropDownCategories);
 
 router.post('/courses/categories',

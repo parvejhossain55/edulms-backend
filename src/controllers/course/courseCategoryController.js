@@ -33,13 +33,26 @@ const getCategories = async (req, res, next)=>{
         next(e);
     }
 }
+const getCategorybyID = async (req, res, next)=>{
+    try {
+
+        const id = req.params.id;
+
+        const category = await DataModel.findById(id)
+        res.status(200).json(category);
+    }catch (e) {
+        next(e);
+    }
+}
 const dropDownCategories = async (req, res, next)=>{
     try {
         const projection = {
+            label: "$name",
+            value: "$_id",
             name: 1
         }
         const categories = await dropDownService(DataModel, projection);
-        res.status(200).json({categories});
+        res.status(200).json(categories);
     }catch (e) {
         next(e);
     }
@@ -64,6 +77,7 @@ const updateCategory = async (req, res, next)=>{
 const deleteCategory = async (req, res, next)=>{
     try {
         const catId = req.params.id;
+
         const category = await courseCategoryService.deleteCategory(catId);
         res.status(200).json({category});
     }catch (e) {
@@ -71,4 +85,11 @@ const deleteCategory = async (req, res, next)=>{
     }
 }
 
-module.exports = {createCategory, getCategories, updateCategory, deleteCategory, dropDownCategories}
+module.exports = {
+    createCategory,
+    getCategories,
+    updateCategory,
+    deleteCategory,
+    dropDownCategories,
+    getCategorybyID
+}
