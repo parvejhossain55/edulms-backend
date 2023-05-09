@@ -13,7 +13,7 @@ router.post('/courses/modules',
 );
 router.patch('/courses/modules/:id',
     authMiddleware.authVerifyMiddleware,
-    authMiddleware.checkPermissions(permissions.courseCategory.can_edit_course),
+    authMiddleware.checkPermissions(permissions.course.can_edit_course),
     courseModuleController.updateModule
 );
 

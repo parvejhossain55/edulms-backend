@@ -1,52 +1,112 @@
-const FormHelper = require('../../helpers/FormHelper');
-const CourseContentModel = require('../../models/CourseContent');
-const courseContentService = require('../../services/course/courseContentService');
+const FormHelper = require("../../helpers/FormHelper");
+const CourseContent = require("../../models/CourseContent");
+const dropDownService = require("../../services/common/dropDownService");
+const findAllService = require("../../services/common/findAllService");
+const listService = require("../../services/common/listService");
+const courseContentService = require("../../services/course/courseContentService");
+
 const createContent = async (req, res, next) => {
-    try {
-        const contentArray = req.body;
+  try {
+    const { moduleId, videoTitle, videoUrl } = req.body;
 
-        contentArray.map(content => {
-            if (!FormHelper.isIdValid(content.moduleId)){
-                return res.status(400).json({
-                    error: 'Provide a valid module'
-                })
-            }
-            if (FormHelper.isEmpty(content.videoTitle)){
-                return res.status(400).json({
-                    error: 'Video title is required'
-                })
-            }
-            if (FormHelper.isEmpty(content.videoUrl)){
-                return res.status(400).json({
-                    error: 'Video URL is required'
-                })
-            }
-        })
-
-
-
-        const contents = await courseContentService.createService(contentArray);
-        res.status(201).json(contents);
-
-
-    }catch (e) {
-        next(e)
+    if (!FormHelper.isIdValid(moduleId)) {
+      return res.status(400).json({
+        error: "Invalid Module No",
+      });
     }
-}
+    if (FormHelper.isEmpty(videoTitle)) {
+      return res.status(400).json({
+        error: "Video Title is required",
+      });
+    }
+    if (FormHelper.isEmpty(videoUrl)) {
+      return res.status(400).json({
+        error: "Video URL is required",
+      });
+    }
+
+    const contents = await courseContentService.createContent({
+      moduleId,
+      videoTitle,
+      videoUrl,
+    });
+
+    res.status(201).json(contents);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getContent = async (req, res, next) => {
+  try {
+    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchArray = [{ name: SearchRgx }];
+    const contents = await listService(req, CourseContent, SearchArray);
+    res.status(200).json(contents);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getContentsbyID = async (req, res, next) => {
+  try {
+    const { moduleId } = req.params;
+    const content = await findAllService({ moduleId }, CourseContent);
+
+    res.status(200).json(content);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const dropDownModules = async (req, res, next) => {
+  try {
+    const projection = {
+      label: "$videoTitle",
+      value: "$_id",
+    };
+    const content = await dropDownService(CourseContent, projection);
+    res.status(200).json(content);
+  } catch (e) {
+    next(e);
+  }
+};
 
 const updateContent = async (req, res, next) => {
-    try {
+  try {
+    const contentId = req.params.id;
+    const { videoTitle, videoUrl } = req.body;
 
-    }catch (e) {
-        next(e)
+    if (FormHelper.isEmpty(videoTitle)) {
+      res.status(400).json({
+        error: "videoTitle is required",
+      });
     }
-}
+    if (FormHelper.isEmpty(videoUrl)) {
+      res.status(400).json({
+        error: "videoUrl is required",
+      });
+    }
+
+    const content = await courseContentService.updateContent(contentId, {
+      videoTitle,
+      videoUrl,
+    });
+    res.status(200).json({ content });
+  } catch (e) {}
+};
+
 const deleteContent = async (req, res, next) => {
-    try {
+  try {
+  } catch (e) {
+    next(e);
+  }
+};
 
-    }catch (e) {
-        next(e)
-    }
-}
-
-module.exports = {createContent}
+module.exports = {
+  createContent,
+  getContent,
+  getContentsbyID,
+  dropDownModules,
+  updateContent,
+};
