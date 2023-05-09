@@ -1,53 +1,107 @@
-const FormHelper = require('../../helpers/FormHelper');
-const courseModuleService = require('../../services/course/courseModuleService');
-const createModule = async (req, res, next)=>{
-    try {
-       const { courseId,  title, moduleNo } = req.body;
+const FormHelper = require("../../helpers/FormHelper");
+const CourseModule = require("../../models/CourseModule");
+const dropDownService = require("../../services/common/dropDownService");
+const findAllService = require("../../services/common/findAllService");
+const listService = require("../../services/common/listService");
+const courseModuleService = require("../../services/course/courseModuleService");
 
-       if (!FormHelper.isIdValid(courseId)){
-           return res.status(400).json({
-               error: 'Provide valid course'
-           });
-       }
-       if (FormHelper.isEmpty(title)){
-           return res.status(400).json({
-               error: 'Module name is required'
-           });
-       }
-       if (FormHelper.isEmpty(moduleNo)){
-           return res.status(400).json({
-               error: 'Module number is required'
-           });
-       }
+const createModule = async (req, res, next) => {
+  try {
+    const { courseId, title, moduleNo } = req.body;
 
-        const module = await courseModuleService.createService({ courseId,  title, moduleNo });
-       res.status(201).json(module);
-       
-    }catch (e) {
-        next(e)
+    if (!FormHelper.isIdValid(courseId)) {
+      return res.status(400).json({
+        error: "Provide valid course",
+      });
     }
-}
-const getModules = async (req, res, next)=>{
-    try {
-
-    }catch (e) {
-        next(e)
+    if (FormHelper.isEmpty(title)) {
+      return res.status(400).json({
+        error: "Module name is required",
+      });
     }
-}
-const updateModule = async (req, res, next)=>{
-    try {
-        const id = req.params.id;
-    }catch (e) {
-        next(e)
+    if (FormHelper.isEmpty(moduleNo)) {
+      return res.status(400).json({
+        error: "Module number is required",
+      });
     }
-}
 
-const deleteModule = async (req, res, next)=>{
-    try {
+    const module = await courseModuleService.createService({
+      courseId,
+      title,
+      moduleNo,
+    });
+    res.status(201).json(module);
+  } catch (e) {
+    next(e);
+  }
+};
 
-    }catch (e) {
-        next(e)
+const getModules = async (req, res, next) => {
+  try {
+    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchArray = [{ name: SearchRgx }];
+    const modules = await listService(req, CourseModule, SearchArray);
+    res.status(200).json(modules);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getModulesbyID = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const module = await findAllService({ courseId }, CourseModule);
+    res.status(200).json(module);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const dropDownModules = async (req, res, next) => {
+  try {
+    const projection = {
+      label: "$title",
+      value: "$_id",
+      title: 1,
+    };
+    const modules = await dropDownService(CourseModule, projection);
+    res.status(200).json(modules);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const updateModule = async (req, res, next) => {
+  try {
+    const moduleId = req.params.id;
+    const { title, moduleNo } = req.body;
+    if (FormHelper.isEmpty(title)) {
+      res.status(400).json({
+        error: "Modules Title is required",
+      });
     }
-}
+    if (FormHelper.isEmpty(moduleNo)) {
+      res.status(400).json({
+        error: "Modules No is required",
+      });
+    }
 
-module.exports = {createModule}
+    const module = await courseModuleService.updateModule(moduleId, {title, moduleNo});
+    res.status(200).json({ module });
+  } catch (e) {}
+};
+
+const deleteModule = async (req, res, next) => {
+  try {
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = {
+  createModule,
+  getModules,
+  getModulesbyID,
+  dropDownModules,
+  updateModule,
+};
