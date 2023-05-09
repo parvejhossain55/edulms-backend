@@ -8,8 +8,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const createService = async ({ courseId, title, moduleNo }) => {
   const isModule = await CourseModule.findOne({
     $or: [
-      { courseId: new ObjetId(courseId), title: title },
-      { courseId: new ObjetId(courseId), moduleNo },
+      { courseId: new ObjectId(courseId), title: title },
+      { courseId: new ObjectId(courseId), moduleNo },
     ],
   });
   if (isModule?.title === title) throw error("Module name already exits", 400);
