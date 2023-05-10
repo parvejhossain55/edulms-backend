@@ -1,5 +1,6 @@
 const Cart = require("../models/Cart");
 const Course = require("../models/Course");
+const error = require("../helpers/error");
 
 exports.getUserCart = async (userId) => {
   try {
@@ -8,9 +9,8 @@ exports.getUserCart = async (userId) => {
     );
 
     return { status: 200, cart: courses };
-  } catch (error) {
-    console.error(error);
-    return { status: 500, message: "Error Retrieving Cart" };
+  } catch (err) {
+    throw error(err.message, err.status);
   }
 };
 
@@ -61,9 +61,8 @@ exports.addCartService = async ({ userId, courseId }) => {
     await cart.save();
 
     return { status: 200, message: "Course Successfully added to your Cart" };
-  } catch (error) {
-    console.error(error);
-    return { status: 500, message: error.message };
+  } catch (err) {
+    throw error(err.message, err.status);
   }
 };
 
@@ -86,9 +85,8 @@ exports.removeCartItem = async (userId, courseId) => {
     );
 
     return { status: 200, cart: courses };
-  } catch (error) {
-    console.error(error);
-    return { status: "error", message: "Error removing cart product." };
+  } catch (err) {
+    throw error(err.message, err.status);
   }
 };
 // api test korte cart item remove er
