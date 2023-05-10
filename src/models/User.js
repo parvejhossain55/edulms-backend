@@ -25,7 +25,6 @@ const userSchema = new Schema(
       minLength: [3, "First name must be 3 character"],
       maxLength: [100, "First name is too large"],
       trim: true,
-      lowercase: true,
     },
     lastName: {
       type: String,
@@ -33,7 +32,6 @@ const userSchema = new Schema(
       minLength: [3, "Last name must be 3 character"],
       maxLength: [100, "Last name is too large"],
       trim: true,
-      lowercase: true,
     },
     password: {
       type: String,
@@ -66,10 +64,10 @@ const userSchema = new Schema(
     },
 
     roleId: { type: Schema.Types.ObjectId, ref: "Role" },
-      createdBy: {
-          type: Schema.Types.ObjectId,
-          ref: "User"
-      },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     status: {
       type: String,
       enum: ["active", "inactive", "blocked"],
@@ -80,12 +78,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-      confirmationToken: {
-          type: String
-      },
-      confirmationTokenExpires: {
-          type: Date,
-      },
+    confirmationToken: {
+      type: String,
+    },
+    confirmationTokenExpires: {
+      type: Date,
+    },
   },
   { versionKey: false, timestamps: true }
 );

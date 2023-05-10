@@ -38,10 +38,102 @@ const createCourse = async ({
   return await course.save();
 };
 
-const getAllCourse = async (query) => {
-  return CourseModel.find(query)
-    .populate("teacherId", "firstName lastName picture")
-    .populate("categoryId", "name");
+const getAllCourse = async (Request, SearchArray) => {
+  try {
+    let pageNo = Number(Request.params.pageNo);
+    let perPage = Number(Request.params.perPage);
+    let searchValue = Request.params.searchKeyword;
+
+    let data;
+
+    if (searchValue !== "0") {
+      data = await CourseModel.aggregate([
+        { $match: { status: "published", $or: SearchArray } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "teacherId",
+            foreignField: "_id",
+            as: "teacher",
+          },
+        },
+        {
+          $lookup: {
+            from: "coursecategories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            description: 1,
+            sellPrice: 1,
+            regularPrice: 1,
+            thumbnail: 1,
+            benefit: 1,
+            sold: 1,
+            seats: 1,
+            startingDate: 1,
+            "teacher.firstName": 1,
+            "teacher.lastName": 1,
+            "teacher.picture": 1,
+            "category._id": 1,
+            "category.name": 1,
+          },
+        },
+        { $skip: (pageNo - 1) * perPage },
+        { $limit: perPage },
+      ]);
+    } else {
+      data = await CourseModel.aggregate([
+        { $match: { status: "published" } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "teacherId",
+            foreignField: "_id",
+            as: "teacher",
+          },
+        },
+        {
+          $lookup: {
+            from: "coursecategories",
+            localField: "categoryId",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            description: 1,
+            sellPrice: 1,
+            regularPrice: 1,
+            thumbnail: 1,
+            benefit: 1,
+            sold: 1,
+            seats: 1,
+            startingDate: 1,
+            "teacher.firstName": 1,
+            "teacher.lastName": 1,
+            "teacher.picture": 1,
+            "category._id": 1,
+            "category.name": 1,
+          },
+        },
+        { $skip: (pageNo - 1) * perPage },
+        { $limit: perPage },
+      ]);
+    }
+
+    return data;
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
 };
 
 const getSingleCourse = async (query) => {
@@ -88,7 +180,6 @@ const getSingleCourse = async (query) => {
         as: "contents",
       },
     },
-
     {
       $project: {
         _id: 1,
@@ -101,6 +192,8 @@ const getSingleCourse = async (query) => {
         createdAt: 1,
         updatedAt: 1,
         slug: 1,
+        startingDate: 1,
+        endingDate: 1,
         modules: {
           $map: {
             input: "$modules",
