@@ -57,9 +57,9 @@ const findUserByProperty = async (key, value, projection = null) => {
   return user[0];
 };
 
-const createNewUser = (userData, session = null) => {
+const createNewUser = (userData, options = null) => {
   const user = new User(userData);
-  return user.save({session});
+  return user.save(options);
 };
 
 const passwordUpdateService = async ({ email, hash, options = null }) => {

@@ -4,7 +4,11 @@ const {
   upload,
   uploadToCloudinary,
 } = require("../middleware/cloudinaryUpload");
+const authMiddleware = require("../middleware/authMiddleware");
+const {permissions} = require("../dbSeed/projectPermissions");
 
-router.post("/teachers", upload.single("picture"), uploadToCloudinary, teacherController.applyTeacher);
+router.post("/teachers",
+    authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_create_teacher),
+    upload.single("picture"), uploadToCloudinary, teacherController.createTeacher);
 router.post("/teacher/agree", upload.none(), teacherController.agreeTeacher);
 module.exports = router;

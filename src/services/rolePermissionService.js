@@ -47,9 +47,9 @@ const getRolesPaginationService = ({page, perPage, keyword})=>{
     }
 
 }
-const createNewRoleService = async ({roleName}, session = null)=>{
+const createNewRoleService = async ({roleName}, options = null)=>{
     const role = new Role({name: roleName});
-    return await role.save({session});
+    return await role.save(options);
 }
 
 const deleteRoleService = async (id)=>{

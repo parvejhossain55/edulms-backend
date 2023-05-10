@@ -15,7 +15,6 @@ const userSchema = new Schema(
     mobile: {
       type: String,
       trim: true,
-      maxLength: 11,
       validate: [validator.isMobilePhone, "Provide a valid mobile number"],
     },
     firstName: {

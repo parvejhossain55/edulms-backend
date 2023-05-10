@@ -1,17 +1,19 @@
 const FormHelper = require("../helpers/FormHelper");
 const teacherService = require("../services/teacherService");
+const mongoose = require("mongoose");
 
-exports.applyTeacher = async (req, res, next) => {
+exports.createTeacher = async (req, res, next) => {
   const { firstName, lastName, mobile, email, qualification, about } = req.body;
-
   const filename = {
     public_id: req?.file?.cloudinaryId,
     secure_url: req?.file?.cloudinaryUrl,
   };
 
-  console.log("filename ", filename);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
+    const options = {session}
     if (FormHelper.isEmpty(firstName)) {
       return res.status(400).json({
         error: "firstName is required",
@@ -45,13 +47,20 @@ exports.applyTeacher = async (req, res, next) => {
 
     // console.log("body ", req.body);
 
-    const teacher = await teacherService.applyTeacherService(
+    const teacher = await teacherService.createTeacherService(
       req.body,
-      filename
+      filename,
+      options
     );
-    res.json(teacher);
+    await session.commitTransaction();
+    await session.endSession();
+    res.status(201).json({
+      message: "Mail send successfully"
+    });
   } catch (e) {
-    console.log(e);
+    console.log("Transaction aborted:", e);
+    await session.abortTransaction();
+    session.endSession();
     next(e);
   }
 };

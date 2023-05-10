@@ -5,6 +5,13 @@ const permissions = {
         can_view_user: 'can_view_user',
         can_delete_user: 'can_delete_user',
     },
+    teacher: {
+        can_create_teacher: 'can_create_teacher',
+        can_edit_teacher: 'can_edit_teacher',
+        can_view_teacher: 'can_view_teacher',
+        can_delete_teacher: 'can_delete_teacher',
+        can_view_applied_teacher: 'can_view_applied_teacher',
+    },
     courseCategory: {
         can_create_course_category: 'can_create_course_category',
         can_edit_course_category: 'can_edit_course_category',

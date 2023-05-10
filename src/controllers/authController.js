@@ -236,3 +236,38 @@ exports.resetPassword = async (req, res, next) => {
     next(e);
   }
 };
+
+exports.setPassword = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+    const { password, confirmPassword } = req.body;
+
+    if (!FormHelper.isPasswordValid(password)) {
+      return res.status(400).json({
+        error: "Password must contain at least 8 characters long, one uppercase letter, one lowercase letter, one digit and one special character",
+      })
+    }
+    if (!FormHelper.comparePassword(password, confirmPassword)) {
+      return res.status(400).json({
+        error: "Password don't match",
+      })
+    }
+
+    const result = await authService.setPasswordService({ token, password });
+
+    res.status(200).json({
+      message: 'successfully password set',
+      result
+    });
+
+  } catch (e) {
+    if (e.message === 'jwt expired'){
+      res.status(401).json({
+        error: 'Token expired',
+      });
+    }else {
+      next(e);
+    }
+  }
+}
+

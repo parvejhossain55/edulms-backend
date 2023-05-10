@@ -4,6 +4,7 @@ const teacherProfileSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
+      ref: 'User'
     },
     designation: {
       type: String,

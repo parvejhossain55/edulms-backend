@@ -1,9 +1,12 @@
 const userService = require("./userService");
+const UserModel = require("../models/User");
 const error = require("../helpers/error");
 const otpService = require("./otpService");
 const sendOTP = require("../helpers/sendOTP");
 const authHelper = require("../helpers/authHelper");
 const rolePermissionService = require("./rolePermissionService");
+const jwt = require("jsonwebtoken");
+const findOneByQuery = require("./common/findOneByQuery");
 
 const registerService = async ({
   email,
@@ -182,6 +185,20 @@ const resetPasswordService = async ({ email, otp, password, options }) => {
   return otpService.updateOtp({ email, otp, status: 1, options });
 };
 
+const setPasswordService = async (
+    { token, password }
+) => {
+  const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+  const user = await findOneByQuery({ email: decoded?.email, confirmationToken: token }, UserModel);
+  if (!user) throw error('Invalid token', 401);
+  if (decoded.exp < Date.now() / 1000) throw error("token has expired", 401);
+  const hashPassword = authHelper.hashPassword(password);
+  user.confirmationToken = "";
+  user.verified = true;
+  user.save();
+  return userService.passwordUpdateService({ email: decoded.email, hash: hashPassword });
+}
+
 module.exports = {
   registerService,
   loginService,
@@ -190,4 +207,5 @@ module.exports = {
   verifyOtpService,
   passwordChangeService,
   resetPasswordService,
+  setPasswordService
 };

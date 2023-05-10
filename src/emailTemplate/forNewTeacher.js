@@ -1,4 +1,4 @@
-const forNewTeacher = (userId, email, password) => {
+const forNewTeacher = ({token, expireDate}) => {
   const htmlBody = `<div marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px; background-color: #f2f3f8;" leftmargin="0">
       <table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
               style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
@@ -29,28 +29,18 @@ const forNewTeacher = (userId, email, password) => {
                                       <tr>
                                           <td style="padding:0 35px;">
                                               <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">
-                                                 You have been appointed to the Teacher post at Lead Educare. Are you want to join us please click <b>Agree to join</b> button
+                                                 You have been appointed to the Teacher post at ${process.env.APP_NAME}. Are you want to join us please click <b>Set your account password from here</b>
                                                   </h1>
                                               <span
                                                   style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
-                                              <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                                  Your Account Credentials
-                                              </p>
-                                              <p style="text-align: center; width: 400px; margin: 0 auto">
-                                                  <pre>
-                                                        Email : ${email}
-                                                        Password : ${password}
-                                                  </pre>
-                                              </p>
-                                              <a href='${process.env.FONTEND_URL}agree-teacher/${userId}}'
-                                                  style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">
-                                                  Agree to join
-                                                  </a>
-      
-                                                  <a href='${process.env.FONTEND_URL}/decline-teacher/${userId}'
-                                                  style="background:#ae0000c7;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">
-                                                  Decline to join
-                                                  </a>
+                                             
+                                             <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                                            This link expire in ${expireDate}<br>
+                                            Please don't share this email to other person.
+                                        </p>
+                                        <a href="${process.env.PASSWORD_SET_URL}?token=${token}"
+                                            style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Set Password
+                                            </a>
                                           </td>
                                       </tr>
                                       <tr>
