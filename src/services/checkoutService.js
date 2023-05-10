@@ -189,11 +189,13 @@ exports.checkoutSuccess = async (success) => {
 };
 
 async function quantityUpdate(cart) {
+  console.log("cart ", cart);
+
   await Course.bulkWrite(
     cart.courses.map((course) => ({
       updateOne: {
         filter: { _id: course.course },
-        update: { $inc: { sold: 1 } },
+        update: { $inc: { sold: 1, seats: -1 } },
       },
     }))
   );

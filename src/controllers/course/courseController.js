@@ -92,8 +92,10 @@ const getAllCourse = async (req, res, next) => {
 };
 const getAllPublishedCourse = async (req, res, next) => {
   try {
-    const query = { status: "published" };
-    const course = await courseService.getAllCourse(query);
+    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchArray = [{ name: SearchRgx }, { description: SearchRgx }];
+
+    const course = await courseService.getAllCourse(req, SearchArray);
     res.status(200).json(course);
   } catch (e) {
     next(e);
