@@ -35,8 +35,8 @@ const courseSchema = new Schema(
     seats: { type: Number, required: [true, "Seats is required"] },
     teacherId: {
       type: ObjectId,
-      ref: "Teacher",
-      required: [true, "teacher is required"],
+      ref: "User",
+      required: [true, "userId is required"],
     },
     startingDate: {
       type: Date,
@@ -48,7 +48,7 @@ const courseSchema = new Schema(
     },
     categoryId: {
       type: ObjectId,
-      ref: "Category",
+      ref: "CourseCategory",
       required: [true, "category is required"],
     },
     benefit: [String],

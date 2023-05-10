@@ -27,8 +27,8 @@ const createCourse = async ({
     regularPrice,
     sellPrice,
     seats,
-    startingDate: new Date(startingDate),
-    endingDate: new Date(endingDate),
+    startingDate,
+    endingDate,
     teacherId,
     categoryId,
     benefit,
@@ -37,9 +37,13 @@ const createCourse = async ({
   });
   return await course.save();
 };
+
 const getAllCourse = async (query) => {
-  return CourseModel.aggregate([{ $match: query }]);
+  return CourseModel.find(query)
+    .populate("teacherId", "firstName lastName picture")
+    .populate("categoryId", "name");
 };
+
 const getSingleCourse = async (query) => {
   const course = await CourseModel.aggregate([
     { $match: query },
