@@ -40,7 +40,7 @@ exports.checkoutFail = async (req, res, next) => {
 // Baintree payment gateway integration
 exports.clientToken = async (req, res, next) => {
   try {
-    const token = await CheckoutService.clientToken();
+    const token = await CheckoutService.clientToken(req);
     res.send(token);
   } catch (err) {
     next(err);
