@@ -40,97 +40,73 @@ const createCourse = async ({
 
 const getAllCourse = async (Request, SearchArray) => {
   try {
-    let pageNo = Number(Request.params.pageNo);
-    let perPage = Number(Request.params.perPage);
+    let pageNo = Number(Request.params.pageNo) || 1;
+    let perPage = Number(Request.params.perPage) || 10;
     let searchValue = Request.params.searchKeyword;
 
     let data;
 
+    let matchQuery = { status: "published" };
     if (searchValue !== "0") {
-      data = await CourseModel.aggregate([
-        { $match: { status: "published", $or: SearchArray } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "teacherId",
-            foreignField: "_id",
-            as: "teacher",
-          },
-        },
-        {
-          $lookup: {
-            from: "coursecategories",
-            localField: "categoryId",
-            foreignField: "_id",
-            as: "category",
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            description: 1,
-            sellPrice: 1,
-            regularPrice: 1,
-            thumbnail: 1,
-            benefit: 1,
-            sold: 1,
-            seats: 1,
-            startingDate: 1,
-            "teacher.firstName": 1,
-            "teacher.lastName": 1,
-            "teacher.picture": 1,
-            "category._id": 1,
-            "category.name": 1,
-          },
-        },
-        { $skip: (pageNo - 1) * perPage },
-        { $limit: perPage },
-      ]);
-    } else {
-      data = await CourseModel.aggregate([
-        { $match: { status: "published" } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "teacherId",
-            foreignField: "_id",
-            as: "teacher",
-          },
-        },
-        {
-          $lookup: {
-            from: "coursecategories",
-            localField: "categoryId",
-            foreignField: "_id",
-            as: "category",
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            description: 1,
-            sellPrice: 1,
-            regularPrice: 1,
-            thumbnail: 1,
-            benefit: 1,
-            sold: 1,
-            seats: 1,
-            startingDate: 1,
-            "teacher.firstName": 1,
-            "teacher.lastName": 1,
-            "teacher.picture": 1,
-            "category._id": 1,
-            "category.name": 1,
-          },
-        },
-        { $skip: (pageNo - 1) * perPage },
-        { $limit: perPage },
-      ]);
+      let SearchArray = [
+        { name: { $regex: searchValue, $options: "i" } },
+        { description: { $regex: searchValue, $options: "i" } },
+      ];
+      matchQuery.$or = SearchArray;
     }
 
-    return data;
+    const count = await CourseModel.countDocuments(matchQuery);
+    const totalPages = Math.ceil(count / perPage);
+
+    data = await CourseModel.aggregate([
+      { $match: matchQuery },
+      {
+        $lookup: {
+          from: "users",
+          localField: "teacherId",
+          foreignField: "_id",
+          as: "teacher",
+        },
+      },
+      {
+        $lookup: {
+          from: "coursecategories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          sellPrice: 1,
+          regularPrice: 1,
+          thumbnail: 1,
+          benefit: 1,
+          sold: 1,
+          seats: 1,
+          startingDate: 1,
+          "teacher.firstName": 1,
+          "teacher.lastName": 1,
+          "teacher.picture": 1,
+          "category._id": 1,
+          "category.name": 1,
+        },
+      },
+      { $skip: (pageNo - 1) * perPage },
+      { $limit: perPage },
+    ]);
+
+    const currentPage = parseInt(pageNo);
+
+    return {
+      courses: data,
+      totalPages,
+      currentPage,
+      totalCourse: count,
+    };
   } catch (err) {
     throw error(err.message, err.status);
   }
@@ -194,6 +170,7 @@ const getSingleCourse = async (query) => {
         slug: 1,
         startingDate: 1,
         endingDate: 1,
+        seats: 1,
         modules: {
           $map: {
             input: "$modules",
