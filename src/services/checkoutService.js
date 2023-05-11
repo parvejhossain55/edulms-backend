@@ -7,12 +7,20 @@ const Course = require("../models/Course");
 const Payment = require("../models/Payment");
 const Purchase = require("../models/Purchase");
 const SSLCommerzPayment = require("sslcommerz-lts");
+const braintree = require("braintree");
 
 const sslcommerz = new SSLCommerzPayment(
   process.env.STORE_ID,
   process.env.STORE_PASSWORD,
   false
 );
+
+const gateway = new braintree.BraintreeGateway({
+  environment: braintree.Environment.Sandbox,
+  merchantId: process.env.BRAINTREE_MERCHANT_ID,
+  publicKey: process.env.BRAINTREE_PUBLIC_KEY,
+  privateKey: process.env.BRAINTREE_PRIVATE_KEY,
+});
 
 exports.checkoutCart = async (userId, courseData) => {
   const {
@@ -200,3 +208,99 @@ async function quantityUpdate(cart) {
     }))
   );
 }
+
+// braintree payment gateway integration
+exports.clientToken = async () => {
+  const { clientToken, success } = await gateway.clientToken.generate({});
+  if (!success) {
+    throw error("Failed to generate token", 400);
+  }
+  return clientToken;
+};
+
+exports.braintreeCheckout = async (userId, data) => {
+  try {
+    const { name, email, phone, address, country, city, state, zip, course } =
+      data;
+    // Retrieve the user's cart
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "courses.course",
+      "name"
+    );
+
+    // Create the new order
+    const purchase = new Purchase({
+      user: value_a,
+      courses: cart.courses.map((course) => ({
+        course: course.course,
+        price: course.price,
+      })),
+      total: cart.total,
+    });
+
+    // create payment
+    // const payment = new Payment({
+    //   user: userId,
+    //   amount,
+    //   store_amount,
+    //   paymentMethod: card_issuer,
+    //   paymentStatus: status === "VALID" ? "Paid" : "Unpaid",
+    //   tran_id,
+    //   tran_date,
+    //   bank_tran_id,
+    //   card_brand,
+    //   card_type,
+    // });
+
+    // purchase.payment = payment._id;
+
+    // Update product sold and quantity
+    await quantityUpdate(cart);
+
+    // order detail for send email
+    const info = {
+      name,
+      title: cart.courses.reduce(
+        (acc, course) => acc + course.course.name + " | ",
+        ""
+      ),
+      amount: cart.total,
+      method: card_issuer,
+      tran_id,
+      date: new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Dhaka",
+        hour12: true,
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+      }),
+    };
+
+    // Clear the user's cart
+    cart.courses = [];
+    cart.total = 0;
+    cart.couponApplied = false;
+
+    const mailbody = purchaseTemplate(info);
+
+    // email send hole resolve kore data save korte hobe otherwise order failed kore dite hobe
+    const sendMail = await sendEmail(
+      value_c,
+      mailbody,
+      "Course Purchase Confirmation"
+    );
+
+    if (sendMail[0].statusCode !== 202) {
+      return `${process.env.FONTEND_URL}/purchase-failed/${JSON.stringify(
+        info
+      )}`;
+    }
+
+    // Save the purchase and payment
+    await Promise.all([purchase.save(), cart.save(), payment.save()]);
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};

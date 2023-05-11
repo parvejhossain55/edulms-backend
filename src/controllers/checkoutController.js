@@ -36,3 +36,22 @@ exports.checkoutFail = async (req, res, next) => {
     next(err);
   }
 };
+
+// Baintree payment gateway integration
+exports.clientToken = async (req, res, next) => {
+  try {
+    const token = await CheckoutService.clientToken();
+    res.send(token);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.braintreeCheckout = async (req, res, next) => {
+  try {
+    const userId = req.auth._id;
+    const checkout = await CheckoutService.braintreeCheckout(userId, req.body);
+  } catch (err) {
+    next(err);
+  }
+};
