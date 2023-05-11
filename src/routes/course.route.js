@@ -7,6 +7,10 @@ const {
 } = require("../middleware/cloudinaryUpload");
 const router = require("express").Router();
 
+router.get(
+  "/courses/published/:pageNo/:perPage/:searchKeyword",
+  courseController.getAllPublishedCourse
+);
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(
   "/courses/:id",
@@ -35,10 +39,6 @@ router.get(
   authMiddleware.authVerifyMiddleware,
   authMiddleware.checkPermissions(permissions.course.can_view_course),
   courseController.getAllCourse
-);
-router.get(
-  "/courses/published/:pageNo/:perPage/:searchKeyword",
-  courseController.getAllPublishedCourse
 );
 
 module.exports = router;
