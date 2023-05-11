@@ -100,16 +100,19 @@ const getAllPublishedCourse = async (req, res, next) => {
 };
 const getAllCourseByTeacher = async (req, res, next) => {
   try {
-    const teacherId = req.params.teacherId;
+    const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+    const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+    const keyword = req.params?.keyword === ':keyword' ? '0' : req.params?.keyword;
+    const teacherId = req?.auth?._id;
 
     if (!FormHelper.isIdValid(teacherId)) {
       return res.status(400).json({
-        error: "provide a valid course id",
+        error: "provide a valid teacher object id",
       });
     }
 
-    const query = { teacherId: new objectId(teacherId) };
-    const course = await courseService.getAllCourse(query);
+
+    const course = await courseService.getAllCourseByTeacher({pageNo, perPage, keyword, teacherId});
     res.status(200).json(course);
   } catch (e) {
     next(e);
@@ -138,9 +141,9 @@ const getPublishedSingleCourse = async (req, res, next) => {
 };
 const getSingleCourseByTeacher = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const teacherId = req.params.teacherId;
-    const query = { _id: new objectId(id), teacherId: new objectId(teacherId) };
+    const courseId = req.params?.courseId;
+    const teacherId = req.auth?._id;
+    const query = { _id: new objectId(courseId), teacherId: new objectId(teacherId) };
     const course = await courseService.getSingleCourse(query);
     res.status(200).json(course);
   } catch (e) {

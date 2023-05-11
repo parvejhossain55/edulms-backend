@@ -4,8 +4,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {permissions} = require("../dbSeed/projectPermissions");
 const router = require('express').Router();
 
-router.get('/courses/teacher/:id/:teacherId',  courseController.getSingleCourseByTeacher);
-router.get('/courses/teacher/:teacherId',  courseController.getAllCourseByTeacher);
+router.get('/courses/teacher/:courseId', authMiddleware.authVerifyMiddleware,  courseController.getSingleCourseByTeacher);
+router.get('/courses/teacher/:pageNo/:perPage/:keyword', authMiddleware.authVerifyMiddleware, courseController.getAllCourseByTeacher);
 router.patch('/courses/teacher/:courseId',
     upload.single("thumbnail"),
     uploadToCloudinary,
