@@ -4,11 +4,12 @@ const error = require("../helpers/error");
 
 exports.getUserCart = async (userId) => {
   try {
-    const { courses } = await Cart.findOne({ user: userId }).populate(
-      "courses.course"
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "courses.course",
+      "name thumbnail"
     );
 
-    return { status: 200, cart: courses };
+    return { status: 200, cart };
   } catch (err) {
     throw error(err.message, err.status);
   }

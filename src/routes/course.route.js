@@ -7,10 +7,7 @@ const {
 } = require("../middleware/cloudinaryUpload");
 const router = require("express").Router();
 
-router.get(
-  "/courses/published/:pageNo/:perPage/:searchKeyword",
-  courseController.getAllPublishedCourse
-);
+router.post("/courses/published", courseController.getAllPublishedCourse);
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(
   "/courses/:id",
