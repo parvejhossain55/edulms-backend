@@ -13,6 +13,7 @@ exports.createTeacher = async (req, res, next) => {
   session.startTransaction();
 
   try {
+    const createdBy = req?.auth?._id;
     const options = {session}
     if (FormHelper.isEmpty(firstName)) {
       return res.status(400).json({
@@ -50,8 +51,9 @@ exports.createTeacher = async (req, res, next) => {
     const teacher = await teacherService.createTeacherService(
       req.body,
       filename,
-      options
-    );
+      options,
+      createdBy
+        );
     await session.commitTransaction();
     await session.endSession();
     res.status(201).json({
@@ -73,6 +75,18 @@ exports.agreeTeacher = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getAllTeachers = async (req, res, next)=>{
+  try {
+    const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+    const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+    const searchKeyword = req.params?.keyword === ':keyword' ? '0' : req.params?.keyword;
+    const teachers = await teacherService.getAllTeacherService({pageNo, perPage, keyword: searchKeyword});
+    res.status(200).json({teachers});
+  }catch (e) {
+    next(e)
+  }
+}
 
 // exports.applyTeacher = async (req, res, next) => {
 //   const { firstName, lastName, mobile, email, qualification, about } = req.body;

@@ -13,7 +13,9 @@ const jwt = require("jsonwebtoken");
 const RoleModel = require("../models/Role");
 const UserModel = require("../models/User");
 
-exports.createTeacherService = async (teacherData, filename, options, authUser) => {
+const objectId = mongoose.Types.ObjectId;
+
+exports.createTeacherService = async (teacherData, filename, options, createdBy) => {
   const {
     firstName,
     lastName,
@@ -65,7 +67,7 @@ exports.createTeacherService = async (teacherData, filename, options, authUser) 
                 mobile,
                 firstName,
                 lastName,
-                picture: filename,
+                createdBy,
                 roleId: isRole?._id,
                 confirmationToken: token,
                 confirmationTokenExpires: date
@@ -78,6 +80,7 @@ exports.createTeacherService = async (teacherData, filename, options, authUser) 
                 userId: user._id,
                 qualification,
                 about,
+                picture: filename,
             },
             options
         );
@@ -99,15 +102,7 @@ const createTeacherProfile = async (teacherData, options = null) => {
   }
 };
 
-const sendEmailToTeacher = async (userId, { email, password, subject }) => {
-  try {
-    const body = emailTemplate(userId, email, password);
-    const mailSend = await sendEmail(email, body, subject);
-    return mailSend;
-  } catch (error) {
-    throw error("Failed to Send Email in Teaher", error.status);
-  }
-};
+
 
 exports.agreeTeacher = async ({ userId }) => {
   try {
@@ -127,21 +122,21 @@ exports.agreeTeacher = async ({ userId }) => {
 };
 
 exports.getAllTeacherService = async (
-    {perPage, keyword, skipRow, auth}
+    {pageNo, perPage, keyword}
 )=>{
 
     const role = await RoleModel.findOne({ name:  'teacher'});
-    let SearchRgx = {"$regex": keyword, "$options": "i"}
     const skipPage = (pageNo - 1) * perPage;
     const searchRegex = {$regex: keyword, $options: 'ix'};
 
-    const query = keyword === '0' ? {} : {$or: [
+    const query = keyword === '0' ? {roleId: role?._id} : {$or: [
             {firstName: searchRegex},
             {lastName: searchRegex},
             {email: searchRegex},
             {mobile: searchRegex},
             {qualification: searchRegex},
         ],
+        roleId: new objectId(role?._id)
     };
  /*   let employees;
     if (keyword!=="0"){
@@ -254,7 +249,7 @@ exports.getAllTeacherService = async (
     }
     return {total: employees[0]?.Total[0]?.count, rows: employees[0]?.Rows};*/
 
-    await UserModel.aggregate([
+    const teachers = await UserModel.aggregate([
         {$match: query},
         {
             $facet:{
@@ -263,16 +258,50 @@ exports.getAllTeacherService = async (
                     {
                         $lookup: {
                             from: "teacherprofiles",
-                            localField: "userId",
-                            foreignField: "_id",
+                            localField: "_id",
+                            foreignField: "userId",
                             as: "profile"
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "createdBy",
+                            foreignField: "_id",
+                            as: "createdBy"
+                        }
+                    },
+                    {
+                        $unwind: "$createdBy"
+                    },
+                    {
+                      $project: {
+                          email: 1,
+                          mobile: 1,
+                          firstName: 1,
+                          lastName: 1,
+                          createdAt: 1,
+                          updatedAt: 1,
+                          qualification: {$first: '$profile.qualification'},
+                          about: {$first: '$profile.about'},
+                          picture: {$first: '$profile.picture'},
+                          createdBy: {
+                              mobile: "$createdBy.mobile",
+                              firstName: "$createdBy.firstName",
+                              lastName: "$createdBy.lastName"
+                          },
+                          createdById: "$createdBy._id",
+                      }
                     },
                     {$skip: skipPage},
                     {$limit: perPage},
                     {$sort: {createdAt: -1}}
                 ]
             }
-        }
+        },
+
+
     ])
+
+    return {total: teachers[0]?.total[0]?.count, rows: teachers[0]?.rows};
 }

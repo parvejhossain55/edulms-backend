@@ -6,15 +6,16 @@ const teacherProfileSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User'
     },
-    designation: {
+    qualification: {
       type: String,
     },
     about: {
       type: String,
     },
-    categoryId: {
-      type: String,
-    },
+      picture: {
+          public_id: { type: String },
+          secure_url: { type: String },
+      },
   },
   { versionKey: false, timestamps: true }
 );
