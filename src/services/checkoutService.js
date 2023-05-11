@@ -211,11 +211,11 @@ async function quantityUpdate(cart) {
 
 // braintree payment gateway integration
 exports.clientToken = async () => {
-  const { clientToken, success } = await gateway.clientToken.generate({});
-  if (!success) {
-    throw error("Failed to generate token", 400);
-  }
-  return clientToken;
+  return gateway.clientToken.generate({}).then((response) => {
+    console.log("response ", response);
+
+    return response.clientToken;
+  });
 };
 
 exports.braintreeCheckout = async (userId, data) => {
