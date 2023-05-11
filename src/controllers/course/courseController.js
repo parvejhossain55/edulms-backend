@@ -1,5 +1,6 @@
 const FormHelper = require("../../helpers/FormHelper");
 const courseService = require("../../services/course/courseService");
+const publicCourseService = require("../../services/course/publicCourseService");
 const CourseModel = require("../../models/Course");
 const mongoose = require("mongoose");
 const findOneByProperty = require("../../services/common/findOneByProperty");
@@ -92,12 +93,18 @@ const getAllCourse = async (req, res, next) => {
 };
 const getAllPublishedCourse = async (req, res, next) => {
   try {
-    const course = await courseService.getAllCourse(req);
+    const filter = req.body;
+    const query = req.query;
+    const course = await publicCourseService.getAllPublishedCourse(
+      filter,
+      query
+    );
     res.status(200).json(course);
   } catch (e) {
     next(e);
   }
 };
+
 const getAllCourseByTeacher = async (req, res, next) => {
   try {
     const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);

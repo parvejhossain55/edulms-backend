@@ -229,9 +229,11 @@ const getSingleCourse = async (query) => {
   ]);
   return course[0];
 };
+
 const updateCourse = async (updateObj, query) => {
   return CourseModel.updateOne(query, { $set: updateObj });
 };
+
 const deleteCourse = async () => {};
 
 module.exports = {

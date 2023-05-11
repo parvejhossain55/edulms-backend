@@ -56,6 +56,11 @@ const courseSchema = new Schema(
       public_id: { type: String },
       secure_url: { type: String },
     },
+    courseType: {
+      type: String,
+      required: [true, "require, course is free or paid"],
+      enum: ["free", "paid"],
+    },
     status: {
       type: String,
       enum: ["draft", "pending", "published"],
