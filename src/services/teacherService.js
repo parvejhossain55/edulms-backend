@@ -70,7 +70,8 @@ exports.createTeacherService = async (teacherData, filename, options, createdBy)
                 createdBy,
                 roleId: isRole?._id,
                 confirmationToken: token,
-                confirmationTokenExpires: date
+                confirmationTokenExpires: date,
+                picture: filename,
             },
             options
         );
@@ -80,7 +81,6 @@ exports.createTeacherService = async (teacherData, filename, options, createdBy)
                 userId: user._id,
                 qualification,
                 about,
-                picture: filename,
             },
             options
         );
@@ -138,116 +138,6 @@ exports.getAllTeacherService = async (
         ],
         roleId: new objectId(role?._id)
     };
- /*   let employees;
-    if (keyword!=="0"){
-        const searchQuery = {$or: SearchArray, roleId: role._id}
-        employees = await UserModel.aggregate([
-            {$match: searchQuery},
-            {
-                $facet:{
-                    Total:[{$count: "count"}],
-                    Rows:[
-                        {
-                            $lookup: {
-                                from: "users",
-                                localField: "createdBy",
-                                foreignField: "_id",
-                                as: "createdBy"
-                            }
-                        },
-                        {
-                            $unwind: "$createdBy"
-                        },
-                        {
-                            $lookup: {
-                                from: "roles",
-                                localField: "roleId",
-                                foreignField: "_id",
-                                as: "roles"
-                            }
-                        },
-                        {
-                            $project: {
-                                email: 1,
-                                mobile: 1,
-                                firstName: 1,
-                                middleName: 1,
-                                lastName: 1,
-                                roleId: 1,
-                                createdBy: {
-                                    mobile: "$createdBy.mobile",
-                                    firstName: "$createdBy.firstName",
-                                    middleName: "$createdBy.middleName",
-                                    lastName: "$createdBy.lastName"
-                                },
-                                createdById: "$createdBy._id",
-                                status: 1,
-                                createdAt: 1,
-                                updatedAt: 1,
-                                role: '$roles.name',
-                            }
-                        },
-                        {$skip: skipRow}, {$limit: perPage}
-                    ],
-                }
-            },
-
-        ])
-
-    }else {
-        employees =  await UserModel.aggregate([
-            {$match: {roleId: {$in: roleIds}}},
-            {
-                $facet:{
-                    Total:[{$count: "count"}],
-                    Rows:[
-                        {
-                            $lookup: {
-                                from: "users",
-                                localField: "createdBy",
-                                foreignField: "_id",
-                                as: "createdBy"
-                            }
-                        },
-                        {
-                            $unwind: "$createdBy"
-                        },
-                        {
-                            $lookup: {
-                                from: "roles",
-                                localField: "roleId",
-                                foreignField: "_id",
-                                as: "roles"
-                            }
-                        },
-                        {
-                            $project: {
-                                email: 1,
-                                mobile: 1,
-                                firstName: 1,
-                                middleName: 1,
-                                lastName: 1,
-                                roleId: 1,
-                                createdBy: {
-                                    mobile: "$createdBy.mobile",
-                                    firstName: "$createdBy.firstName",
-                                    middleName: "$createdBy.middleName",
-                                    lastName: "$createdBy.lastName"
-                                },
-                                createdById: "$createdBy._id",
-                                status: 1,
-                                createdAt: 1,
-                                updatedAt: 1,
-                                role: '$roles.name',
-                            }
-                        },
-                        {$skip: skipRow}, {$limit: perPage}
-                    ],
-                }
-            },
-        ])
-    }
-    return {total: employees[0]?.Total[0]?.count, rows: employees[0]?.Rows};*/
 
     const teachers = await UserModel.aggregate([
         {$match: query},
@@ -284,7 +174,7 @@ exports.getAllTeacherService = async (
                           updatedAt: 1,
                           qualification: {$first: '$profile.qualification'},
                           about: {$first: '$profile.about'},
-                          picture: {$first: '$profile.picture'},
+                          picture: 1,
                           createdBy: {
                               mobile: "$createdBy.mobile",
                               firstName: "$createdBy.firstName",
