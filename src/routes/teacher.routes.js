@@ -13,5 +13,9 @@ router.post("/teachers",
 router.get("/teachers/:pageNo/:perPage/:keyword",
     authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_view_teacher),
     teacherController.getAllTeachers);
+router.get("/teachers",
+    authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_view_teacher),
+    teacherController.teacherDropDown);
+
 router.post("/teacher/agree", upload.none(), teacherController.agreeTeacher);
 module.exports = router;

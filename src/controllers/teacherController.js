@@ -1,6 +1,8 @@
 const FormHelper = require("../helpers/FormHelper");
 const teacherService = require("../services/teacherService");
 const mongoose = require("mongoose");
+const findAllOneJoinService = require("../services/common/findAllOneJoinService");
+const TeacherModel = require("../models/TeacherProfile");
 
 exports.createTeacher = async (req, res, next) => {
   const { firstName, lastName, mobile, email, qualification, about } = req.body;
@@ -87,6 +89,33 @@ exports.getAllTeachers = async (req, res, next)=>{
     next(e)
   }
 }
+
+
+ exports.teacherDropDown = async (req, res, next) => {
+  try {
+    const join= {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "teacher",
+      },
+    }
+    const projection = {
+      $project: {
+        userId: 1,
+        value: "$userId",
+        firstName: {$first: "$teacher.firstName"},
+        lastName: {$first: "$teacher.lastName"},
+        label:  {$concat: [{$first: "$teacher.firstName"}, ' ', {$first: "$teacher.lastName"}]},
+      }
+    }
+    const result = await findAllOneJoinService(TeacherModel, join, projection);
+    res.status(200).json(result);
+  }catch (e) {
+    next(e);
+  }
+};
 
 // exports.applyTeacher = async (req, res, next) => {
 //   const { firstName, lastName, mobile, email, qualification, about } = req.body;
