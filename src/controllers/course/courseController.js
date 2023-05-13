@@ -23,6 +23,7 @@ const createCourse = async (req, res, next) => {
             benefit,
             status,
             courseType
+
         } = req.body || {};
 
         const filename = {
@@ -32,7 +33,7 @@ const createCourse = async (req, res, next) => {
 
         if (FormHelper.isEmpty(name)) {
             return res.status(400).json({
-                error: "course name is required",
+                error: "Course name is required",
             });
         }
         if (FormHelper.isEmpty(regularPrice)) {
@@ -43,12 +44,12 @@ const createCourse = async (req, res, next) => {
 
         if (!FormHelper.isIdValid(teacherId)) {
             return res.status(400).json({
-                error: "provide a valid teacher",
+                error: "Provide a valid teacher",
             });
         }
         if (!FormHelper.isIdValid(categoryId)) {
             return res.status(400).json({
-                error: "provide a valid category",
+                error: "Provide a valid category",
             });
         }
         const course = await courseService.createCourse({
@@ -60,7 +61,8 @@ const createCourse = async (req, res, next) => {
             categoryId,
             benefit,
             status,
-            courseType
+            courseType,
+           filename
         });
         res.status(201).json(course);
     } catch (e) {
