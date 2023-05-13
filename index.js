@@ -23,8 +23,8 @@ app.use(xss());
 app.use(morgan("dev"));
 
 const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 100,
+  windowMs: 2 * 60 * 1000, // 2 minutes
+  max: 1000,
 });
 app.use(limiter);
 
