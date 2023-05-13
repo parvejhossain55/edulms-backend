@@ -217,21 +217,9 @@ exports.clientToken = async () => {
 
 exports.braintreeCheckout = async (
   { _id, firstName, lastName, email },
-  data
+  { nonce }
 ) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      address,
-      country,
-      city,
-      state,
-      zip,
-      course,
-      nonce,
-    } = data;
     // Retrieve the user's cart
     const cart = await Cart.findOne({ user: _id }).populate(
       "courses.course",
@@ -287,7 +275,7 @@ exports.braintreeCheckout = async (
 
     // order detail for send email
     const info = {
-      name,
+      name: firstName + " " + lastName,
       title: cart.courses.reduce(
         (acc, course) => acc + course.course.name + " | ",
         ""
@@ -327,6 +315,8 @@ exports.braintreeCheckout = async (
     // Save the purchase and payment
     await Promise.all([purchase.save(), cart.save(), payment.save()]);
     // await Promise.all([purchase.save(), cart.save(), payment.save()]);
+
+    return { message: "Purchases Successfull" };
   } catch (err) {
     throw error(err.message, err.status);
   }
