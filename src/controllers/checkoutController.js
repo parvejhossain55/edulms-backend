@@ -41,7 +41,7 @@ exports.checkoutFail = async (req, res, next) => {
 exports.clientToken = async (req, res, next) => {
   try {
     const token = await CheckoutService.clientToken(req);
-    res.send(token);
+    res.json({ token });
   } catch (err) {
     next(err);
   }
@@ -49,8 +49,11 @@ exports.clientToken = async (req, res, next) => {
 
 exports.braintreeCheckout = async (req, res, next) => {
   try {
-    const userId = req.auth._id;
-    const checkout = await CheckoutService.braintreeCheckout(userId, req.body);
+    const checkout = await CheckoutService.braintreeCheckout(
+      req.auth,
+      req.body
+    );
+    res.json(checkout);
   } catch (err) {
     next(err);
   }

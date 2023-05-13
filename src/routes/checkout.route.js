@@ -12,7 +12,15 @@ router.post("/checkout/cancel", CheckoutController.checkoutCancel);
 router.post("/checkout/fail", CheckoutController.checkoutFail);
 
 // braintree payment gateway integration
-router.get("/client-token", CheckoutController.clientToken);
-router.post("/checkout/braintree", CheckoutController.braintreeCheckout);
+router.get(
+  "/client-token",
+  authVerifyMiddleware,
+  CheckoutController.clientToken
+);
+router.post(
+  "/checkout/braintree",
+  authVerifyMiddleware,
+  CheckoutController.braintreeCheckout
+);
 
 module.exports = router;

@@ -211,26 +211,57 @@ async function quantityUpdate(cart) {
 
 // braintree payment gateway integration
 exports.clientToken = async () => {
-  return gateway.clientToken.generate({}).then((response) => {
-    console.log("response ", response);
-
-    return response.clientToken;
-  });
+  const { clientToken } = await gateway.clientToken.generate({});
+  return clientToken;
 };
 
-exports.braintreeCheckout = async (userId, data) => {
+exports.braintreeCheckout = async (
+  { _id, firstName, lastName, email },
+  data
+) => {
   try {
-    const { name, email, phone, address, country, city, state, zip, course } =
-      data;
+    const {
+      name,
+      email,
+      phone,
+      address,
+      country,
+      city,
+      state,
+      zip,
+      course,
+      nonce,
+    } = data;
     // Retrieve the user's cart
-    const cart = await Cart.findOne({ user: userId }).populate(
+    const cart = await Cart.findOne({ user: _id }).populate(
       "courses.course",
       "name"
     );
 
+    // Create the Braintree transaction
+    const { success, transaction } = await gateway.transaction.sale({
+      amount: cart.total,
+      paymentMethodNonce: nonce,
+      options: {
+        submitForSettlement: true,
+      },
+    });
+
+    if (!success) {
+      throw error("Transaction Failed", 400);
+    }
+
+    if (
+      transaction.status === "failed" ||
+      transaction.status === "gateway_rejected"
+    ) {
+      throw error("Payment is Failed or Rejected");
+    }
+
     // Create the new order
     const purchase = new Purchase({
-      user: value_a,
+      user: _id,
+      payment: transaction,
       courses: cart.courses.map((course) => ({
         course: course.course,
         price: course.price,
@@ -239,18 +270,15 @@ exports.braintreeCheckout = async (userId, data) => {
     });
 
     // create payment
-    // const payment = new Payment({
-    //   user: userId,
-    //   amount,
-    //   store_amount,
-    //   paymentMethod: card_issuer,
-    //   paymentStatus: status === "VALID" ? "Paid" : "Unpaid",
-    //   tran_id,
-    //   tran_date,
-    //   bank_tran_id,
-    //   card_brand,
-    //   card_type,
-    // });
+    const payment = new Payment({
+      user: _id,
+      amount: transaction.amount,
+      paymentMethod: transaction.paymentInstrumentType,
+      paymentStatus: transaction.status,
+      tran_id: transaction.id,
+      tran_date: transaction.createdAt,
+      card_type: transaction.creditCard.cardType || "",
+    });
 
     // purchase.payment = payment._id;
 
@@ -265,8 +293,8 @@ exports.braintreeCheckout = async (userId, data) => {
         ""
       ),
       amount: cart.total,
-      method: card_issuer,
-      tran_id,
+      method: transaction.creditCard.cardType,
+      tran_id: transaction.id,
       date: new Date().toLocaleString("en-US", {
         timeZone: "Asia/Dhaka",
         hour12: true,
@@ -287,19 +315,18 @@ exports.braintreeCheckout = async (userId, data) => {
 
     // email send hole resolve kore data save korte hobe otherwise order failed kore dite hobe
     const sendMail = await sendEmail(
-      value_c,
+      email,
       mailbody,
       "Course Purchase Confirmation"
     );
 
     if (sendMail[0].statusCode !== 202) {
-      return `${process.env.FONTEND_URL}/purchase-failed/${JSON.stringify(
-        info
-      )}`;
+      throw error("Failed to send email", 400);
     }
 
     // Save the purchase and payment
     await Promise.all([purchase.save(), cart.save(), payment.save()]);
+    // await Promise.all([purchase.save(), cart.save(), payment.save()]);
   } catch (err) {
     throw error(err.message, err.status);
   }
