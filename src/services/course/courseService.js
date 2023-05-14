@@ -275,6 +275,8 @@ const getSingleCourse = async (query) => {
         startingDate: 1,
         endingDate: 1,
         seats: 1,
+        status: 1,
+        courseType: 1,
         modules: {
           $map: {
             input: "$modules",
@@ -302,6 +304,16 @@ const getSingleCourse = async (query) => {
           avatar: { $first: "$teacherProfile.avatar" },
         },
         category: { $first: "$category.name" },
+        categoryId: {
+          label: {$first: "$category.name"},
+          value: {$first: "$category._id"}
+
+        },
+        teacherId: {
+          label: {$concat: ["$teacher.firstName", " ", "$teacher.lastName"]},
+          value: "$teacher._id"
+
+        }
       },
     },
   ]);
