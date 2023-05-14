@@ -1,5 +1,5 @@
 {
-  "name": "hello_talk_server",
+  "name": "edulms-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,17 +8,9 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/the-code-wizards/hello_talk_server.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/the-code-wizards/hello_talk_server/issues"
-  },
-  "homepage": "https://github.com/the-code-wizards/hello_talk_server#readme",
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
     "bcryptjs": "^2.4.3",
@@ -34,10 +26,6 @@
     "express-rate-limit": "^6.7.0",
     "formidable": "^2.1.1",
     "helmet": "^6.0.1",
-    "imagemin": "7.0.1",
-    "imagemin-jpegtran": "^7.0.0",
-    "imagemin-mozjpeg": "9.0.0",
-    "imagemin-pngquant": "^9.0.2",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^4.13.0",
     "mongoose": "^7.0.3",
@@ -53,3 +41,4 @@
     "xss-clean": "^0.1.1"
   }
 }
+
