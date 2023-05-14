@@ -9,23 +9,22 @@ const getAllPublishedCourse = async (filter, query) => {
     const { pageNo = 1, perPage = 10 } = query;
 
     let matchQuery = { status: "published" };
+    // console.log("filter ", filter);
+    // console.log("query ", query);
 
     // Filter by category
-    // if (category && category.length > 0) {
-    //   matchQuery.categoryId = { $in: category };
-    // }
-    // let categoryQuery;
-    // if (category && category.length > 0) {
-    //   categoryQuery = { $match: { categoryId: { $in: category } } };
-    // }
+    if (category && category.length > 0) {
+      matchQuery.categoryId = { $in: category };
+    }
 
     if (courseType) {
       matchQuery.courseType = courseType;
     }
 
+    console.log("matchQuery ", matchQuery);
+
     const course = await CourseModel.aggregate([
       { $match: matchQuery },
-      // categoryQuery,
       {
         $lookup: {
           from: "users",

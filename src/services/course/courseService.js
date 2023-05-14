@@ -119,7 +119,7 @@ const getAllCoursePagination = async (Request, SearchArray) => {
 
     let data;
 
-    let matchQuery = { };
+    let matchQuery = {};
     if (searchValue !== "0") {
       let SearchArray = [
         { name: { $regex: searchValue, $options: "i" } },
@@ -161,7 +161,7 @@ const getAllCoursePagination = async (Request, SearchArray) => {
           // sold: 1,
           // seats: 1,
           // startingDate: 1,
-          status:1,
+          status: 1,
           courseType: 1,
           "teacher.firstName": 1,
           "teacher.lastName": 1,
@@ -187,31 +187,34 @@ const getAllCoursePagination = async (Request, SearchArray) => {
   }
 };
 
-const getAllCourseByTeacher = async (
-    {pageNo, perPage, keyword, teacherId}
-)=>{
-
+const getAllCourseByTeacher = async ({
+  pageNo,
+  perPage,
+  keyword,
+  teacherId,
+}) => {
   const skipPage = (pageNo - 1) * perPage;
   const query = { teacherId: new ObjectId(teacherId) };
 
   const teacherCourses = await CourseModel.aggregate([
-    {$match: query},
+    { $match: query },
     {
-      $facet:{
-        total:[{$count: "count"}],
-        rows:[
-          {$skip: skipPage},
-          {$limit: perPage},
-          {$sort: {createdAt: -1}}
-        ]
-      }
+      $facet: {
+        total: [{ $count: "count" }],
+        rows: [
+          { $skip: skipPage },
+          { $limit: perPage },
+          { $sort: { createdAt: -1 } },
+        ],
+      },
     },
+  ]);
 
-
-  ])
-
-  return {total: teacherCourses[0]?.total[0]?.count, rows: teacherCourses[0]?.rows};
-}
+  return {
+    total: teacherCourses[0]?.total[0]?.count,
+    rows: teacherCourses[0]?.rows,
+  };
+};
 
 const getSingleCourse = async (query) => {
   const course = await CourseModel.aggregate([
@@ -318,5 +321,5 @@ module.exports = {
   updateCourse,
   deleteCourse,
   getAllCourseByTeacher,
-  getAllCoursePagination
+  getAllCoursePagination,
 };

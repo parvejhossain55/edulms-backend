@@ -21,7 +21,7 @@ router.post(
 // Get all posts
 router.get(
   "/posts/:pageNo/:perPage/:searchKeyword",
-  authVerifyMiddleware,
+  // authVerifyMiddleware,
   PostController.getPosts
 );
 
