@@ -30,7 +30,7 @@ const postSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["draft", "published", "review"],
-      default: "draft",
+      default: "published",
     },
     tags: {
       type: [String],
@@ -41,8 +41,13 @@ const postSchema = new mongoose.Schema(
       default: 0,
     },
     likes: {
-      type: Number,
-      default: 0,
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      default: [],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,

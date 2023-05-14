@@ -1,6 +1,7 @@
 const FormHelper = require("../../helpers/FormHelper");
 const PostCategory = require("../../models/PostCategory");
 const categoryService = require("../../services/blog/postCategoryService");
+const dropDownService = require("../../services/common/dropDownService");
 const listService = require("../../services/common/listService");
 
 async function createCategory(req, res, next) {
@@ -27,6 +28,20 @@ async function getCategories(req, res, next) {
     res.status(200).json(categories);
   } catch (err) {
     next(err);
+  }
+}
+
+async function getCategorieDropdown(req, res, next) {
+  try {
+    const projection = {
+      label: "$name",
+      value: "$_id",
+      name: 1,
+    };
+    const categories = await dropDownService(PostCategory, projection);
+    res.status(200).json(categories);
+  } catch (e) {
+    next(e);
   }
 }
 
@@ -84,6 +99,7 @@ async function deleteCategoryById(req, res, next) {
 module.exports = {
   createCategory,
   getCategories,
+  getCategorieDropdown,
   getCategoryBySlug,
   updateCategoryById,
   deleteCategoryById,
