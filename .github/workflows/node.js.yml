@@ -1,6 +1,6 @@
 
 on:
-  rebase:
+  push:
     branches:
 name: 🚀 Deploy website on push
 
