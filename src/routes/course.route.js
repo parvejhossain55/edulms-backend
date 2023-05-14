@@ -31,11 +31,17 @@ router.patch(
   authMiddleware.checkPermissions(permissions.course.can_edit_course),
   courseController.updateCourse
 );
+// router.get(
+//   "/courses",
+//   authMiddleware.authVerifyMiddleware,
+//   authMiddleware.checkPermissions(permissions.course.can_view_course),
+//   courseController.getAllCourse
+// );
 router.get(
-  "/courses",
+  "/courses/:pageNo/:perPage/:searchKeyword",
   authMiddleware.authVerifyMiddleware,
   authMiddleware.checkPermissions(permissions.course.can_view_course),
-  courseController.getAllCourse
+  courseController.getAllCoursePagiController
 );
 
 module.exports = router;
