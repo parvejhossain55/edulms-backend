@@ -26,21 +26,34 @@ const upload = multer({
 
 // Middleware function to upload file to Cloudinary
 const uploadToCloudinary = (req, res, next) => {
-  if (!req.file) {
-    return next();
-  }
-
-  cloudinary.uploader.upload(req.file.path, (error, result) => {
-    if (error) {
-      return res
-        .status(500)
-        .send({ error: "Error uploading file to Cloudinary" });
+  try {
+    if (!req.file) {
+      return next();
     }
 
-    req.file.cloudinaryId = result.public_id;
-    req.file.cloudinaryUrl = result.secure_url;
-    return next();
-  });
+    cloudinary.uploader.upload(req.file.path, (error, result) => {
+      if (error) {
+        return res
+          .status(500)
+          .send({ error: "Error uploading file to Cloudinary" });
+      }
+
+      req.file.cloudinaryId = result.public_id;
+      req.file.cloudinaryUrl = result.secure_url;
+      next();
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
-module.exports = { upload, uploadToCloudinary };
+const deleteFile = async (publicId) => {
+  try {
+    const response = await cloudinary.uploader.destroy(publicId);
+    return response;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+module.exports = { upload, uploadToCloudinary, deleteFile };
