@@ -70,15 +70,38 @@ const createCourse = async (req, res, next) => {
     }
 };
 
+// const getAllCourse = async (req, res, next) => {
+//     try {
+//         const query = {};
+//         const course = await courseService.getAllCourse(query);
+//         res.status(200).json(course);
+//     } catch (e) {
+//         next(e);
+//     }
+// };
 const getAllCourse = async (req, res, next) => {
     try {
         const query = {};
-        const course = await courseService.getAllCourse(query);
+
+        const course = await courseService.getAllCourse(req);
         res.status(200).json(course);
     } catch (e) {
         next(e);
     }
 };
+const getAllCoursePagiController = async (req, res, next) => {
+    try {
+        const query = {};
+
+        const course = await courseService.getAllCoursePagination(req);
+        res.status(200).json(course);
+    } catch (e) {
+        next(e);
+    }
+};
+
+
+
 const getAllPublishedCourse = async (req, res, next) => {
     try {
         const filter = req.body;
@@ -280,5 +303,6 @@ module.exports = {
     getSingleCourseByTeacher,
     getAllPublishedCourse,
     getPublishedSingleCourse,
-    updateCourse
+    updateCourse,
+    getAllCoursePagiController
 };
