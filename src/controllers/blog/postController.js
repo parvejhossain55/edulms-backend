@@ -1,6 +1,7 @@
 const FormHelper = require("../../helpers/FormHelper");
 const Post = require("../../models/Post");
 const postService = require("../../services/blog/postService");
+const findAllOneJoinService = require("../../services/common/findAllOneJoinService");
 const listService = require("../../services/common/listService");
 
 exports.createPost = async (req, res, next) => {
@@ -47,10 +48,18 @@ exports.createPost = async (req, res, next) => {
 
 exports.getPosts = async (req, res, next) => {
   try {
-    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
-    let SearchArray = [{ title: SearchRgx }, { content: SearchRgx }];
-    const posts = await listService(req, Post, SearchArray);
+    const posts = await postService.getPosts(req.params);
     res.status(200).json(posts);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get post by Category
+exports.getPostByCategory = async (req, res, next) => {
+  try {
+    const postByCat = await postService.getPostByCategory(req);
+    res.status(200).json(postByCat);
   } catch (err) {
     next(err);
   }
@@ -63,7 +72,7 @@ exports.getPostById = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ success: false, error: "Post not found" });
     }
-    res.status(200).json({ success: true, data: post });
+    res.status(200).json(post);
   } catch (err) {
     next(err);
   }
@@ -119,23 +128,39 @@ exports.deletePostById = async (req, res, next) => {
   }
 };
 
-// update baki
-
 // Add a comment to a post by id
 exports.addCommentToPostById = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id);
-    if (!post)
-      return res.status(404).json({ success: false, error: "Post not found" });
+    const { comment } = req.body;
+    if (FormHelper.isEmpty(comment)) {
+      return res.status(400).json({ error: "Comment is rquired" });
+    }
+    const post = await postService.addCommentToPostById(req);
+    res.status(201).json(post);
+  } catch (err) {
+    next(err);
+  }
+};
 
-    const comment = {
-      text: req.body.text,
-      author: req.user._id,
-    };
+// Toggle Like in Post
+exports.toggleLikeInPost = async (req, res, next) => {
+  try {
+    const post = await postService.toggleLikeInPost(req);
+    res.status(201).json(post);
+  } catch (err) {
+    next(err);
+  }
+};
 
-    post.comments.unshift(comment);
-    await post.save();
-    res.status(201).json({ success: true, data: comment });
+// Update Comment
+exports.updateComment = async (req, res, next) => {
+  try {
+    const { comment } = req.body;
+    if (FormHelper.isEmpty(comment)) {
+      return res.status(400).json({ error: "Comment is rquired" });
+    }
+    const post = await postService.updateComment(req);
+    res.status(200).json(post);
   } catch (err) {
     next(err);
   }
@@ -144,34 +169,24 @@ exports.addCommentToPostById = async (req, res, next) => {
 // Get 5 related post in same type
 exports.getRelatedPosts = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.postId);
-
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    const relatedPosts = await Post.find({
-      $and: [
-        { _id: { $ne: post._id } },
-        { $or: [{ category: post.category }, { tags: { $in: post.tags } }] },
-      ],
-    }).limit(5);
-
-    res.status(200).json({ relatedPosts });
+    const relatedPosts = await postService.relatedPost(req.params.postId);
+    res.status(200).json(relatedPosts);
   } catch (err) {
     next(err);
   }
 };
 
-// Get post by category
-exports.getPostByCategory = async (req, res, next) => {
+// Get 10 popular posts
+exports.getPopularPosts = async (req, res, next) => {
   try {
-    const { categoryId } = req.params;
-    const posts = await Post.find({ category: categoryId }).populate(
-      "author",
-      "name email"
-    );
+    const popularPosts = await Post.find({ status: "published" })
+      .populate("category", "name")
+      .populate("author", "firstName lastName picture")
+      .sort({ views: -1 })
+      .limit(10);
 
-    res.status(200).json({ success: true, data: posts });
-  } catch (error) {
+    res.status(200).json(popularPosts);
+  } catch (err) {
     next(err);
   }
 };
@@ -190,21 +205,6 @@ exports.getPostsByTag = async (req, res, next) => {
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
-  } catch (err) {
-    next(err);
-  }
-};
-
-// Get popular posts
-exports.getPopularPosts = async (req, res, next) => {
-  try {
-    const popularPosts = await Post.find({ status: "published" })
-      .populate("category", "name")
-      .populate("author", "name")
-      .sort({ views: -1 })
-      .limit(10);
-
-    res.status(200).json(popularPosts);
   } catch (err) {
     next(err);
   }
