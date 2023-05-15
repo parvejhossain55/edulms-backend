@@ -7,14 +7,11 @@ const purchaseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    // payment object for ssl commerze
-    // payment: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Payment",
-    //   required: true,
-    // },
-    // payment object for braintree
-    payment: {},
+    payment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      required: true,
+    },
     courses: [
       {
         course: {
