@@ -36,7 +36,7 @@ exports.getPosts = async (query) => {
         select: "name",
       })
       .select(
-        "_id title slug content thumbnail isFeatured tags views likes category author"
+        "_id title slug content thumbnail isFeatured tags views likes category author createdAt"
       )
       .skip((parseInt(pageNo) - 1) * parseInt(perPage))
       .limit(parseInt(perPage));
