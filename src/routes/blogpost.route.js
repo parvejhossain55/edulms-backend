@@ -18,6 +18,12 @@ router.post(
   PostController.createPost
 );
 
+// Get All Post by Category
+router.get(
+  "/posts/:categoryId/:pageNo/:perPage/:searchKeyword",
+  PostController.getPostByCategory
+);
+
 // Get all posts
 router.get(
   "/posts/:pageNo/:perPage/:searchKeyword",
@@ -25,6 +31,32 @@ router.get(
   PostController.getPosts
 );
 
+// Get 5 related post in the same category
+router.get("/posts/:postId/related", PostController.getRelatedPosts);
+
+// Get popular post
+router.get("/posts/popular-post", PostController.getPopularPosts);
+
+// Add comment to a specific post by ID
+router.post(
+  "/posts/:postId/comments",
+  authVerifyMiddleware,
+  PostController.addCommentToPostById
+);
+
+// Update Comment by post
+router.put(
+  "/posts/:postId/comments/:commentId",
+  authVerifyMiddleware,
+  PostController.updateComment
+);
+
+// Post Like
+router.get(
+  "/posts/:postId/like",
+  authVerifyMiddleware,
+  PostController.toggleLikeInPost
+);
 // Get a specific post by ID
 router.get("/posts/:id", PostController.getPostById);
 
@@ -43,13 +75,6 @@ router.patch(
 //   "/posts/:id",
 //   authVerifyMiddleware,
 //   PostController.deletePostById
-// );
-
-// // Add comment to a specific post by ID
-// router.post(
-//   "/posts/:id/comments",
-//   authVerifyMiddleware,
-//   PostController.addCommentToPostById
 // );
 
 // // Get 5 related post in the same category
