@@ -8,6 +8,10 @@ const {
 const router = require("express").Router();
 
 router.post("/courses/published", courseController.getAllPublishedCourse);
+router.get(
+  "/courses/:categoryId/category",
+  courseController.getPublishedCourseByCategory
+);
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(
   "/courses/:id",
