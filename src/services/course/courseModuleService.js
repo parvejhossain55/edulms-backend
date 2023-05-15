@@ -12,9 +12,9 @@ const createService = async ({ courseId, title, moduleNo }) => {
       { courseId: new ObjectId(courseId), moduleNo },
     ],
   });
-  if (isModule?.title === title) throw error("Module name already exits", 400);
+  if (isModule?.title?.toLowerCase()?.trim() === title?.toLowerCase()?.trim()) throw error("Module name already exits in select course", 400);
   if (isModule?.moduleNo === moduleNo)
-    throw error("Module Number already exits", 400);
+    throw error("Module Number already exits in select course", 400);
 
   const courseModule = new CourseModule({ courseId, title, moduleNo });
   return courseModule.save();
