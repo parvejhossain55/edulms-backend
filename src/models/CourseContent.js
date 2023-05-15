@@ -7,11 +7,17 @@ const courseContentSchema = new Schema({
     },
     videoTitle: {
         type: String,
-        trim: true
+        trim: true,
+        unique: true,
     },
     videoUrl: {
         type: String,
-        trim: true
+        trim: true,
+        unique: true
+    },
+    serialNo: {
+        type: Number,
+        unique: true
     }
 }, {versionKey: false, timestamps: true});
 

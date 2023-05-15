@@ -7,31 +7,30 @@ const courseContentService = require("../../services/course/courseContentService
 
 const createContent = async (req, res, next) => {
   try {
-    const { moduleId, videoTitle, videoUrl } = req.body;
+    const {contents} = req.body;
 
-    if (!FormHelper.isIdValid(moduleId)) {
-      return res.status(400).json({
-        error: "Invalid Module No",
-      });
-    }
-    if (FormHelper.isEmpty(videoTitle)) {
-      return res.status(400).json({
-        error: "Video Title is required",
-      });
-    }
-    if (FormHelper.isEmpty(videoUrl)) {
-      return res.status(400).json({
-        error: "Video URL is required",
-      });
-    }
-
-    const contents = await courseContentService.createContent({
-      moduleId,
-      videoTitle,
-      videoUrl,
+    contents?.map(content => {
+      if (!FormHelper.isIdValid(content.moduleId)){
+        return res.status(400).json({
+          error: 'Provide a valid module'
+        })
+      }
+      if (FormHelper.isEmpty(content.videoTitle)){
+        return res.status(400).json({
+          error: 'Video title is required'
+        })
+      }
+      if (FormHelper.isEmpty(content.videoUrl)){
+        return res.status(400).json({
+          error: 'Video URL is required'
+        })
+      }
     });
 
-    res.status(201).json(contents);
+    await courseContentService.createContent(contents);
+    res.status(201).json({
+      message: 'Course contents create successfully'
+    });
   } catch (e) {
     next(e);
   }

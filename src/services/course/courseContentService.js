@@ -1,38 +1,77 @@
 const mongoose = require("mongoose");
 const FormHelper = require("../../helpers/FormHelper");
 const CourseContent = require("../../models/CourseContent");
+const CourseModule = require("../../models/CourseModule");
 const updateService = require("../common/updateService");
 const error = require("../../helpers/error");
+const findOneByQuery = require("../common/findOneByQuery");
 const ObjectId = mongoose.Types.ObjectId;
 
-const createContent = async ({ moduleId, videoTitle, videoUrl }) => {
-  try {
-    const isContent = await CourseContent.findOne({
-      $or: [
-        { moduleId: new ObjectId(moduleId), videoTitle },
-        { moduleId: new ObjectId(moduleId), videoUrl },
-      ],
-    });
+const checkSerialNoUnique = (contents, key) => {
+  const serialNoSet = new Set();
 
-    if (isContent?.videoTitle === videoTitle)
-      throw error("videoTitle already exits", 400);
-    if (isContent?.videoUrl === videoUrl)
-      throw error("videoUrl already exits", 400);
-
-    const content = new CourseContent({
-      moduleId,
-      videoTitle,
-      videoUrl,
-    });
-
-    await content.save();
-
-    console.log("content ", content);
-
-    return content;
-  } catch (err) {
-    throw error(err.message, err.status);
+  for (const content of contents) {
+    if (serialNoSet.has(content[key])) {
+      return false; // Duplicate serialNo found
+    }
+    serialNoSet.add(content[key]);
   }
+
+  // return true; // All serialNo values are unique
+  return serialNoSet;
+};
+
+const createContent = async (contents) => {
+
+  const errors = (await Promise.all(contents.map(async content => {
+    const modules = await CourseModule.find({courseId: content?.courseId}, {_id: 1});
+
+    const moduleErrors = await Promise.all(modules.map(async module => {
+      const isTitle = await CourseContent.findOne({moduleId: module?._id, videoTitle: content?.videoTitle});
+      const isUrl = await CourseContent.findOne({moduleId: module?._id, videoUrl: content?.videoUrl});
+      const isSerial = await CourseContent.findOne({moduleId: content?.moduleId, serialNo: content?.serialNo});
+
+      if (isTitle) {
+        return `${content?.videoTitle} - already exists in this course`;
+      }else if (isUrl){
+        return `${content?.videoUrl} - already exists in this course`;
+      }else if (isSerial){
+        return `${content?.serialNo} - Serial No already exists in this module`;
+      }
+
+    }));
+
+    return moduleErrors.filter(Boolean); // Filter out undefined values
+  }))).flat();
+
+  const isVideoTitleNoUnique = checkSerialNoUnique(contents, 'videoTitle');
+  const isVideoUrlNoUnique = checkSerialNoUnique(contents, 'videoUrl');
+  const isSerialNoNoUnique = checkSerialNoUnique(contents, 'serialNo');
+
+  if (!isVideoTitleNoUnique){
+    throw error('You provide same video title, please provide different video title', 400)
+  }
+  if (!isVideoUrlNoUnique){
+    throw error('You provide same video url, please provide different video url', 400)
+  }
+  if (!isSerialNoNoUnique){
+    throw error('You provide same serial no, please provide different serial no', 400)
+  }
+
+  errors.forEach(err => {
+    throw error(err, 400)
+  })
+
+  contents?.map(async content => {
+   await CourseContent.create({
+      moduleId: content?.moduleId,
+      videoTitle: content?.videoTitle,
+      videoUrl: content?.videoUrl,
+      serialNo: content?.serialNo
+    })
+  })
+  return true
+
 };
 
 const updateContent = async (contentId, { videoTitle, videoUrl }) => {
