@@ -1,3 +1,4 @@
+const slugify = require("slugify");
 const FormHelper = require("../../helpers/FormHelper");
 const PostCategory = require("../../models/PostCategory");
 const categoryService = require("../../services/blog/postCategoryService");
@@ -6,13 +7,11 @@ const listService = require("../../services/common/listService");
 
 async function createCategory(req, res, next) {
   try {
-    const { name, slug } = req.body;
+    const { name } = req.body;
     if (FormHelper.isEmpty(name)) {
       return res.status(400).json({ error: "Category Name is required" });
     }
-    if (FormHelper.isEmpty(slug)) {
-      return res.status(400).json({ error: "Category Slug is required" });
-    }
+    req.body.slug = slugify(name, { lower: true });
     const category = await categoryService.createCategory(req.body);
     res.status(201).json(category);
   } catch (err) {
@@ -60,18 +59,15 @@ async function getCategoryBySlug(req, res, next) {
 
 async function updateCategoryById(req, res, next) {
   try {
-    const { name, slug } = req.body;
+    const { name } = req.body;
     if (FormHelper.isEmpty(name)) {
       return res.status(400).json({ error: "Category Name is required" });
     }
-    if (FormHelper.isEmpty(slug)) {
-      return res.status(400).json({ error: "Category Slug is required" });
-    }
-
-    const category = await categoryService.updateCategoryById(req.params.slug, {
-      name,
-      slug,
-    });
+    req.body.slug = slugify(name, { lower: true });
+    const category = await categoryService.updateCategoryById(
+      req.params.slug,
+      req.body
+    );
 
     if (category) {
       res.json(category);

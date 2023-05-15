@@ -1,12 +1,11 @@
 const FormHelper = require("../../helpers/FormHelper");
 const Post = require("../../models/Post");
 const postService = require("../../services/blog/postService");
-const findAllOneJoinService = require("../../services/common/findAllOneJoinService");
-const listService = require("../../services/common/listService");
+const slugify = require("slugify");
 
 exports.createPost = async (req, res, next) => {
   try {
-    const { title, slug, content, author, category } = req.body;
+    const { title, content, author, category } = req.body;
     const filename = {
       public_id: req?.file?.cloudinaryId,
       secure_url: req?.file?.cloudinaryUrl,
@@ -14,9 +13,6 @@ exports.createPost = async (req, res, next) => {
 
     if (FormHelper.isEmpty(title)) {
       return res.status(400).json({ error: "Title is required" });
-    }
-    if (FormHelper.isEmpty(slug)) {
-      return res.status(400).json({ error: "Slug is required" });
     }
     if (FormHelper.isEmpty(content)) {
       return res.status(400).json({ error: "Content is required" });
@@ -34,7 +30,7 @@ exports.createPost = async (req, res, next) => {
 
     const post = await postService.createPost({
       title,
-      slug,
+      slug: slugify(title, { lower: true }),
       content,
       author,
       category,
@@ -81,13 +77,10 @@ exports.getPostById = async (req, res, next) => {
 // Update a post by id
 exports.updatePostById = async (req, res, next) => {
   try {
-    const { title, slug, content, category, isFeature } = req.body;
+    const { title, content, category, isFeature } = req.body;
 
     if (FormHelper.isEmpty(title)) {
       return res.status(400).json({ error: "Title is required" });
-    }
-    if (FormHelper.isEmpty(slug)) {
-      return res.status(400).json({ error: "Slug is required" });
     }
     if (FormHelper.isEmpty(content)) {
       return res.status(400).json({ error: "Content is required" });
@@ -100,7 +93,7 @@ exports.updatePostById = async (req, res, next) => {
         error: "Provide a valid category",
       });
     }
-
+    req.body.slug = slugify(title, { lower: true });
     const post = await postService.updatePostById(
       req.params.id,
       req.body,

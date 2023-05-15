@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      unique: [true, "Slug is required"],
+      unique: [true, "Slug is Unique"],
     },
     content: {
       type: String,
