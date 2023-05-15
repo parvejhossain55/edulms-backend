@@ -1,7 +1,8 @@
+const FormHelper = require("../../helpers/FormHelper");
 const error = require("../../helpers/error");
 const CourseModel = require("../../models/Course");
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Schema.Types.ObjectId;
+const ObjectId = mongoose.Types.ObjectId;
 
 const getAllPublishedCourse = async (filter, query) => {
   try {
@@ -68,4 +69,58 @@ const getAllPublishedCourse = async (filter, query) => {
   }
 };
 
-module.exports = { getAllPublishedCourse };
+const getPublishedCourseByCategory = async (req) => {
+  try {
+    const { categoryId } = req.params;
+    const { pageNo, perPage } = req.query;
+
+    let matchQuery = {
+      status: "published",
+      categoryId: new ObjectId(categoryId),
+    };
+
+    const course = await CourseModel.find(matchQuery)
+      .populate({
+        path: "teacherId",
+        select: "firstName lastName picture",
+      })
+      .populate({
+        path: "categoryId",
+        select: "name",
+      })
+      .select({
+        _id: 1,
+        name: 1,
+        description: 1,
+        sellPrice: 1,
+        regularPrice: 1,
+        thumbnail: 1,
+        benefit: 1,
+        sold: 1,
+        seats: 1,
+        startingDate: 1,
+        "teacher.firstName": 1,
+        "teacher.lastName": 1,
+        "teacher.picture": 1,
+        "category._id": 1,
+        "category.name": 1,
+      })
+      .skip((parseInt(pageNo) - 1) * parseInt(perPage))
+      .limit(parseInt(perPage));
+
+    const count = await CourseModel.countDocuments(matchQuery);
+    const totalPages = Math.ceil(count / perPage);
+    const currentPage = parseInt(pageNo);
+
+    return {
+      course,
+      totalPages,
+      currentPage,
+      totalCourse: count,
+    };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
+module.exports = { getAllPublishedCourse, getPublishedCourseByCategory };
