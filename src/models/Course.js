@@ -28,10 +28,10 @@ const courseSchema = new Schema(
         sellPrice: {
             type: Number,
         },
-        // sold: {
-        //   type: Number,
-        //   default: 0,
-        // },
+        sellCount: {
+          type: Number,
+          default: 0,
+        },
         // seats: { type: Number, required: [true, "Seats is required"] },
         teacherId: {
             type: ObjectId,
