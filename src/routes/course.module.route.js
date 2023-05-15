@@ -5,7 +5,7 @@ const router = require('express').Router();
 
 router.get('/courses/modules/:pageNo/:perPage/:searchKeyword', courseModuleController.getModules);
 router.get('/courses/modules/:courseId', courseModuleController.getModulesbyID);
-router.get('/courses/modules', courseModuleController.dropDownModules);
+router.get('/courses/modulesdropdown/:courseId', courseModuleController.dropDownModules);
 router.post('/courses/modules',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.course.can_create_course),
