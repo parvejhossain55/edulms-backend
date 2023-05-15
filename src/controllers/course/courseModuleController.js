@@ -4,6 +4,7 @@ const dropDownService = require("../../services/common/dropDownService");
 const findAllService = require("../../services/common/findAllService");
 const listService = require("../../services/common/listService");
 const courseModuleService = require("../../services/course/courseModuleService");
+const mongoose = require("mongoose");
 
 const createModule = async (req, res, next) => {
   try {
@@ -64,7 +65,11 @@ const dropDownModules = async (req, res, next) => {
       value: "$_id",
       title: 1,
     };
-    const modules = await dropDownService(CourseModule, projection);
+    const {courseId} = req.params || {};
+    const query = {
+      courseId: new mongoose.Types.ObjectId(courseId)
+    }
+    const modules = await dropDownService(CourseModule, projection, query);
     res.status(200).json(modules);
   } catch (e) {
     next(e);
