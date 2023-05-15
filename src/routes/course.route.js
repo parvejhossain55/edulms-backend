@@ -43,5 +43,11 @@ router.get(
   authMiddleware.checkPermissions(permissions.course.can_view_course),
   courseController.getAllCoursePagiController
 );
+router.get(
+  "/courses",
+  authMiddleware.authVerifyMiddleware,
+  authMiddleware.checkPermissions(permissions.course.can_view_course),
+  courseController.dropDownCourses
+);
 
 module.exports = router;

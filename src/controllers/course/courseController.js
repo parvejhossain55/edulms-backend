@@ -11,6 +11,7 @@ const TeacherModel = require('../../models/TeacherProfile')
 const objectId = mongoose.Types.ObjectId;
 const findAllOneJoinService = require('../../services/common/findAllOneJoinService')
 const readline = require("readline");
+const CourseModule = require("../../models/CourseModule");
 const createCourse = async (req, res, next) => {
     try {
         const {
@@ -294,6 +295,21 @@ const deleteCourse = async (req, res, next) => {
         next(e);
     }
 };
+const dropDownCourses = async (req, res, next) => {
+    try {
+        const projection = {
+            label: "$name",
+            value: "$_id",
+            name: 1,
+        };
+        const result = await dropDownService(CourseModel, projection);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+};
+
+
 
 
 module.exports = {
@@ -307,5 +323,6 @@ module.exports = {
     getAllPublishedCourse,
     getPublishedSingleCourse,
     updateCourse,
-    getAllCoursePagiController
+    getAllCoursePagiController,
+    dropDownCourses
 };
