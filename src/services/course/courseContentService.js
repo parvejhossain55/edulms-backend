@@ -11,7 +11,7 @@ const checkSerialNoUnique = (contents, key) => {
   const setArray = new Set();
 
   for (const content of contents) {
-    if (setArray.has(content[key].toLowerCase())) {
+    if (setArray.has(content[key])) {
       return false; // Duplicate serialNo found
     }
     setArray.add(content[key]);
