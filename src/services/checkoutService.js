@@ -196,19 +196,6 @@ exports.checkoutSuccess = async (success) => {
   }
 };
 
-async function quantityUpdate(cart) {
-  console.log("cart ", cart);
-
-  await Course.bulkWrite(
-    cart.courses.map((course) => ({
-      updateOne: {
-        filter: { _id: course.course },
-        update: { $inc: { sold: 1, seats: -1 } },
-      },
-    }))
-  );
-}
-
 // braintree payment gateway integration
 exports.clientToken = async () => {
   const { clientToken } = await gateway.clientToken.generate({});
@@ -226,6 +213,8 @@ exports.braintreeCheckout = async (
       "name"
     );
 
+    if (!cart) throw error("Cart is Empty", 400);
+
     // Create the Braintree transaction
     const { success, transaction } = await gateway.transaction.sale({
       amount: cart.total,
@@ -235,9 +224,7 @@ exports.braintreeCheckout = async (
       },
     });
 
-    if (!success) {
-      throw error("Transaction Failed", 400);
-    }
+    if (!success) throw error("Transaction Failed", 400);
 
     if (
       transaction.status === "failed" ||
@@ -249,7 +236,6 @@ exports.braintreeCheckout = async (
     // Create the new order
     const purchase = new Purchase({
       user: _id,
-      payment: transaction,
       courses: cart.courses.map((course) => ({
         course: course.course,
         price: course.price,
@@ -265,10 +251,10 @@ exports.braintreeCheckout = async (
       paymentStatus: transaction.status,
       tran_id: transaction.id,
       tran_date: transaction.createdAt,
-      card_type: transaction.creditCard.cardType || "",
+      card_type: transaction.creditCard.cardType || "Other",
     });
 
-    // purchase.payment = payment._id;
+    purchase.payment = payment._id;
 
     // Update product sold and quantity
     await quantityUpdate(cart);
@@ -281,7 +267,7 @@ exports.braintreeCheckout = async (
         ""
       ),
       amount: cart.total,
-      method: transaction.creditCard.cardType,
+      method: transaction.paymentInstrumentType,
       tran_id: transaction.id,
       date: new Date().toLocaleString("en-US", {
         timeZone: "Asia/Dhaka",
@@ -294,7 +280,7 @@ exports.braintreeCheckout = async (
       }),
     };
 
-    // Clear the user's cart
+    // Clear the user cart
     cart.courses = [];
     cart.total = 0;
     cart.couponApplied = false;
@@ -321,3 +307,14 @@ exports.braintreeCheckout = async (
     throw error(err.message, err.status);
   }
 };
+
+async function quantityUpdate(cart) {
+  await Course.bulkWrite(
+    cart.courses.map((course) => ({
+      updateOne: {
+        filter: { _id: course.course },
+        update: { $inc: { sellCount: 1 } },
+      },
+    }))
+  );
+}

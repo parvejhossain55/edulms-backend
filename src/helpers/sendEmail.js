@@ -1,5 +1,5 @@
 const sgMail = require("@sendgrid/mail");
-const sendError = require("./error");
+const error = require("./error");
 
 const sendEmail = async (EmailTo, body, EmailSubject) => {
   try {
@@ -13,8 +13,8 @@ const sendEmail = async (EmailTo, body, EmailSubject) => {
     };
 
     return sgMail.send(mailOptions);
-  } catch (error) {
-    sendError(error.message);
+  } catch (err) {
+    throw error(err.message, err.status);
   }
 };
 module.exports = sendEmail;
