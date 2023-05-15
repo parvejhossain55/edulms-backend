@@ -229,12 +229,13 @@ const updateCourse = async (req, res, next) => {
             categoryId,
             benefit,
             status,
+            courseType
         } = req.body;
         const id = req.params.courseId;
 
         if (!FormHelper.isIdValid(id)) {
             return res.status(400).json({
-                error: "provide a valid course id",
+                error: "Provide a valid course id",
             });
         }
         const filename = {
@@ -244,7 +245,7 @@ const updateCourse = async (req, res, next) => {
         const course = await findOneByProperty("_id", id, CourseModel);
         if (!course) {
             return res.status(404).json({
-                error: "course not found",
+                error: "Course not found",
             });
         }
 
@@ -259,6 +260,7 @@ const updateCourse = async (req, res, next) => {
             : regularPrice;
         const courseSellPrice = !sellPrice ? course.sellPrice : sellPrice;
         const courseStatus = !status ? course.status : status;
+        const coursesType = !courseType ? course.courseType : courseType;
         const courseThumbnail = !req?.file?.cloudinaryUrl
             ? course.thumbnail
             : filename;
@@ -274,6 +276,7 @@ const updateCourse = async (req, res, next) => {
                 status: courseStatus,
                 regularPrice: courseRegularPrice,
                 sellPrice: courseSellPrice,
+                courseType: coursesType
             },
             {_id: new objectId(id)}
         );

@@ -304,16 +304,18 @@ const getSingleCourse = async (query) => {
           avatar: { $first: "$teacherProfile.avatar" },
         },
         category: { $first: "$category.name" },
-        categoryId: {
-          label: {$first: "$category.name"},
-          value: {$first: "$category._id"}
-
-        },
-        teacherId: {
-          label: {$concat: ["$teacher.firstName", " ", "$teacher.lastName"]},
-          value: "$teacher._id"
-
-        }
+        // categoryId: {
+        //   label: {$first: "$category.name"},
+        //   value: {$first: "$category._id"}
+        //
+        // },
+        categoryId: {$first:"$category._id"},
+        teacherId: "$teacher._id"
+        // teacherId: {
+        //   label: {$concat: ["$teacher.firstName", " ", "$teacher.lastName"]},
+        //   value: "$teacher._id"
+        //
+        // }
       },
     },
   ]);
