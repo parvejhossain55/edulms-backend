@@ -8,17 +8,17 @@ const findOneByQuery = require("../common/findOneByQuery");
 const ObjectId = mongoose.Types.ObjectId;
 
 const checkSerialNoUnique = (contents, key) => {
-  const serialNoSet = new Set();
+  const setArray = new Set();
 
   for (const content of contents) {
-    if (serialNoSet.has(content[key])) {
+    if (setArray.has(content[key].toLowerCase())) {
       return false; // Duplicate serialNo found
     }
-    serialNoSet.add(content[key]);
+    setArray.add(content[key]);
   }
 
   // return true; // All serialNo values are unique
-  return serialNoSet;
+  return setArray;
 };
 
 const createContent = async (contents) => {
@@ -27,8 +27,8 @@ const createContent = async (contents) => {
     const modules = await CourseModule.find({courseId: content?.courseId}, {_id: 1});
 
     const moduleErrors = await Promise.all(modules.map(async module => {
-      const isTitle = await CourseContent.findOne({moduleId: module?._id, videoTitle: content?.videoTitle});
-      const isUrl = await CourseContent.findOne({moduleId: module?._id, videoUrl: content?.videoUrl});
+      const isTitle = await CourseContent.findOne({moduleId: module?._id, videoTitle: content?.videoTitle?.toLowerCase()?.trim()});
+      const isUrl = await CourseContent.findOne({moduleId: module?._id, videoUrl: content?.videoUrl?.toLowerCase()?.trim()});
       const isSerial = await CourseContent.findOne({moduleId: content?.moduleId, serialNo: content?.serialNo});
 
       if (isTitle) {
