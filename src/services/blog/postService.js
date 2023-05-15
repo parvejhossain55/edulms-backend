@@ -2,6 +2,7 @@ const error = require("../../helpers/error");
 const { deleteFile } = require("../../middleware/cloudinaryUpload");
 const Post = require("../../models/Post");
 const mongoose = require("mongoose");
+const findOneByQuery = require("../common/findOneByQuery");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.createPost = async (postData) => {
@@ -127,6 +128,9 @@ exports.updatePostById = async (postId, postData, file) => {
   try {
     const { title, slug, category, content, isFeature } = postData;
     let post;
+
+    const checkPost = await findOneByQuery({ slug }, Post);
+    if (checkPost) throw error("Title already exists, Must be Unique", 400);
 
     if (!file) {
       post = await Post.findById(postId);

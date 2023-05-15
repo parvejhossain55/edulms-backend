@@ -1,5 +1,6 @@
 const error = require("../../helpers/error");
 const Category = require("../../models/PostCategory");
+const findOneByQuery = require("../common/findOneByQuery");
 
 async function createCategory(categoryData) {
   try {
@@ -20,6 +21,12 @@ async function getCategoryBySlug(slug) {
 
 async function updateCategoryById(slug, updateData) {
   try {
+    const checkCategory = await findOneByQuery(
+      { slug: updateData.slug },
+      Category
+    );
+    if (checkCategory) throw error("Name already exists, Must be Unique", 400);
+
     return await Category.findOneAndUpdate(
       { slug },
       { $set: updateData },
