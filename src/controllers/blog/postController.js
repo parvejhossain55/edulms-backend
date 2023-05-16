@@ -44,7 +44,7 @@ exports.createPost = async (req, res, next) => {
 
 exports.getPosts = async (req, res, next) => {
   try {
-    const posts = await postService.getPosts(req.params);
+    const posts = await postService.getPosts(req.params, req.body);
     res.status(200).json(posts);
   } catch (err) {
     next(err);

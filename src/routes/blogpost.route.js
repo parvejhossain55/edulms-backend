@@ -25,7 +25,7 @@ router.get(
 );
 
 // Get all posts
-router.get(
+router.post(
   "/posts/:pageNo/:perPage/:searchKeyword",
   // authVerifyMiddleware,
   PostController.getPosts
@@ -77,19 +77,7 @@ router.patch(
 //   PostController.deletePostById
 // );
 
-// // Get 5 related post in the same category
-// router.get("/posts/:postId/related", PostController.getRelatedPosts);
-
-// // Get posts by category
-// router.get("/posts/category/:categoryId", PostController.getPostByCategory);
-
 // // Get post by Tag
 // router.get("/posts/tags", PostController.getPostsByTag);
-
-// // Get popular post
-// router.get("/posts/popular-post", PostController.getPopularPosts);
-
-// // Route for searching posts
-// router.get("/posts/search", PostController.searchPosts);
 
 module.exports = router;
