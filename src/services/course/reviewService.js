@@ -1,26 +1,101 @@
-// services/reviews.js
+const error = require("../../helpers/error");
 const Review = require("../../models/CourseReview");
 const Purchase = require("../../models/Purchase");
 
-exports.addReview = async ({ courseId, userId, rating, comment }) => {
-  // Check if the user has purchased the course
-  const purchase = await Purchase.findOne({
-    user: userId,
-    course: courseId,
-  });
+exports.addReview = async ({ course, userId, rating, comment }) => {
+  try {
+    // Check if the user has purchased the course
+    const purchase = await Purchase.find({
+      user: userId,
+      "courses.course": course,
+    });
 
-  if (!purchase) {
-    throw new Error("Unauthorized");
+    if (purchase.length < 1) {
+      throw error("Your are not eligible for this comment", 400);
+    }
+
+    // Create a new review
+    const review = new Review({
+      course: course,
+      user: userId,
+      rating,
+      comment,
+    });
+
+    // Save the review to the database
+    return await review.save();
+  } catch (err) {
+    throw error(err.message, err.status);
   }
+};
 
-  // Create a new review
-  const review = new Review({
-    course: courseId,
-    user,
-    rating,
-    comment,
-  });
+exports.getAllReviews = async (page, limit) => {
+  try {
+    const currentPage = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
 
-  // Save the review to the database
-  await review.save();
+    const totalReviews = await Review.countDocuments();
+    const totalPages = Math.ceil(totalReviews / limitNumber);
+
+    const reviews = await Review.find()
+      .populate("user", "firstName lastName picture")
+      .populate("course", "name thumbnail regularPrice sellPrice sellCount")
+      .skip((currentPage - 1) * limitNumber)
+      .limit(limitNumber)
+      .exec();
+
+    return {
+      reviews,
+      currentPage,
+      totalReviews,
+      totalPages,
+    };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
+exports.updateReview = async ({ reviewId, rating, comment, userId }) => {
+  try {
+    const review = await Review.findOne({ _id: reviewId, user: userId });
+
+    if (!review) {
+      throw error("Review not found", 400);
+    }
+
+    review.rating = rating;
+    review.comment = comment;
+    return await review.save();
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
+exports.updateReviewStatus = async (reviewId, status) => {
+  try {
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      throw error("Review not found", 400);
+    }
+
+    review.status = status;
+
+    await review.save();
+    return { message: "Review Status Updated" };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
+exports.deleteReview = async (reviewId) => {
+  try {
+    const { acknowledged } = await Review.deleteOne({ _id: reviewId });
+    if (acknowledged) {
+      return { message: "Review Successfully Deleted" };
+    }
+    return { message: "Failed to Delete Review" };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
 };

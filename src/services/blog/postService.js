@@ -14,9 +14,10 @@ exports.createPost = async (postData) => {
   }
 };
 
-exports.getPosts = async (query) => {
+exports.getPosts = async (query, body) => {
   try {
     const { pageNo = 1, perPage = 10, searchKeyword } = query;
+    const { category } = body;
 
     const matchQuery = { status: "published" };
 
@@ -24,6 +25,10 @@ exports.getPosts = async (query) => {
       let SearchRgx = { $regex: searchKeyword, $options: "i" };
       let SearchArray = [{ title: SearchRgx }, { content: SearchRgx }];
       matchQuery.$or = SearchArray;
+    }
+
+    if (category && category.length > 0) {
+      matchQuery.category = { $in: category };
     }
 
     const posts = await Post.find(matchQuery)
@@ -113,7 +118,8 @@ exports.getPostById = async (postId) => {
   try {
     const post = await Post.findById(postId)
       .populate("author", "firstName lastName picture email")
-      .populate("category", "name");
+      .populate("category", "name")
+      .populate("comments.author", "firstName lastName picture");
     if (!post) {
       throw error("Post Not Found", 404);
     }
