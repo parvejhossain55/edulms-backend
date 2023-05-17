@@ -106,7 +106,12 @@ exports.getReviewsByCourse = async ({ courseId, page, limit }) => {
     const limitNumber = parseInt(limit) || 20;
     const query = { status: "published", course: courseId };
 
-    const reviews = await Review.find(query, { user: 1, comment: 1, rating: 1 })
+    const reviews = await Review.find(query, {
+      user: 1,
+      comment: 1,
+      rating: 1,
+      createdAt: 1,
+    })
       .populate("user", "firstName lastName picture")
       .skip((currentPage - 1) * limitNumber)
       .limit(limitNumber)
