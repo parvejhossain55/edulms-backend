@@ -99,3 +99,29 @@ exports.deleteReview = async (reviewId) => {
     throw error(err.message, err.status);
   }
 };
+
+exports.getReviewsByCourse = async ({ courseId, page, limit }) => {
+  try {
+    const currentPage = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 20;
+    const query = { status: "published", course: courseId };
+
+    const reviews = await Review.find(query, { user: 1, comment: 1, rating: 1 })
+      .populate("user", "firstName lastName picture")
+      .skip((currentPage - 1) * limitNumber)
+      .limit(limitNumber)
+      .exec();
+
+    const totalReviews = await Review.countDocuments(query);
+    const totalPages = Math.ceil(totalReviews / limitNumber);
+
+    return {
+      reviews,
+      currentPage,
+      totalReviews,
+      totalPages,
+    };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};

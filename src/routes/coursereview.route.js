@@ -31,6 +31,10 @@ router.delete(
   courseReviewController.deleteReview
 );
 
+router.get(
+  "/course/:courseId/reviews",
+  courseReviewController.getReviewsByCourse
+);
 router.get("/reviews", courseReviewController.getAllReviews);
 
 module.exports = router;

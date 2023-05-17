@@ -97,3 +97,21 @@ exports.getAllReviews = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getReviewsByCourse = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const { page, limit } = req.query;
+    if (!FormHelper.isIdValid(courseId)) {
+      return res.status(400).json({ error: "Provide valid Course Id" });
+    }
+    const reviews = await reviewService.getReviewsByCourse({
+      courseId,
+      page,
+      limit,
+    });
+    res.status(200).json(reviews);
+  } catch (err) {
+    next(err);
+  }
+};
