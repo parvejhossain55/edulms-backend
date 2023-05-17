@@ -57,14 +57,14 @@ async function getCategoryBySlug(req, res, next) {
   }
 }
 
-async function updateCategoryById(req, res, next) {
+async function updateCategoryBySlug(req, res, next) {
   try {
     const { name } = req.body;
     if (FormHelper.isEmpty(name)) {
       return res.status(400).json({ error: "Category Name is required" });
     }
     req.body.slug = slugify(name, { lower: true });
-    const category = await categoryService.updateCategoryById(
+    const category = await categoryService.updateCategoryBySlug(
       req.params.slug,
       req.body
     );
@@ -82,6 +82,7 @@ async function updateCategoryById(req, res, next) {
 async function deleteCategoryById(req, res, next) {
   try {
     const result = await categoryService.deleteCategoryById(req.params.id);
+
     if (result.deletedCount > 0) {
       res.json({ message: "Category deleted successfully" });
     } else {
@@ -97,6 +98,6 @@ module.exports = {
   getCategories,
   getCategorieDropdown,
   getCategoryBySlug,
-  updateCategoryById,
+  updateCategoryBySlug,
   deleteCategoryById,
 };
