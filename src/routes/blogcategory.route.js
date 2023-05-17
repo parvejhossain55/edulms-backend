@@ -30,12 +30,12 @@ router.put(
   "/category/:slug",
   authVerifyMiddleware,
   isAdmin,
-  categoryController.updateCategoryById
+  categoryController.updateCategoryBySlug
 );
 
 // delete category
 router.delete(
-  "/category/:slug",
+  "/category/:id",
   authVerifyMiddleware,
   isAdmin,
   categoryController.deleteCategoryById

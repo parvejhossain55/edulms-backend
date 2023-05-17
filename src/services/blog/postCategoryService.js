@@ -19,7 +19,7 @@ async function getCategoryBySlug(slug) {
   }
 }
 
-async function updateCategoryById(slug, updateData) {
+async function updateCategoryBySlug(slug, updateData) {
   try {
     const checkCategory = await findOneByQuery(
       { slug: updateData.slug },
@@ -38,12 +38,13 @@ async function updateCategoryById(slug, updateData) {
 }
 
 async function deleteCategoryById(id) {
-  return Category.deleteOne({ _id: id });
+  const category = await Category.deleteOne({ _id: id });
+  return category;
 }
 
 module.exports = {
   createCategory,
   getCategoryBySlug,
-  updateCategoryById,
+  updateCategoryBySlug,
   deleteCategoryById,
 };
