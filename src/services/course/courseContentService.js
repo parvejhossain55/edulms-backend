@@ -7,17 +7,16 @@ const error = require("../../helpers/error");
 const findOneByQuery = require("../common/findOneByQuery");
 const ObjectId = mongoose.Types.ObjectId;
 
-const checkSerialNoUnique = (contents, key) => {
+const checkUnique = (contents, key) => {
   const setArray = new Set();
 
   for (const content of contents) {
-    if (setArray.has(content[key])) {
-      return false; // Duplicate serialNo found
+    const value = String(content[key]); // Convert value to string
+    if (setArray.has(value.toLowerCase())) {
+      return false;
     }
-    setArray.add(content[key]);
+    setArray.add(value.toLowerCase());
   }
-
-  // return true; // All serialNo values are unique
   return setArray;
 };
 
@@ -33,7 +32,7 @@ const createContent = async (contents) => {
 
       if (isTitle) {
         return `${content?.videoTitle} - already exists in this course`;
-      }else if (isUrl){
+      }else if (isUrl?.videoUrl.toLowerCase() === content?.videoUrl.toLowerCase()){
         return `${content?.videoUrl} - already exists in this course`;
       }else if (isSerial){
         return `${content?.serialNo} - Serial No already exists in this module`;
@@ -44,9 +43,9 @@ const createContent = async (contents) => {
     return moduleErrors.filter(Boolean); // Filter out undefined values
   }))).flat();
 
-  const isVideoTitleNoUnique = checkSerialNoUnique(contents, 'videoTitle');
-  const isVideoUrlNoUnique = checkSerialNoUnique(contents, 'videoUrl');
-  const isSerialNoNoUnique = checkSerialNoUnique(contents, 'serialNo');
+  const isVideoTitleNoUnique = checkUnique(contents, 'videoTitle');
+  const isVideoUrlNoUnique = checkUnique(contents, 'videoUrl');
+  const isSerialNoNoUnique = checkUnique(contents, 'serialNo');
 
   if (!isVideoTitleNoUnique){
     throw error('You provide same video title, please provide different video title', 400)

@@ -15,7 +15,6 @@ const courseContentSchema = new Schema({
         type: String,
         trim: true,
         unique: true,
-        lowercase: true
     },
     serialNo: {
         type: Number,

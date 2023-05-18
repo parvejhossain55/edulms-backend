@@ -27,15 +27,9 @@ const createContent = async (req, res, next) => {
       }
     });
 
-    const modifiedData = contents?.map(content => {
-      return {
-        ...content,
-        videoTitle: content?.videoTitle?.toLowerCase(),
-        videoUrl: content?.videoUrl?.toLowerCase()
-      };
-    });
 
-    await courseContentService.createContent(modifiedData);
+
+    await courseContentService.createContent(contents);
     res.status(201).json({
       message: 'Course contents create successfully'
     });
