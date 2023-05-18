@@ -18,7 +18,6 @@ const courseContentSchema = new Schema({
     },
     serialNo: {
         type: Number,
-        unique: true
     }
 }, {versionKey: false, timestamps: true});
 
