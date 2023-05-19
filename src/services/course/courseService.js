@@ -1,6 +1,7 @@
 const CourseModel = require("../../models/Course");
 const error = require("../../helpers/error");
 const mongoose = require("mongoose");
+const Purchase = require("../../models/Purchase");
 const ObjectId = mongoose.Types.ObjectId;
 
 const createCourse = async ({
@@ -309,8 +310,8 @@ const getSingleCourse = async (query) => {
         //   value: {$first: "$category._id"}
         //
         // },
-        categoryId: {$first:"$category._id"},
-        teacherId: "$teacher._id"
+        categoryId: { $first: "$category._id" },
+        teacherId: "$teacher._id",
         // teacherId: {
         //   label: {$concat: ["$teacher.firstName", " ", "$teacher.lastName"]},
         //   value: "$teacher._id"
@@ -328,6 +329,18 @@ const updateCourse = async (updateObj, query) => {
 
 const deleteCourse = async () => {};
 
+const getMyAllCourse = async (query) => {
+  try {
+    const course = await Purchase.find(query)
+      .populate("user", "firstName lastName picture")
+      .populate("payment")
+      .populate("courses.course");
+    return course;
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
 module.exports = {
   createCourse,
   getAllCourse,
@@ -336,4 +349,5 @@ module.exports = {
   deleteCourse,
   getAllCourseByTeacher,
   getAllCoursePagination,
+  getMyAllCourse,
 };

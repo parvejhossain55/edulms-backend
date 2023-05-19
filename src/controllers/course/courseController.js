@@ -89,6 +89,19 @@ const getAllCourse = async (req, res, next) => {
     next(e);
   }
 };
+
+const getMyAllCourse = async (req, res, next) => {
+  try {
+    // console.log("req ", req);
+
+    const query = { user: new objectId(req.auth._id) };
+    const course = await courseService.getMyAllCourse(query);
+    res.status(200).json(course);
+  } catch (e) {
+    next(e);
+  }
+};
+
 const getAllCoursePagiController = async (req, res, next) => {
   try {
     const query = {};
@@ -345,4 +358,5 @@ module.exports = {
   updateCourse,
   getAllCoursePagiController,
   dropDownCourses,
+  getMyAllCourse,
 };
