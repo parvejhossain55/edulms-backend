@@ -12,6 +12,13 @@ router.get(
   "/courses/:categoryId/category",
   courseController.getPublishedCourseByCategory
 );
+
+router.get(
+  "/courses/my-course",
+  authMiddleware.authVerifyMiddleware,
+  courseController.getMyAllCourse
+);
+
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(
   "/courses/:id",
@@ -19,6 +26,7 @@ router.get(
   authMiddleware.checkPermissions(permissions.course.can_view_course),
   courseController.getSingleCourse
 );
+
 router.post(
   "/courses",
   authMiddleware.authVerifyMiddleware,

@@ -7,7 +7,7 @@ const categoryController = require("../controllers/blog/postCategoryController")
 
 // cretae category
 router.post(
-  "/category",
+  "/blog/category",
   authVerifyMiddleware,
   isAdmin,
   categoryController.createCategory
@@ -15,19 +15,19 @@ router.post(
 
 // get category with pagination
 router.get(
-  "/category/:pageNo/:perPage/:searchKeyword",
+  "/blog/category/:pageNo/:perPage/:searchKeyword",
   categoryController.getCategories
 );
 
 // get category with dropdown
-router.get("/category/dropdown", categoryController.getCategorieDropdown);
+router.get("/blog/category/dropdown", categoryController.getCategorieDropdown);
 
 // get category by slug
-router.get("/category/:slug", categoryController.getCategoryBySlug);
+router.get("/blog/category/:slug", categoryController.getCategoryBySlug);
 
 // update category
 router.put(
-  "/category/:slug",
+  "/blog/category/:slug",
   authVerifyMiddleware,
   isAdmin,
   categoryController.updateCategoryBySlug
@@ -35,7 +35,7 @@ router.put(
 
 // delete category
 router.delete(
-  "/category/:id",
+  "/blog/category/:id",
   authVerifyMiddleware,
   isAdmin,
   categoryController.deleteCategoryById
