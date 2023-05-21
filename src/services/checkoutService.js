@@ -206,14 +206,14 @@ exports.braintreeCheckout = async (
   { _id, firstName, lastName, email },
   { nonce }
 ) => {
-  try {
+
     // Retrieve the user's cart
     const cart = await Cart.findOne({ user: _id }).populate(
       "courses.course",
       "name"
     );
 
-    if (!cart) throw error("Cart is Empty", 400);
+    if (!cart) error("Cart is Empty", 400);
 
     // Create the Braintree transaction
     const { success, transaction } = await gateway.transaction.sale({
@@ -224,24 +224,26 @@ exports.braintreeCheckout = async (
       },
     });
 
-    if (!success) throw error("Transaction Failed", 400);
+    if (!success) error("Transaction Failed", 400);
 
     if (
-      transaction.status === "failed" ||
-      transaction.status === "gateway_rejected"
+      transaction?.status === "failed" ||
+      transaction?.status === "gateway_rejected"
     ) {
-      throw error("Payment is Failed or Rejected");
+      error("Payment is Failed or Rejected");
     }
 
     // Create the new order
-    const purchase = new Purchase({
+ /*   const purchase = new Purchase({
       user: _id,
       courses: cart.courses.map((course) => ({
         course: course.course,
         price: course.price,
       })),
       total: cart.total,
-    });
+    });*/
+
+
 
     // create payment
     const payment = new Payment({
@@ -254,7 +256,16 @@ exports.braintreeCheckout = async (
       card_type: transaction.creditCard.cardType || "Other",
     });
 
-    purchase.payment = payment._id;
+      cart.courses.map(async course => {
+        await Purchase.create({
+          studentId: _id,
+          courseId: course.course,
+          price: course.price,
+          paymentId: payment._id
+        })
+      })
+
+ /*   purchase.payment = payment._id;*/
 
     // Update product sold and quantity
     await quantityUpdate(cart);
@@ -295,17 +306,14 @@ exports.braintreeCheckout = async (
     );
 
     if (sendMail[0].statusCode !== 202) {
-      throw error("Failed to send email", 400);
+      error("Failed to send email", 400);
     }
 
     // Save the purchase and payment
-    await Promise.all([purchase.save(), cart.save(), payment.save()]);
+    await Promise.all([cart.save(), payment.save()]);
     // await Promise.all([purchase.save(), cart.save(), payment.save()]);
-
     return { message: "Purchases Successfull" };
-  } catch (err) {
-    throw error(err.message, err.status);
-  }
+
 };
 
 async function quantityUpdate(cart) {

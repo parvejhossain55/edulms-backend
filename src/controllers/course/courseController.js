@@ -10,8 +10,8 @@ const DataModel = require("../../models/CourseCategory");
 const TeacherModel = require("../../models/TeacherProfile");
 const objectId = mongoose.Types.ObjectId;
 const findAllOneJoinService = require("../../services/common/findAllOneJoinService");
-const readline = require("readline");
-const CourseModule = require("../../models/CourseModule");
+const PurchaseModule = require("../../models/Purchase");
+const checkAssociateService = require("../../services/common/checkAssociateService");
 const createCourse = async (req, res, next) => {
   try {
     const {
@@ -90,17 +90,49 @@ const getAllCourse = async (req, res, next) => {
   }
 };
 
+// Student my course
 const getMyAllCourse = async (req, res, next) => {
   try {
-    // console.log("req ", req);
+    const pageNo =
+        req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+    const perPage =
+        req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
 
-    const query = { user: new objectId(req.auth._id) };
-    const course = await courseService.getMyAllCourse(query);
+    const query = { studentId: new objectId(req.auth?._id) };
+    const course = await courseService.getMyAllCourse(pageNo, perPage, query);
     res.status(200).json(course);
   } catch (e) {
     next(e);
   }
 };
+
+const getMySingleCourse = async (req, res, next) => {
+  try {
+    const courseId = req.params.courseId;
+
+    if (!FormHelper.isIdValid(courseId)){
+      return res.status(400).json({
+        error: 'provide a valid course id'
+      })
+    }
+    const studentId = req.auth?._id;
+    const query = { _id: new objectId(courseId) };
+    const isCourse = await checkAssociateService({'courseId': new objectId(courseId) , studentId: new objectId(studentId) }, PurchaseModule);
+
+    if (!isCourse){
+      return res.status(400).json({
+        error: 'course not found'
+      })
+    }
+
+    const course = await courseService.getSingleCourse(query);
+    res.status(200).json(course);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Student my course end
 
 const getAllCoursePagiController = async (req, res, next) => {
   try {
@@ -359,4 +391,5 @@ module.exports = {
   getAllCoursePagiController,
   dropDownCourses,
   getMyAllCourse,
+  getMySingleCourse
 };

@@ -1,18 +1,27 @@
 const mongoose = require("mongoose");
 
 const purchaseSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    payment: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Payment",
-      required: true,
-    },
-    courses: [
+    {
+          studentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        courseId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
+            required: true,
+        },
+        paymentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Payment",
+          required: true,
+        },
+        price: {
+            type: Number,
+            required: true,
+        },
+   /* courses: [
       {
         course: {
           type: mongoose.Schema.Types.ObjectId,
@@ -24,11 +33,7 @@ const purchaseSchema = new mongoose.Schema(
           required: true,
         },
       },
-    ],
-    total: {
-      type: Number,
-      required: true,
-    },
+    ],*/
   },
   { timestamps: true, versionKey: false }
 );

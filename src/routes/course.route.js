@@ -12,12 +12,19 @@ router.get(
   "/courses/:categoryId/category",
   courseController.getPublishedCourseByCategory
 );
-
+// student my course
 router.get(
-  "/courses/my-course",
+    "/courses/my-course/:courseId",
+    authMiddleware.authVerifyMiddleware,
+    courseController.getMySingleCourse
+);
+router.get(
+  "/courses/my-course/:pageNo/:perPage",
   authMiddleware.authVerifyMiddleware,
   courseController.getMyAllCourse
 );
+
+// student my course end
 
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(

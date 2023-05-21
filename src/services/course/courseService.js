@@ -329,13 +329,84 @@ const updateCourse = async (updateObj, query) => {
 
 const deleteCourse = async () => {};
 
-const getMyAllCourse = async (query) => {
+const getMyAllCourse = async (pageNo, perPage, query) => {
   try {
-    const course = await Purchase.find(query)
+  /*  const course = await Purchase.find(query)
       .populate("user", "firstName lastName picture")
       .populate("payment")
-      .populate("courses.course");
-    return course;
+      .populate("courses.course");*/
+   /* const course = await Purchase.aggregate([
+      {$match: query},
+      {$lookup: {from: 'courses', foreignField: '_id', localField: 'courses.course', as: 'course'}}
+    ])
+    return course;*/
+
+    const skipPage = (pageNo - 1) * perPage;
+    /*const myCourses = await Purchase.aggregate([
+      { $match: query },
+      {
+        $facet: {
+          total: [{ $count: "count" }],
+          rows: [
+            {$lookup: {from: 'courses', foreignField: '_id', localField: 'courses.course', as: 'courses'}},
+            { $skip: skipPage },
+            { $limit: perPage },
+            { $sort: { createdAt: -1 } },
+          ],
+        },
+      },
+    ]); */
+    const myCourses = await Purchase.aggregate([
+      { $match: query },
+      {$lookup: {from: 'courses', foreignField: '_id', localField: 'courseId', as: 'courses'}},
+      {
+        $unwind: "$courses"  // Unwind the "courses" array
+      },
+      {
+        $project: {
+          "_id": "$courses._id",
+          "name": "$courses.name",
+          "description": "$courses.description",
+          "regularPrice": "$courses.regularPrice",
+          "sellPrice": "$courses.sellPrice",
+          "sellCount": "$courses.sellCount",
+          "teacherId": "$courses.teacherId",
+          "categoryId": "$courses.categoryId",
+          "benefit": "$courses.benefit",
+          "thumbnail": "$courses.thumbnail",
+          "courseType": "$courses.courseType",
+          "status": "$courses.status",
+          "createdAt": "$courses.createdAt",
+          "slug": "$courses.slug"
+        },
+
+      },
+      { $skip: skipPage },
+      { $limit: perPage },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: null,
+          rows: { $push: "$$ROOT" },
+          total: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          total: 1,
+          rows: 1
+        }
+      },
+
+    ]);
+
+    /*return {
+      total: myCourses[0]?.total[0]?.count,
+      rows: myCourses[0]?.rows,
+    };*/
+    return myCourses[0] || {rows: []};
+
   } catch (err) {
     throw error(err.message, err.status);
   }
