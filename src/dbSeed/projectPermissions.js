@@ -34,7 +34,13 @@ const permissions = {
         can_edit_role: 'can_edit_role',
         can_view_role: 'can_view_role',
         can_delete_role: 'can_delete_role',
-    }
+    },
+    assignment: {
+        can_create_assignment: 'can_create_assignment',
+        can_edit_assignment: 'can_edit_assignment',
+        can_view_assignment: 'can_view_assignment',
+        can_delete_assignment: 'can_delete_assignment',
+    },
 }
 
 const permissionsDocuments = Object.keys(permissions).reduce((acc, category) => {

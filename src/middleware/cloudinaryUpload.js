@@ -24,6 +24,20 @@ const upload = multer({
   limits: 2 * 1024 * 1024,
 });
 
+// Assignment file upload middleware
+const assignmentUpload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/zip") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only zip files are allowed"));
+    }
+  },
+  limits: 2 * 1024 * 1024,
+});
+
+
 // Middleware function to upload file to Cloudinary
 const uploadToCloudinary = (req, res, next) => {
   try {
@@ -31,7 +45,10 @@ const uploadToCloudinary = (req, res, next) => {
       return next();
     }
 
-    cloudinary.uploader.upload(req.file.path, (error, result) => {
+
+    cloudinary.uploader.upload(req.file.path, {resource_type: 'raw',
+      folder: 'zip_files'},(error, result) => {
+      console.log(error)
       if (error) {
         return res
           .status(500)
@@ -56,4 +73,4 @@ const deleteFile = async (publicId) => {
   }
 };
 
-module.exports = { upload, uploadToCloudinary, deleteFile };
+module.exports = { upload, assignmentUpload, uploadToCloudinary, deleteFile };

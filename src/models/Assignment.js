@@ -1,21 +1,22 @@
 const {Schema, model} = require('mongoose');
+const validator = require("validator");
 const {ObjectId} = Schema.Types;
 
 const assignmentSchema = new Schema({
     assignmentName: {
         type: String,
-        unique: true,
         trim: true,
         required: [true, 'assignment name is required'],
         minLength: 3,
-        maxLength: 300,
+        maxLength: 1000,
     },
     assignmentDescription: {
         type: String
     },
     status: {
       type: String,
-      enum: ['PENDING', 'REJECT', 'APPROVED']
+      enum: ['PENDING', 'REJECT', 'APPROVED', 'ACTIVE'],
+        default: 'ACTIVE'
     },
     teacherReview: {
       type: String
@@ -34,7 +35,23 @@ const assignmentSchema = new Schema({
     courseModuleId: {
         type: ObjectId,
         ref: 'CourseModule'
-    }
+    },
+
+    studentComment: {
+        type: String
+    },
+    assignmentUrl: {
+        type: String,
+        validate: [validator.isURL, "Provide a valid URL"],
+    },
+    limit: {
+        type: Number,
+        default: 3
+    },
+    file: {
+        public_id: {type: String},
+        secure_url: {type: String},
+    },
 
 }, {versionKey: false, timestamps: true});
 
