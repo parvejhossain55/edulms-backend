@@ -5,7 +5,7 @@ const slugify = require("slugify");
 
 exports.createPost = async (req, res, next) => {
   try {
-    const { title, content, author, category } = req.body;
+    const { title, content, status, category } = req.body;
     const filename = {
       public_id: req?.file?.cloudinaryId,
       secure_url: req?.file?.cloudinaryUrl,
@@ -22,19 +22,15 @@ exports.createPost = async (req, res, next) => {
         error: "Provide a valid category",
       });
     }
-    if (!FormHelper.isIdValid(author)) {
-      return res.status(400).json({
-        error: "Provide a valid author",
-      });
-    }
 
     const post = await postService.createPost({
       title,
       slug: slugify(title, { lower: true }),
       content,
-      author,
+      author: req.auth._id,
       category,
       thumbnail: filename,
+      status,
     });
     res.status(201).json(post);
   } catch (err) {
@@ -45,6 +41,15 @@ exports.createPost = async (req, res, next) => {
 exports.getPosts = async (req, res, next) => {
   try {
     const posts = await postService.getPosts(req.params, req.body);
+    res.status(200).json(posts);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getPostsforAdmin = async (req, res, next) => {
+  try {
+    const posts = await postService.getPostsforAdmin(req.params);
     res.status(200).json(posts);
   } catch (err) {
     next(err);
@@ -115,7 +120,7 @@ exports.deletePostById = async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ success: false, error: "Post not found" });
     }
-    res.status(200).json({ success: true, data: post });
+    res.status(200).json({ success: true, post });
   } catch (err) {
     next(err);
   }

@@ -31,6 +31,13 @@ router.post(
   PostController.getPosts
 );
 
+// Get all posts for admin
+router.get(
+  "/blog/posts/:pageNo/:perPage/:searchKeyword",
+  authVerifyMiddleware,
+  PostController.getPostsforAdmin
+);
+
 // Get 5 related post in the same category
 router.get("/posts/:postId/related", PostController.getRelatedPosts);
 
@@ -71,11 +78,11 @@ router.patch(
 );
 
 // // Delete a specific post by ID
-// router.delete(
-//   "/posts/:id",
-//   authVerifyMiddleware,
-//   PostController.deletePostById
-// );
+router.delete(
+  "/posts/:id",
+  authVerifyMiddleware,
+  PostController.deletePostById
+);
 
 // // Get post by Tag
 // router.get("/posts/tags", PostController.getPostsByTag);
