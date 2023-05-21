@@ -30,7 +30,7 @@ const postSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["draft", "published", "review"],
-      default: "published",
+      default: "draft",
     },
     tags: {
       type: [String],

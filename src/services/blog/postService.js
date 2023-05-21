@@ -61,6 +61,48 @@ exports.getPosts = async (query, body) => {
   }
 };
 
+exports.getPostsforAdmin = async (query) => {
+  try {
+    const { pageNo = 1, perPage = 10, searchKeyword } = query;
+
+    const matchQuery = {};
+
+    if (searchKeyword !== "0") {
+      let SearchRgx = { $regex: searchKeyword, $options: "i" };
+      let SearchArray = [{ title: SearchRgx }, { content: SearchRgx }];
+      matchQuery.$or = SearchArray;
+    }
+
+    const posts = await Post.find(matchQuery)
+      .populate({
+        path: "author",
+        select: "firstName lastName picture",
+      })
+      .populate({
+        path: "category",
+        select: "name",
+      })
+      .select(
+        "_id title slug content thumbnail isFeatured tags views likes category author createdAt"
+      )
+      .skip((parseInt(pageNo) - 1) * parseInt(perPage))
+      .limit(parseInt(perPage));
+
+    const count = await Post.countDocuments(matchQuery);
+    const totalPages = Math.ceil(count / perPage);
+    const currentPage = parseInt(pageNo);
+
+    return {
+      posts,
+      totalPages,
+      currentPage,
+      totalPosts: count,
+    };
+  } catch (err) {
+    throw error(err.message, err.status);
+  }
+};
+
 exports.getPostByCategory = async (req) => {
   try {
     const categoryId = req.params.categoryId;
@@ -176,11 +218,10 @@ exports.updatePostById = async (postId, postData, file) => {
 
 exports.deletePostById = async (postId) => {
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findByIdAndDelete(postId);
     if (!post) {
       throw new Error("Post not found");
     }
-    await post.remove();
     return post;
   } catch (err) {
     throw error(err.message, err.status);
