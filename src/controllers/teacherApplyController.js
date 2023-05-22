@@ -12,7 +12,7 @@ const UserModel = require("../models/User");
 exports.applyTeacher = async (req, res, next) => {
     try {
 
-        const {email, firstName, lastName, mobile} = req.body;
+        const {email, firstName, lastName, mobile, about, qualification} = req.body || {};
 
 
         if (FormHelper.isEmpty(email)) {
@@ -41,7 +41,7 @@ exports.applyTeacher = async (req, res, next) => {
             });
         }
 
-        const result = await applyTeacherService({email, firstName, lastName, mobile});
+        const result = await applyTeacherService({email, firstName, lastName, mobile, about, qualification});
 
         return res.status(201).json(result)
 
@@ -54,6 +54,7 @@ exports.applyTeacherStatusUpdate = async (req, res, next) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
+        const createdBy = req?.auth?._id;
         const {status} = req.body || {};
         const {teacherId} = req.params || {};
         const options = {session}
@@ -78,11 +79,11 @@ exports.applyTeacherStatusUpdate = async (req, res, next) => {
                 secure_url: 'https://i.ibb.co/pLPLX44/avataaars.png'
             };
 
-            const createNewTeacher = await createTeacherService(getTeacherData, filename, options);
+            const createNewTeacher = await createTeacherService(getTeacherData, filename, options, createdBy);
 
             await session.commitTransaction();
             await session.endSession();
-            return res.status(200).json(createNewTeacher)
+            return res.status(201).json(createNewTeacher)
         }
 
         await session.commitTransaction();

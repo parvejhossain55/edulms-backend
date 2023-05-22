@@ -8,17 +8,17 @@ exports.applyTeacherService = async ({
                                          firstName,
                                          lastName,
                                          mobile,
+                                         about,
+                                         qualification,
                                          role = "teacher",
                                      }) => {
 
     const exitingApply = await TeacheModelApply.findOne({email: email})
     const exitingUser = await User.findOne({email: email})
 
-    if(exitingApply || exitingUser){
+    if (exitingApply || exitingUser) {
         throw error("Email address already exists", 400);
     }
-
-
 
 
     const result = await TeacheModelApply.create({
@@ -26,7 +26,9 @@ exports.applyTeacherService = async ({
         lastName,
         email,
         mobile,
-        role
+        role,
+        about,
+        qualification
     })
     if (result) {
         const send = await sendOTP(
