@@ -1,10 +1,12 @@
 const FormHelper = require("../../helpers/FormHelper");
 const CourseModule = require("../../models/CourseModule");
+const CourseModel = require("../../models/Course");
 const dropDownService = require("../../services/common/dropDownService");
 const findAllService = require("../../services/common/findAllService");
 const listService = require("../../services/common/listService");
 const courseModuleService = require("../../services/course/courseModuleService");
 const mongoose = require("mongoose");
+const checkAssociateService = require("../../services/common/checkAssociateService");
 
 const createModule = async (req, res, next) => {
   try {
@@ -103,10 +105,52 @@ const deleteModule = async (req, res, next) => {
   }
 };
 
+const dropDownModuleByCourseAndTeacher = async (req, res, next)=>{
+  try {
+    const projection = {
+      label: "$title",
+      value: "$_id",
+      title: 1,
+    };
+    const {courseId} = req.params || {};
+    const teacherId = req.auth?._id;
+
+    if (!FormHelper.isIdValid(courseId)){
+      return res.status(400).json({
+        error: 'please provide a valid course id'
+      })
+    }
+    if (!FormHelper.isIdValid(teacherId)){
+      return res.status(400).json({
+        error: 'please provide a valid teacher id'
+      })
+    }
+
+    const associateQuery = {_id: new mongoose.Types.ObjectId(courseId), teacherId: new mongoose.Types.ObjectId(teacherId)}
+
+    const isCourse = await checkAssociateService(associateQuery, CourseModel);
+    if (!isCourse){
+      return res.status(200).json({
+        error: 'course not found'
+      })
+    }
+
+
+    const query = {
+      courseId: new mongoose.Types.ObjectId(courseId),
+    }
+    const modules = await dropDownService(CourseModule, projection, query);
+    res.status(200).json(modules);
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
   createModule,
   getModules,
   getModulesbyID,
   dropDownModules,
   updateModule,
+  dropDownModuleByCourseAndTeacher
 };

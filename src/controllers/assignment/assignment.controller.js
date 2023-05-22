@@ -1,5 +1,6 @@
 const FormHelper = require('../../helpers/FormHelper');
 const assignmentServices = require('../../services/assignment/assignment.services');
+const {ObjectId} = require("mongoose").Types;
 const postAssignment = async (req, res, next)=>{
     try {
         const {
@@ -50,7 +51,8 @@ const postAssignment = async (req, res, next)=>{
 
 const getAllAssignment = async (req, res, next)=>{
     try {
-        const assignments = await assignmentServices.getAllAssignmentService();
+        const teacherId = new ObjectId(req.auth?._id);
+        const assignments = await assignmentServices.getAllAssignmentService({teacherId});
         res.status(200).json(assignments)
     }catch (e) {
         next(e)
