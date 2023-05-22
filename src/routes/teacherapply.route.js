@@ -9,6 +9,7 @@ router.post("/teachersapply", teacherApplyController.applyTeacher);
 router.get("/teachersapply/:pageNo/:perPage/:keyword",
     authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_view_teacher),
     teacherApplyController.getAllAppliedTeachers);
+router.patch("/teachersapply/:teacherId", teacherApplyController.applyTeacherStatusUpdate);
 
 
 
