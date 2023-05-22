@@ -14,9 +14,9 @@ router.get(
 );
 // student my course
 router.get(
-    "/courses/my-course/:courseId",
-    authMiddleware.authVerifyMiddleware,
-    courseController.getMySingleCourse
+  "/courses/my-course/:courseId",
+  authMiddleware.authVerifyMiddleware,
+  courseController.getMySingleCourse
 );
 router.get(
   "/courses/my-course/:pageNo/:perPage",
@@ -26,6 +26,10 @@ router.get(
 
 // student my course end
 
+router.get(
+  "/courses/:courseId/purchase/:userId",
+  courseController.checkCourseIsPurchase
+);
 router.get("/courses/published/:id", courseController.getPublishedSingleCourse);
 router.get(
   "/courses/:id",

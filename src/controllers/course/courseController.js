@@ -94,9 +94,9 @@ const getAllCourse = async (req, res, next) => {
 const getMyAllCourse = async (req, res, next) => {
   try {
     const pageNo =
-        req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+      req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
     const perPage =
-        req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+      req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
 
     const query = { studentId: new objectId(req.auth?._id) };
     const course = await courseService.getMyAllCourse(pageNo, perPage, query);
@@ -110,19 +110,22 @@ const getMySingleCourse = async (req, res, next) => {
   try {
     const courseId = req.params.courseId;
 
-    if (!FormHelper.isIdValid(courseId)){
+    if (!FormHelper.isIdValid(courseId)) {
       return res.status(400).json({
-        error: 'provide a valid course id'
-      })
+        error: "provide a valid course id",
+      });
     }
     const studentId = req.auth?._id;
     const query = { _id: new objectId(courseId) };
-    const isCourse = await checkAssociateService({'courseId': new objectId(courseId) , studentId: new objectId(studentId) }, PurchaseModule);
+    const isCourse = await checkAssociateService(
+      { courseId: new objectId(courseId), studentId: new objectId(studentId) },
+      PurchaseModule
+    );
 
-    if (!isCourse){
+    if (!isCourse) {
       return res.status(400).json({
-        error: 'course not found'
-      })
+        error: "course not found",
+      });
     }
 
     const course = await courseService.getSingleCourse(query);
@@ -207,6 +210,29 @@ const getSingleCourse = async (req, res, next) => {
     const id = req.params.id;
     const query = { _id: new objectId(id) };
     const course = await courseService.getSingleCourse(query);
+    res.status(200).json(course);
+  } catch (e) {
+    next(e);
+  }
+};
+const checkCourseIsPurchase = async (req, res, next) => {
+  try {
+    const { courseId, userId } = req.params;
+    // const query = {
+    //   courseId: new objectId(id),
+    //   studentId: new objectId(userId),
+    // };
+    if (!FormHelper.isIdValid(courseId)) {
+      return res.status(400).json({
+        error: "Provide a valid Course ID",
+      });
+    }
+    if (!FormHelper.isIdValid(userId)) {
+      return res.status(400).json({
+        error: "Provide a valid User ID",
+      });
+    }
+    const course = await courseService.checkCourseIsPurchase(req.params);
     res.status(200).json(course);
   } catch (e) {
     next(e);
@@ -379,6 +405,7 @@ const dropDownCourses = async (req, res, next) => {
 module.exports = {
   createCourse,
   getAllCourse,
+  checkCourseIsPurchase,
   getSingleCourse,
   teacherUpdateCourse,
   deleteCourse,
@@ -391,5 +418,5 @@ module.exports = {
   getAllCoursePagiController,
   dropDownCourses,
   getMyAllCourse,
-  getMySingleCourse
+  getMySingleCourse,
 };

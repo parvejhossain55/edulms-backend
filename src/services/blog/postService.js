@@ -83,7 +83,7 @@ exports.getPostsforAdmin = async (query) => {
         select: "name",
       })
       .select(
-        "_id title slug content thumbnail isFeatured tags views likes category author createdAt"
+        "_id title slug content thumbnail isFeatured tags views likes status category author createdAt"
       )
       .skip((parseInt(pageNo) - 1) * parseInt(perPage))
       .limit(parseInt(perPage));
@@ -174,29 +174,27 @@ exports.getPostById = async (postId) => {
 
 exports.updatePostById = async (postId, postData, file) => {
   try {
-    const { title, slug, category, content, isFeature } = postData;
-    let post;
+    const { title, slug, category, content, tags, isFeature, status } =
+      postData;
 
-    const checkPost = await findOneByQuery({ slug }, Post);
-    if (checkPost) throw error("Title already exists, Must be Unique", 400);
+    let post = await Post.findById(postId);
+
+    if (!post) {
+      throw error("Post not found", 400);
+    }
 
     if (!file) {
-      post = await Post.findById(postId);
-
-      if (!post) {
-        throw error("Post not found", 400);
-      }
-
       post.title = title;
       post.slug = slug;
       post.category = category;
       post.content = content;
-      post.isFeatured = isFeature;
+      post.tags = tags || post.tags;
+      post.isFeatured = isFeature || post.isFeatured;
+      post.status = status || post.status;
 
       return await post.save();
     }
 
-    post = await Post.findById(postId);
     // delete previous uploaded file
     await deleteFile(post.thumbnail.public_id);
 
@@ -204,7 +202,9 @@ exports.updatePostById = async (postId, postData, file) => {
     post.slug = slug;
     post.category = category;
     post.content = content;
-    post.isFeatured = isFeature;
+    post.tags = tags || post.tags;
+    post.isFeatured = isFeature || post.isFeatured;
+    post.status = status || post.status;
     post.thumbnail = {
       public_id: file?.cloudinaryId,
       secure_url: file?.cloudinaryUrl,
