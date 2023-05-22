@@ -2,12 +2,17 @@ const TeacherApplyModel = require('../models/TeacherApply')
 const FormHelper = require("../helpers/FormHelper");
 const {applyTeacherService} = require("../services/teacherAuthService");
 const {getAllApplyTeacherService} = require("../services/teacherApplyService");
+const updateService = require('../services/common/updateService')
+const findOneByQuery = require('../services/common/findOneByQuery')
+const mongoose = require("mongoose");
+const {createTeacherService} = require("../services/teacherService");
+const UserModel = require("../models/User");
+
 
 exports.applyTeacher = async (req, res, next) => {
     try {
 
-        const {email, firstName, lastName, mobile} = req.body;
-
+        const {email, firstName, lastName, mobile, about, qualification} = req.body || {};
 
 
         if (FormHelper.isEmpty(email)) {
@@ -36,11 +41,61 @@ exports.applyTeacher = async (req, res, next) => {
             });
         }
 
-        const result = await applyTeacherService({email, firstName, lastName, mobile});
+        const result = await applyTeacherService({email, firstName, lastName, mobile, about, qualification});
 
         return res.status(201).json(result)
 
     } catch (error) {
+        next(error);
+    }
+}
+exports.applyTeacherStatusUpdate = async (req, res, next) => {
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        const createdBy = req?.auth?._id;
+        const {status} = req.body || {};
+        const {teacherId} = req.params || {};
+        const options = {session}
+        if (FormHelper.isEmpty(status)) {
+            return res.status(400).json({
+                error: "Status is required",
+            });
+        }
+
+        const query = {
+            _id: new mongoose.Types.ObjectId(teacherId)
+        }
+
+        const result = await updateService(query, {status}, TeacherApplyModel, options);
+
+        const getTeacherData = await findOneByQuery(query, TeacherApplyModel);
+        const checkExist = await findOneByQuery({email: getTeacherData?.email}, UserModel);
+
+        if (!checkExist) {
+            const filename = {
+                public_id: 'default',
+                secure_url: 'https://i.ibb.co/pLPLX44/avataaars.png'
+            };
+
+            const createNewTeacher = await createTeacherService(getTeacherData, filename, options, createdBy);
+
+            await session.commitTransaction();
+            await session.endSession();
+            return res.status(201).json(createNewTeacher)
+        }
+
+        await session.commitTransaction();
+        await session.endSession();
+        return res.status(400).json({
+            error: "Email already exists",
+        });
+
+    } catch (error) {
+        console.log(error)
+        await session.abortTransaction();
+        await session.endSession();
         next(error);
     }
 }

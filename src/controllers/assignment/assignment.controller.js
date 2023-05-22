@@ -50,7 +50,8 @@ const postAssignment = async (req, res, next)=>{
 
 const getAllAssignment = async (req, res, next)=>{
     try {
-
+        const assignments = await assignmentServices.getAllAssignmentService();
+        res.status(200).json(assignments)
     }catch (e) {
         next(e)
     }
