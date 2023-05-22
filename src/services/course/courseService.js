@@ -425,18 +425,18 @@ const getMyAllCourse = async (pageNo, perPage, query) => {
   }
 };
 
-const dropDownCourseByTeacherService = (
-    {teacherId}
-)=>{
+const dropDownCourseByTeacherService = ({ teacherId }) => {
   return CourseModel.aggregate([
-    {$match: {teacherId: new ObjectId(teacherId)}},
-    {$project: {
+    { $match: { teacherId: new ObjectId(teacherId) } },
+    {
+      $project: {
         label: "$name",
         value: "$_id",
         name: 1,
-      }}
-  ])
-}
+      },
+    },
+  ]);
+};
 
 module.exports = {
   createCourse,
@@ -448,5 +448,5 @@ module.exports = {
   getAllCourseByTeacher,
   getAllCoursePagination,
   getMyAllCourse,
-  dropDownCourseByTeacherService
+  dropDownCourseByTeacherService,
 };
