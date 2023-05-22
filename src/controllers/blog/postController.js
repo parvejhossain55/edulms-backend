@@ -5,7 +5,7 @@ const slugify = require("slugify");
 
 exports.createPost = async (req, res, next) => {
   try {
-    const { title, content, status, category } = req.body;
+    const { title, content, status, category, tags } = req.body;
     const filename = {
       public_id: req?.file?.cloudinaryId,
       secure_url: req?.file?.cloudinaryUrl,
@@ -16,6 +16,9 @@ exports.createPost = async (req, res, next) => {
     }
     if (FormHelper.isEmpty(content)) {
       return res.status(400).json({ error: "Content is required" });
+    }
+    if (FormHelper.isEmpty(tags)) {
+      return res.status(400).json({ error: "Tags is required" });
     }
     if (!FormHelper.isIdValid(category)) {
       return res.status(400).json({
@@ -31,6 +34,7 @@ exports.createPost = async (req, res, next) => {
       category,
       thumbnail: filename,
       status,
+      tags,
     });
     res.status(201).json(post);
   } catch (err) {
@@ -82,7 +86,7 @@ exports.getPostById = async (req, res, next) => {
 // Update a post by id
 exports.updatePostById = async (req, res, next) => {
   try {
-    const { title, content, category, isFeature } = req.body;
+    const { title, content, category, tags } = req.body;
 
     if (FormHelper.isEmpty(title)) {
       return res.status(400).json({ error: "Title is required" });
@@ -90,8 +94,8 @@ exports.updatePostById = async (req, res, next) => {
     if (FormHelper.isEmpty(content)) {
       return res.status(400).json({ error: "Content is required" });
     }
-    if (FormHelper.isEmpty(isFeature)) {
-      return res.status(400).json({ error: "Feature is required" });
+    if (FormHelper.isEmpty(tags)) {
+      return res.status(400).json({ error: "Tags is required" });
     }
     if (!FormHelper.isIdValid(category)) {
       return res.status(400).json({
@@ -104,9 +108,7 @@ exports.updatePostById = async (req, res, next) => {
       req.body,
       req.file
     );
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
+
     res.status(200).json(post);
   } catch (err) {
     next(err);
