@@ -31,7 +31,36 @@ const createAssignmentService = async (
     return assignment.save()
 }
 
+const getAllAssignmentService = ()=>{
+    return AssignmentModel.aggregate([
+        {$match: {}},
+        {$lookup: {from: 'courses', localField: 'courseId', foreignField: '_id', as: 'course'}},
+        {$lookup: {from: 'coursemodules', localField: 'courseModuleId', foreignField: '_id', as: 'courseModule'}},
+        {$project: {
+                assignmentName:1,
+                assignmentDescription:1,
+                status:1,
+                createdAt: {
+                    $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: "$createdAt"
+                    }
+
+                },
+                updatedAt: {
+                    $dateToString: {
+                        format: "%Y-%m-%d",
+                        date: "$updatedAt"
+                    }
+                },
+                courseName: {$first: '$course.name'},
+                courseModule: {$first: '$courseModule.title'},
+            }}
+    ])
+}
+
 
 module.exports = {
-    createAssignmentService
+    createAssignmentService,
+    getAllAssignmentService
 }

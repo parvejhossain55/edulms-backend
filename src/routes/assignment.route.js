@@ -10,6 +10,14 @@ router.post('/assignments',
     assignmentUpload.single("file"),
     uploadToCloudinary,
     assignmentController.postAssignment
-    )
+    );
+
+router.get('/assignments',
+    authMiddleware.authVerifyMiddleware,
+    authMiddleware.checkPermissions(permissions.assignment.can_view_assignment),
+    assignmentController.getAllAssignment
+)
+
+
 
 module.exports = router;
