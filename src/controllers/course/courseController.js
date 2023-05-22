@@ -12,6 +12,7 @@ const objectId = mongoose.Types.ObjectId;
 const findAllOneJoinService = require("../../services/common/findAllOneJoinService");
 const PurchaseModule = require("../../models/Purchase");
 const checkAssociateService = require("../../services/common/checkAssociateService");
+
 const createCourse = async (req, res, next) => {
   try {
     const {
@@ -402,6 +403,24 @@ const dropDownCourses = async (req, res, next) => {
   }
 };
 
+const dropDownCoursesByTeacher = async (req, res, next) => {
+  try {
+    const teacherId = req.auth?._id;
+    if (!FormHelper.isIdValid(teacherId)) {
+      return res.status(400).json({
+        error: "please provide a valid course id",
+      });
+    }
+
+    const courses = await courseService.dropDownCourseByTeacherService({
+      teacherId,
+    });
+    res.status(200).json(courses);
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports = {
   createCourse,
   getAllCourse,
@@ -419,4 +438,5 @@ module.exports = {
   dropDownCourses,
   getMyAllCourse,
   getMySingleCourse,
+  dropDownCoursesByTeacher,
 };

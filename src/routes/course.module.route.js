@@ -17,4 +17,9 @@ router.patch('/courses/modules/:id',
     courseModuleController.updateModule
 );
 
+router.get('/dropdown-modules/teacher/:courseId',
+    authMiddleware.authVerifyMiddleware,
+    courseModuleController.dropDownModuleByCourseAndTeacher
+    )
+
 module.exports = router;

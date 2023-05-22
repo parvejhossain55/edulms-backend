@@ -72,5 +72,10 @@ router.get(
   authMiddleware.checkPermissions(permissions.course.can_view_course),
   courseController.dropDownCourses
 );
+router.get(
+  "/dropdown-courses/teacher",
+  authMiddleware.authVerifyMiddleware,
+  courseController.dropDownCoursesByTeacher
+);
 
 module.exports = router;
