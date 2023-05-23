@@ -36,18 +36,6 @@ const assignmentSchema = new Schema({
         type: ObjectId,
         ref: 'CourseModule'
     },
-
-    studentComment: {
-        type: String
-    },
-    assignmentUrl: {
-        type: String,
-        validate: [validator.isURL, "Provide a valid URL"],
-    },
-    limit: {
-        type: Number,
-        default: 3
-    },
     file: {
         public_id: {type: String},
         secure_url: {type: String},
