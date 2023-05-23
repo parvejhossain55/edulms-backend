@@ -64,11 +64,19 @@ exports.applyTeacherStatusUpdate = async (req, res, next) => {
             });
         }
 
+
         const query = {
             _id: new mongoose.Types.ObjectId(teacherId)
         }
 
         const result = await updateService(query, {status}, TeacherApplyModel, options);
+
+            if(status !== 'Active' && result){
+                await session.commitTransaction();
+                await session.endSession();
+                return res.status(201).json(result)
+            }
+
 
         const getTeacherData = await findOneByQuery(query, TeacherApplyModel);
         const checkExist = await findOneByQuery({email: getTeacherData?.email}, UserModel);
