@@ -24,6 +24,11 @@ router.patch('/assignments/:id',
     uploadToCloudinary,
     assignmentController.patchAssignment
     );
+router.patch('/assignments/review/:studentId/:assignmentId/:submittedId',
+    authMiddleware.authVerifyMiddleware,
+    authMiddleware.checkPermissions(permissions.assignment.can_edit_assignment),
+    assignmentController.teacherReview
+    );
 
 
 router.get('/assignments/:id',

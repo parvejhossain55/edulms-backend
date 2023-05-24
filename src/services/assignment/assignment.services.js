@@ -114,10 +114,21 @@ const updateAssignmentService = async (
         courseId,
         courseModuleId,
         file: filename,
-        teacherId
+        teacherId,
     });
 
 
+}
+
+const teacherReviewService = async (
+    {studentId, assignmentId, submittedId, teacherReview, status, mark, teacherId}
+)=>{
+    const isAssignment = await AssignmentModel.findOne({_id: new objectId(assignmentId), teacherId: new objectId(teacherId)});
+    if (!isAssignment) throw error('assignment not found', 400);
+
+    return AssignmentSubmitModel.updateOne({_id: new objectId(submittedId), studentId: new objectId(studentId)}, {
+         teacherReview, status, mark
+    })
 }
 
 const getSubmittedService = async (
@@ -211,16 +222,30 @@ const getSubmittedService = async (
                             assignmentUrl: 1,
                             limit: 1,
                             file: 1,
+                            createdAt: {
+                                $dateToString: {
+                                    format: "%Y-%m-%d",
+                                    date: "$createdAt"
+                                }
+
+                            },
+                            updatedAt: {
+                                $dateToString: {
+                                    format: "%Y-%m-%d",
+                                    date: "$updatedAt"
+                                }
+                            },
+                            teacherReview: 1,
+                            status: 1,
+                            mark: 1,
                             assignment: {
                                 assignmentName: '$assignment.assignmentName',
                                 assignmentDescription: '$assignment.assignmentDescription',
-                                status: '$assignment.status',
-                                teacherReview: '$assignment.teacherReview',
-                                mark: '$assignment.mark',
                                 courseId: '$assignment.courseId',
                                 teacherId: '$assignment.teacherId',
                                 courseModuleId: '$assignment.courseModuleId',
-                                file: '$assignment.file'
+                                file: '$assignment.file',
+                                _id: '$assignment._id'
                             },
                             student: {
                                 firstName: '$student.firstName',
@@ -251,5 +276,6 @@ module.exports = {
     assignmentSubmitService,
     getSingleAssignmentService,
     updateAssignmentService,
-    getSubmittedService
+    getSubmittedService,
+    teacherReviewService
 }
