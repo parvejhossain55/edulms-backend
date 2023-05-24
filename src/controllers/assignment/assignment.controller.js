@@ -121,8 +121,38 @@ const patchAssignment = async (req, res, next)=>{
         next(e)
     }
 }
+
 const deleteAssignment = async (req, res, next)=>{
     try {
+
+    }catch (e) {
+        next(e)
+    }
+}
+
+const getSubmitted = async (req, res, next)=>{
+    try {
+        const {courseId, moduleId} = req.params;
+        const teacherId = req.auth?._id;
+
+        const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+        const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+        const searchKeyword = req.params?.keyword === ':keyword' ? '0' : req.params?.keyword;
+
+        if (!FormHelper.isIdValid(courseId)){
+            return res.status(400).json({
+                error: 'please provide a valid course'
+            })
+        }
+        if (!FormHelper.isIdValid(moduleId)){
+            return res.status(400).json({
+                error: 'please provide a valid module'
+            })
+        }
+
+        const submittedAssignment = await assignmentServices.getSubmittedService({courseId, moduleId, teacherId, pageNo, perPage, keyword: searchKeyword})
+
+        res.status(200).json(submittedAssignment)
 
     }catch (e) {
         next(e)
@@ -180,5 +210,6 @@ module.exports = {
     getSingleAssignment,
     patchAssignment,
     deleteAssignment,
-    assignmentSubmit
+    assignmentSubmit,
+    getSubmitted
 }

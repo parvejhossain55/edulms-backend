@@ -120,11 +120,136 @@ const updateAssignmentService = async (
 
 }
 
+const getSubmittedService = async (
+    {courseId, moduleId, teacherId, pageNo, perPage, keyword}
+)=>{
+
+
+
+    const isCourse = await checkAssociateService({teacherId: new objectId(teacherId), _id: new objectId(courseId)}, CourseModel);
+    if (!isCourse){
+        throw error("course not found. please create a course first", 400)
+    }
+    const skipPage = (pageNo - 1) * perPage;
+    const searchRegex = {$regex: keyword, $options: 'i'};
+    /*const commonQuery = {teacherId, courseId: new objectId(courseId), courseModuleId: new objectId(moduleId)}*/
+    const commonQuery = {
+        'assignment.teacherId': teacherId,
+        'assignment.courseId': new objectId(courseId),
+        'assignment.courseModuleId': new objectId(moduleId)
+    }
+
+    const query = keyword === '0' ? commonQuery : {$or: [
+            {'student.firstName': searchRegex},
+            {'student.lastName': searchRegex},
+            {'student.fullName': searchRegex},
+            {'student.email': searchRegex},
+            {'student.mobile': searchRegex},
+            {'assignment.assignmentName': searchRegex},
+        ],
+        'assignment.teacherId': teacherId,
+        'assignment.courseId': new objectId(courseId),
+        'assignment.courseModuleId': new objectId(moduleId)
+    };
+
+    return AssignmentSubmitModel.aggregate([
+        {$facet: {
+                total:[
+                    {
+                        $lookup: {
+                            from: 'assignments',
+                            localField: 'assignmentId',
+                            foreignField: '_id',
+                            as: 'assignment'
+                        }
+                    },
+                    {
+                        $unwind: '$assignment'
+                    },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'studentId',
+                            foreignField: '_id',
+                            as: 'student'
+                        }
+                    },
+                    {
+                        $unwind: '$student'
+                    },
+                    {$match: query},
+                    {$count: "count"}
+                ],
+                rows:[
+                    {
+                        $lookup: {
+                            from: 'assignments',
+                            localField: 'assignmentId',
+                            foreignField: '_id',
+                            as: 'assignment'
+                        }
+                    },
+                    {
+                        $unwind: '$assignment'
+                    },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'studentId',
+                            foreignField: '_id',
+                            as: 'student'
+                        }
+                    },
+                    {
+                        $unwind: '$student'
+                    },
+                    {
+                        $project: {
+                            assignmentId: 1,
+                            studentId: 1,
+                            studentComment: 1,
+                            assignmentUrl: 1,
+                            limit: 1,
+                            file: 1,
+                            assignment: {
+                                assignmentName: '$assignment.assignmentName',
+                                assignmentDescription: '$assignment.assignmentDescription',
+                                status: '$assignment.status',
+                                teacherReview: '$assignment.teacherReview',
+                                mark: '$assignment.mark',
+                                courseId: '$assignment.courseId',
+                                teacherId: '$assignment.teacherId',
+                                courseModuleId: '$assignment.courseModuleId',
+                                file: '$assignment.file'
+                            },
+                            student: {
+                                firstName: '$student.firstName',
+                                lastName: '$student.lastName',
+                                fullName: { $concat: ['$student.firstName', ' ', '$student.lastName'] },
+                                email: '$student.email',
+                                mobile: '$student.mobile',
+                            },
+                        }
+                    },
+                    {$match: query},
+                    {$skip: skipPage},
+                    {$limit: perPage},
+                    {$sort: {createdAt: -1}}
+                ],
+
+            }},
+
+    ])
+
+
+
+}
 
 module.exports = {
     createAssignmentService,
     getAllAssignmentService,
     assignmentSubmitService,
     getSingleAssignmentService,
-    updateAssignmentService
+    updateAssignmentService,
+    getSubmittedService
 }
