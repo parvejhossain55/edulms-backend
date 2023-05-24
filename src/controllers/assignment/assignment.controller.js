@@ -1,6 +1,7 @@
 const FormHelper = require('../../helpers/FormHelper');
 const assignmentServices = require('../../services/assignment/assignment.services');
 const AssignmentModel = require('../../models/Assignment');
+const AssignmentSubmitModel = require('../../models/AssignmentSubmit');
 const findOneByQuery = require("../../services/common/findOneByQuery");
 const {ObjectId} = require("mongoose").Types;
 
@@ -80,7 +81,7 @@ const patchAssignment = async (req, res, next)=>{
             assignmentName,
             assignmentDescription,
             courseId,
-            courseModuleId,
+            courseModuleId
         } = req.body;
 
         const filename = {
@@ -111,7 +112,7 @@ const patchAssignment = async (req, res, next)=>{
                 courseId: course,
                 courseModuleId: moduleId,
                 filename: file,
-                teacherId
+                teacherId,
             }
         )
 
@@ -154,6 +155,27 @@ const getSubmitted = async (req, res, next)=>{
 
         res.status(200).json(submittedAssignment)
 
+    }catch (e) {
+        next(e)
+    }
+}
+
+const teacherReview = async (req, res, next)=>{
+    try {
+        const {studentId, assignmentId, submittedId} = req.params;
+        const teacherId = req.auth?._id;
+
+        const submitted = AssignmentSubmitModel.findById(submittedId);
+
+        const teacherReview = !req.body?.teacherReview ? submitted?.teacherReview : req.body?.teacherReview;
+        const status = !req.body?.status ? submitted?.status : req.body?.status;
+        const mark = !req.body?.mark ? submitted?.mark : req.body?.mark;
+
+
+        const updateResult = await assignmentServices.teacherReviewService({
+            studentId, assignmentId, submittedId, teacherReview, status: status?.toUpperCase(), mark, teacherId,
+        });
+        res.status(200).json(updateResult)
     }catch (e) {
         next(e)
     }
@@ -204,6 +226,7 @@ const assignmentSubmit = async (req, res, next)=>{
 
 
 
+
 module.exports = {
     postAssignment,
     getAllAssignment,
@@ -211,5 +234,6 @@ module.exports = {
     patchAssignment,
     deleteAssignment,
     assignmentSubmit,
-    getSubmitted
+    getSubmitted,
+    teacherReview
 }
