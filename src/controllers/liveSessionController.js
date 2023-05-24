@@ -30,6 +30,11 @@ exports.createSession = async (req, res, next) => {
       return res.status(400).json({ error: "Provide valid module id" });
     }
 
+    req.body.thumbnail = {
+      public_id: req.file.cloudinaryId,
+      secure_url: req.file.cloudinaryUrl,
+    };
+
     const session = await sessionService.createSession(req.body);
 
     res.status(201).json(session);

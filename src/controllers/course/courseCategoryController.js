@@ -22,8 +22,10 @@ const createCategory = async (req, res, next) => {
 
 const getCategories = async (req, res, next) => {
   try {
-    // const categories = await listService(req, DataModel, SearchArray);
-    const categories = await courseCategoryService.getAllCategories(req.params);
+    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchArray = [{ name: SearchRgx }];
+    const categories = await listService(req, DataModel, SearchArray);
+    // const categories = await courseCategoryService.getAllCategories(req.params);
     res.status(200).json(categories);
   } catch (e) {
     next(e);

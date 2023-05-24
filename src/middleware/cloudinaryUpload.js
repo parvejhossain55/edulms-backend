@@ -63,6 +63,10 @@ const uploadToCloudinary = (req, res, next) => {
             .status(400)
             .send({ error: "Error uploading file to Cloudinary" });
         }
+
+        req.file.cloudinaryId = result.public_id;
+        req.file.cloudinaryUrl = result.secure_url;
+        return next();
       }
     );
   } catch (err) {
