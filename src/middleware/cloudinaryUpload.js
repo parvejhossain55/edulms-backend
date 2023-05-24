@@ -15,7 +15,15 @@ const storage = multer.diskStorage({});
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
+    const allowedMimeTypes = [
+      "image/jpg",
+      "image/jpeg",
+      "image/png",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/zip",
+    ];
+    if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error("Only images are allowed"));
@@ -37,7 +45,6 @@ const assignmentUpload = multer({
   limits: 2 * 1024 * 1024,
 });
 
-
 // Middleware function to upload file to Cloudinary
 const uploadToCloudinary = (req, res, next) => {
   try {
@@ -45,20 +52,22 @@ const uploadToCloudinary = (req, res, next) => {
       return next();
     }
 
+    cloudinary.uploader.upload(
+      req.file.path,
+      { resource_type: "raw", folder: "zip_files" },
+      (error, result) => {
+        console.log(error);
+        if (error) {
+          return res
+            .status(500)
+            .send({ error: "Error uploading file to Cloudinary" });
+        }
 
-    cloudinary.uploader.upload(req.file.path, {resource_type: 'raw',
-      folder: 'zip_files'},(error, result) => {
-      console.log(error)
-      if (error) {
-        return res
-          .status(500)
-          .send({ error: "Error uploading file to Cloudinary" });
+        req.file.cloudinaryId = result.public_id;
+        req.file.cloudinaryUrl = result.secure_url;
+        next();
       }
-
-      req.file.cloudinaryId = result.public_id;
-      req.file.cloudinaryUrl = result.secure_url;
-      next();
-    });
+    );
   } catch (err) {
     next(err);
   }
