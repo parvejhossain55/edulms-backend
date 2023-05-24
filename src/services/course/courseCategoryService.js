@@ -21,15 +21,8 @@ const createCategory = async ({ name }) => {
 //     return CourseCategoryModel.find({});
 // }
 
-const getAllCategories = async ({
-  pageNo = 1,
-  perPage = 10,
-  //   searchKeyword,
-}) => {
+const getAllCategories = async ({ pageNo = 1, perPage = 10 }) => {
   const skip = (pageNo - 1) * perPage;
-
-  //   let SearchRgx = { $regex: searchKeyword, $options: "i" };
-  //   let SearchArray = [{ name: SearchRgx }];
 
   try {
     const categories = await CourseCategoryModel.aggregate([
