@@ -35,6 +35,9 @@ class FormHelper {
   isIdValid = (id) => {
     return ObjectId.isValid(id);
   };
+  isUrl = (url) => {
+    return validator.isURL(url);
+  };
 }
 
 module.exports = new FormHelper();

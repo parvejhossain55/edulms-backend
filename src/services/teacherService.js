@@ -195,3 +195,66 @@ exports.getAllTeacherService = async (
 
     return {total: teachers[0]?.total[0]?.count, rows: teachers[0]?.rows};
 }
+
+
+
+exports.getTeacherDetailsService = async (teacherId)=>{
+
+    // const role = await RoleModel.findOne({ name:  'teacher'});
+    // const skipPage = (pageNo - 1) * perPage;
+    // const searchRegex = {$regex: keyword, $options: 'ix'};
+
+    // const query = keyword === '0' ? {roleId: role?._id} : {$or: [
+    //         {firstName: searchRegex},
+    //         {lastName: searchRegex},
+    //         {email: searchRegex},
+    //         {mobile: searchRegex},
+    //         {qualification: searchRegex},
+    //     ],
+    //     roleId: new objectId(role?._id)
+    // };
+
+    const query = {
+        _id: new mongoose.Types.ObjectId(teacherId)
+    }
+
+    const teachers = await UserModel.aggregate([
+        {$match: query},
+        {
+            $facet:{
+                rows:[
+                    {
+                        $lookup: {
+                            from: "teacherprofiles",
+                            localField: "_id",
+                            foreignField: "userId",
+                            as: "profile"
+                        }
+                    },
+                    {
+                      $project: {
+                          email: 1,
+                          mobile: 1,
+                          firstName: 1,
+                          lastName: 1,
+                          createdAt: 1,
+                          updatedAt: 1,
+                          qualification: {$first: '$profile.qualification'},
+                          about: {$first: '$profile.about'},
+                          picture: 1
+                      }
+                    },
+                    // {$skip: skipPage},
+                    // {$limit: perPage},
+                    {$sort: {createdAt: -1}}
+                ]
+            }
+        },
+
+
+    ])
+
+    return teachers[0]?.rows[0];
+}
+
+

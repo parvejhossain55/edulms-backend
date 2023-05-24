@@ -271,6 +271,15 @@ const getSingleCourse = async (query) => {
       },
     },
     {
+      $lookup: {
+        from: 'assignments',
+        foreignField: 'courseModuleId',
+        localField: 'modules._id',
+        as: 'assignments'
+      }
+    },
+
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -295,6 +304,13 @@ const getSingleCourse = async (query) => {
               _id: "$$module._id",
               name: "$$module.title",
               moduleNo: "$$module.moduleNo",
+              assignment: {$first: {
+                  $filter: {
+                    input: "$assignments",
+                    as: "assignment",
+                    cond: { $eq: ["$$assignment.courseModuleId", "$$module._id"] },
+                  },
+                }},
               contents: {
                 $filter: {
                   input: "$contents",

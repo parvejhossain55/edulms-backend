@@ -13,6 +13,7 @@ const RoleModel = require("./src/models/Role");
 const projectRoles = require("./src/dbSeed/projectRoles");
 const PermissionModel = require("./src/models/Permission");
 const { permissionsDocuments } = require("./src/dbSeed/projectPermissions");
+const multer = require("multer");
 
 app.use(helmet());
 app.use(express.json());
@@ -39,14 +40,43 @@ readdirSync("./src/routes").map((r) =>
   app.use("/api/v1", require("./src/routes/" + r))
 );
 
-app.use((err, req, res, next) => {
+/*app.use((err, req, res, next) => {
   console.log(err);
   const message = err.message ? err.message : "Server Error Occurred";
   const status = err.status ? err.status : 500;
   res.status(status).json({
     error: status === 500 ? "Server Error Occurred" : message,
   });
+});*/
+
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        // Multer error occurred during file upload
+        console.log('multer err', err)
+        const message = "Error uploading file";
+        const status = 400; // or any appropriate status code
+        res.status(status).json({ error: message });
+    } else if (err && err.message === "Only images are allowed") {
+        // Custom error from fileFilter callback
+        const message = err.message;
+        const status = 400; // or any appropriate status code
+        res.status(status).json({ error: message });
+    } else if (err && err.message === "Only zip files are allowed") {
+        // Custom error from fileFilter callback
+        const message = err.message;
+        const status = 400; // or any appropriate status code
+        res.status(status).json({ error: message });
+    } else {
+        console.log(err);
+        const message = err.message ? err.message : "Server Error Occurred";
+        const status = err.status ? err.status : 500;
+        res.status(status).json({
+            error: status === 500 ? "Server Error Occurred" : message,
+        });
+    }
 });
+
+
 
 const port = process.env.PORT || 8000;
 // DB Connection

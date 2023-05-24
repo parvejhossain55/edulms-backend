@@ -20,13 +20,12 @@ const upload = multer({
       "image/jpeg",
       "image/png",
       "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/zip",
     ];
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only images are allowed"));
+      cb(new Error(`${file.mimetype} are not allow`));
     }
   },
   limits: 2 * 1024 * 1024,
@@ -40,6 +39,9 @@ const assignmentUpload = multer({
       cb(null, true);
     } else {
       cb(new Error("Only zip files are allowed"));
+      /*const error = new Error("Only zip files are allowed");
+      error.statusCode = 400;
+      cb(error);*/
     }
   },
   limits: 2 * 1024 * 1024,
@@ -56,16 +58,11 @@ const uploadToCloudinary = (req, res, next) => {
       req.file.path,
       { resource_type: "raw", folder: "zip_files" },
       (error, result) => {
-        console.log(error);
         if (error) {
           return res
-            .status(500)
+            .status(400)
             .send({ error: "Error uploading file to Cloudinary" });
         }
-
-        req.file.cloudinaryId = result.public_id;
-        req.file.cloudinaryUrl = result.secure_url;
-        next();
       }
     );
   } catch (err) {
