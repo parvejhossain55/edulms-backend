@@ -8,12 +8,18 @@ const assignmentSubmitSchema = new Schema({
         ref: 'Assignment',
         required: true
     },
+    studentId: {
+        type: ObjectId,
+        ref: 'User',
+        required: true
+    },
     studentComment: {
-        type: String
+        type: String,
+        maxLength: [5000, "Comment is too large"],
     },
     assignmentUrl: {
         type: String,
-        validate: [validator.isURL, "Provide a valid URL"],
+        maxLength: [2000, "url is too large"],
     },
     limit: {
         type: Number,
