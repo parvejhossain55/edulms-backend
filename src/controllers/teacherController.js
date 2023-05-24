@@ -93,6 +93,16 @@ exports.getAllTeachers = async (req, res, next) => {
         next(e)
     }
 }
+exports.getTeacherById = async (req, res, next) => {
+    try {
+        const {teacherId} = req.params || {};
+
+        const result = await teacherService.getTeacherDetailsService(teacherId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e)
+    }
+}
 
 
 exports.teacherDropDown = async (req, res, next) => {

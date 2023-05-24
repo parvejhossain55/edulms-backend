@@ -14,7 +14,9 @@ router.post("/teachers",
 // router.get("/teachers/:pageNo/:perPage/:keyword",
 //     authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_view_teacher),
 //     teacherController.getAllTeachers);
+router.get("/teachers/:teacherId", teacherController.getTeacherById);
 router.get("/teachers/:pageNo/:perPage/:keyword", teacherController.getAllTeachers);
+
 router.get("/teachers",
     authMiddleware.authVerifyMiddleware, authMiddleware.checkPermissions(permissions.teacher.can_view_teacher),
     teacherController.teacherDropDown);
