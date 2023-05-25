@@ -98,6 +98,7 @@ const getAllCourse = async (Request, SearchArray) => {
       },
       { $skip: (pageNo - 1) * perPage },
       { $limit: perPage },
+      {$sort: {createdAt: -1}}
     ]);
 
     const currentPage = parseInt(pageNo);
@@ -174,6 +175,7 @@ const getAllCoursePagination = async (Request, SearchArray) => {
       },
       { $skip: (pageNo - 1) * perPage },
       { $limit: perPage },
+      {$sort: {createdAt: -1}}
     ]);
 
     const currentPage = parseInt(pageNo);

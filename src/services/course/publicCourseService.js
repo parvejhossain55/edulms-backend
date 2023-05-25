@@ -52,7 +52,7 @@ const getAllPublishedCourse = async (filter, query) => {
         "category.name": 1,
       })
       .skip((parseInt(pageNo) - 1) * parseInt(perPage))
-      .limit(parseInt(perPage));
+      .limit(parseInt(perPage)).sort('-createdAt');
 
     const count = await CourseModel.countDocuments(matchQuery);
     const totalPages = Math.ceil(count / perPage);
@@ -106,7 +106,7 @@ const getPublishedCourseByCategory = async (req) => {
         "category.name": 1,
       })
       .skip((parseInt(pageNo) - 1) * parseInt(perPage))
-      .limit(parseInt(perPage));
+      .limit(parseInt(perPage)).sort('-createdAt');
 
     const count = await CourseModel.countDocuments(matchQuery);
     const totalPages = Math.ceil(count / perPage);
