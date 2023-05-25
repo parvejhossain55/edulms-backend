@@ -79,10 +79,13 @@ const assignmentSubmitService = async (
     if (getSubmittedAssignment?.limit === 0){
         throw error('you reached submitted limit', 400)
     }
+    if (getSubmittedAssignment?.mark > 0){
+        throw error("teacher review your assignment. you don't submit", 400)
+    }
 
     return AssignmentSubmitModel.updateOne(
         {studentId: new objectId(studentId), assignmentId: new objectId(assignmentId)},
-        {assignmentId, studentId, studentComment, assignmentUrl, limit: getSubmittedAssignment?.limit <= 3 ? getSubmittedAssignment?.limit - 1 : 3, file},
+        {assignmentId, studentId, status: 'PENDING', studentComment, assignmentUrl, limit: getSubmittedAssignment?.limit <= 2 ? getSubmittedAssignment?.limit - 1 : 2, file},
         {upsert: true, runValidators: true}
     );
 

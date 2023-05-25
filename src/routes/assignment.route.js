@@ -39,11 +39,16 @@ router.get('/assignments/submitted/:courseId/:moduleId/:pageNo/:perPage/:keyword
     authMiddleware.authVerifyMiddleware,
     assignmentController.getSubmitted
 )
+router.get('/submitted/:assignmentId',
+    authMiddleware.authVerifyMiddleware,
+    assignmentController.getSubmittedAssignmentByAssignmentID
+)
 router.get('/assignments',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.assignment.can_view_assignment),
     assignmentController.getAllAssignment
 )
+
 
 
 

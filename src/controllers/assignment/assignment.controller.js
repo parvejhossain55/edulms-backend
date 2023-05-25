@@ -224,6 +224,19 @@ const assignmentSubmit = async (req, res, next)=>{
 }
 
 
+const getSubmittedAssignmentByAssignmentID = async (req, res, next)=>{
+    try {
+        const assignmentId = req.params.assignmentId;
+
+        const submittedAssignment = await findOneByQuery({assignmentId}, AssignmentSubmitModel);
+        res.status(200).json(submittedAssignment)
+
+    }catch (e) {
+        next(e)
+    }
+}
+
+
 
 
 
@@ -235,5 +248,6 @@ module.exports = {
     deleteAssignment,
     assignmentSubmit,
     getSubmitted,
-    teacherReview
+    teacherReview,
+    getSubmittedAssignmentByAssignmentID
 }
