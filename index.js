@@ -8,12 +8,14 @@ const morgan = require("morgan");
 const app = express();
 require("dotenv").config();
 const { readdirSync } = require("fs");
-
 const RoleModel = require("./src/models/Role");
 const projectRoles = require("./src/dbSeed/projectRoles");
 const PermissionModel = require("./src/models/Permission");
 const { permissionsDocuments } = require("./src/dbSeed/projectPermissions");
 const multer = require("multer");
+const rolePermissionService = require("./src/services/rolePermissionService");
+const userService = require('./src/services/userService');
+const {employeeCreateService} = require("./src/services/userManage/manageUserService");
 
 app.use(helmet());
 app.use(express.json());
@@ -80,7 +82,7 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 8000;
 // DB Connection
-mongoose
+/*mongoose
   // .connect(process.env.LOCAL_DB)
   .connect(process.env.DATABASE)
   .then(() => {
@@ -98,6 +100,44 @@ mongoose
       console.log(`Server run success on port ${port}`);
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.log(err));*/
+
+mongoose
+    .connect(process.env.DATABASE)
+    .then(async () => {
+        console.log("DB Connected");
+
+        projectRoles.map(async role => {
+            await RoleModel.updateOne({name: role.name}, {$set: {name: role.name}}, {upsert: true});
+        });
+        permissionsDocuments.map(async permission => {
+            await PermissionModel.updateOne({name: permission.name}, {$set: {name: permission.name}}, {upsert: true});
+        });
+        const superAdmin = {
+            firstName: process.env.SUPER_ADMIN_FIRST_NAME,
+            lastName: process.env.SUPER_ADMIN_LAST_NAME,
+            email: process.env.SUPER_ADMIN_EMAIL,
+            mobile: process.env.SUPER_ADMIN_MOBILE,}
+
+        const isMatch = await userService.findUserByProperty('email', superAdmin.email);
+        if (!isMatch){
+            const role = await rolePermissionService.roleFindByProperty("name", 'superadmin');
+            await employeeCreateService({
+                email: superAdmin.email,
+                firstName: superAdmin.firstName,
+                lastName: superAdmin.lastName,
+                mobile: superAdmin.mobile,
+                roleId: role?._id,
+                createdBy: null
+                }, superAdmin
+            );
+        }
+
+        // Server Listen
+        app.listen(port, () => {
+            console.log(`Server run success on port ${port}`);
+        });
+    })
+    .catch((err) => console.log(err));
 
 module.exports = app;

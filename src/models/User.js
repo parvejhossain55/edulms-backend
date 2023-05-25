@@ -45,6 +45,7 @@ const userSchema = new Schema(
       //     }),
       //   message: "Please provide a strong password",
       // },
+        default: ''
     },
     picture: {
       public_id: { type: String },
@@ -59,6 +60,7 @@ const userSchema = new Schema(
       //   },
       //   message: "Password does not match",
       // },
+        default: ''
     },
 
     roleId: { type: Schema.Types.ObjectId, ref: "Role" },

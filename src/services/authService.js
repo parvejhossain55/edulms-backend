@@ -7,6 +7,9 @@ const authHelper = require("../helpers/authHelper");
 const rolePermissionService = require("./rolePermissionService");
 const jwt = require("jsonwebtoken");
 const findOneByQuery = require("./common/findOneByQuery");
+const sendEmail = require("../helpers/sendEmail");
+const newAccountEmailTemplate = require("../emailTemplate/newAccountEmail");
+const {ObjectId} = require("mongodb");
 
 const registerService = async ({
   email,
@@ -54,6 +57,7 @@ const registerService = async ({
     throw error("Server error occurred", 5000);
   }
 };
+
 
 const loginService = async ({ email, password }) => {
   const user = await userService.findUserByProperty("email", email);
@@ -207,5 +211,5 @@ module.exports = {
   verifyOtpService,
   passwordChangeService,
   resetPasswordService,
-  setPasswordService
+  setPasswordService,
 };
