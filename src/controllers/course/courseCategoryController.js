@@ -44,6 +44,7 @@ const getCategories = async (req, res, next)=>{
 }
 
 
+
 const getAllCategories = async (req, res, next) => {
   try {
     const categories = await courseCategoryService.getAllCategories(req.params);
@@ -51,6 +52,27 @@ const getAllCategories = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+}
+// const getAllCategories = async (req, res, next) => {
+//   try {
+//     const categories = await courseCategoryService.getAllCategories(req.params);
+//     res.status(200).json(categories);
+//   } catch (e) {
+//     next(e);
+//   }
+// };
+
+//     let SearchRgx = {$regex: req.params.searchKeyword, $options: "i"};
+//     let SearchArray = [
+//       {name: SearchRgx},
+//     ];
+//     const categories = await listService(req, DataModel, SearchArray);
+//     res.status(200).json({categories});
+//   }catch (e) {
+//     next(e);
+//   }
+// }
+
 
 
 const getCategorybyID = async (req, res, next) => {
