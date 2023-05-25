@@ -43,6 +43,16 @@ const getCategories = async (req, res, next)=>{
   }
 }
 
+
+const getAllCategories = async (req, res, next) => {
+  try {
+    const categories = await courseCategoryService.getAllCategories(req.params);
+    res.status(200).json(categories);
+  } catch (e) {
+    next(e);
+  }
+
+
 const getCategorybyID = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -101,4 +111,5 @@ module.exports = {
   deleteCategory,
   dropDownCategories,
   getCategorybyID,
+  getAllCategories,
 };

@@ -202,7 +202,7 @@ const employeeCreateService = async (
     );
 
     if (send[0].statusCode === 202) {
-        return await userService.createNewUser({
+        const createUser = await userService.createNewUser({
             email,
             firstName,
             lastName,
@@ -212,6 +212,11 @@ const employeeCreateService = async (
             confirmationToken: token,
             confirmationTokenExpires: expireDate
         });
+
+        if (!createdBy){
+            await userService.userUpdateService({_id: createUser?._id}, {createdBy: createUser?._id})
+        }
+        return createUser
 
     } else {
         throw error("Server error occurred", 5000);

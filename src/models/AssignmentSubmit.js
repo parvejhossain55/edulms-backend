@@ -25,6 +25,18 @@ const assignmentSubmitSchema = new Schema({
         type: Number,
         default: 3
     },
+    status: {
+        type: String,
+        enum: ['PENDING', 'REJECT', 'APPROVED', 'ACTIVE'],
+        default: 'ACTIVE'
+    },
+    teacherReview: {
+        type: String
+    },
+    mark: {
+        type: Number,
+        default: 0
+    },
     file: {
         public_id: {type: String},
         secure_url: {type: String},

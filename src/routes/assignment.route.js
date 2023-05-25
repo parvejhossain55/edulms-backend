@@ -1,28 +1,33 @@
 const authMiddleware = require("../middleware/authMiddleware");
 const router = require('express').Router();
 const {permissions} = require("../dbSeed/projectPermissions");
-const {assignmentUpload, uploadToCloudinary} = require("../middleware/cloudinaryUpload");
+const {assignmentUpload, uploadAssignmentToCloudinary, } = require("../middleware/cloudinaryUpload");
 const assignmentController = require('../controllers/assignment/assignment.controller');
 
 router.put('/assignments/submit',
     authMiddleware.authVerifyMiddleware,
     assignmentUpload.single("file"),
-    uploadToCloudinary,
+    uploadAssignmentToCloudinary,
     assignmentController.assignmentSubmit
 );
 router.post('/assignments',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.assignment.can_create_assignment),
     assignmentUpload.single("file"),
-    uploadToCloudinary,
+    uploadAssignmentToCloudinary,
     assignmentController.postAssignment
     );
 router.patch('/assignments/:id',
     authMiddleware.authVerifyMiddleware,
     authMiddleware.checkPermissions(permissions.assignment.can_edit_assignment),
     assignmentUpload.single("file"),
-    uploadToCloudinary,
+    uploadAssignmentToCloudinary,
     assignmentController.patchAssignment
+    );
+router.patch('/assignments/review/:studentId/:assignmentId/:submittedId',
+    authMiddleware.authVerifyMiddleware,
+    authMiddleware.checkPermissions(permissions.assignment.can_edit_assignment),
+    assignmentController.teacherReview
     );
 
 

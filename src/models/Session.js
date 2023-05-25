@@ -6,10 +6,15 @@ const sessionSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Plesee provide a Session Title"],
+      unique: [true, "Session title must be unique"],
     },
     description: {
       type: String,
       //   required: [true, "Please provide description"],
+    },
+    thumbnail: {
+      public_id: { type: String },
+      secure_url: { type: String },
     },
     startingAt: {
       type: Date,

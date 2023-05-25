@@ -13,17 +13,6 @@ const assignmentSchema = new Schema({
     assignmentDescription: {
         type: String
     },
-    status: {
-      type: String,
-      enum: ['PENDING', 'REJECT', 'APPROVED', 'ACTIVE'],
-        default: 'ACTIVE'
-    },
-    teacherReview: {
-      type: String
-    },
-    mark: {
-      type: Number
-    },
     courseId: {
         type: ObjectId,
         ref: 'Course'
