@@ -358,31 +358,9 @@ const deleteCourse = async () => {};
 
 const getMyAllCourse = async (pageNo, perPage, query) => {
   try {
-    /*  const course = await Purchase.find(query)
-      .populate("user", "firstName lastName picture")
-      .populate("payment")
-      .populate("courses.course");*/
-    /* const course = await Purchase.aggregate([
-      {$match: query},
-      {$lookup: {from: 'courses', foreignField: '_id', localField: 'courses.course', as: 'course'}}
-    ])
-    return course;*/
 
     const skipPage = (pageNo - 1) * perPage;
-    /*const myCourses = await Purchase.aggregate([
-      { $match: query },
-      {
-        $facet: {
-          total: [{ $count: "count" }],
-          rows: [
-            {$lookup: {from: 'courses', foreignField: '_id', localField: 'courses.course', as: 'courses'}},
-            { $skip: skipPage },
-            { $limit: perPage },
-            { $sort: { createdAt: -1 } },
-          ],
-        },
-      },
-    ]); */
+
     const myCourses = await Purchase.aggregate([
       { $match: query },
       {
@@ -433,14 +411,38 @@ const getMyAllCourse = async (pageNo, perPage, query) => {
       },
     ]);
 
-    /*return {
-      total: myCourses[0]?.total[0]?.count,
-      rows: myCourses[0]?.rows,
-    };*/
     return myCourses[0] || { rows: [] };
   } catch (err) {
     throw error(err.message, err.status);
   }
+};
+
+const dropDownMyCourseByStudentService = async (query) => {
+
+ return Purchase.aggregate([
+    { $match: query},
+    {
+      $lookup: {
+        from: "courses",
+        foreignField: "_id",
+        localField: "courseId",
+        as: "courses",
+      },
+    },
+    {
+      $unwind: "$courses", // Unwind the "courses" array
+    },
+    {
+      $project: {
+        _id: "$courses._id",
+        label: "$courses.name",
+        value: "$courses._id",
+      },
+    },
+    { $sort: { createdAt: -1 } },
+  ]);
+
+
 };
 
 const dropDownCourseByTeacherService = ({ teacherId }) => {
@@ -467,4 +469,5 @@ module.exports = {
   getAllCoursePagination,
   getMyAllCourse,
   dropDownCourseByTeacherService,
+  dropDownMyCourseByStudentService
 };

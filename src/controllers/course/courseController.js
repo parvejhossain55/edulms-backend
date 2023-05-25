@@ -107,6 +107,23 @@ const getMyAllCourse = async (req, res, next) => {
   }
 };
 
+
+const dropDownMyCoursesByStudent = async (req, res, next) => {
+  try {
+    const studentId = req.auth?._id;
+    if (!FormHelper.isIdValid(studentId)) {
+      return res.status(400).json({
+        error: "please provide a valid course id",
+      });
+    }
+    const query = { studentId: new objectId(req.auth?._id) };
+    const courses = await courseService.dropDownMyCourseByStudentService(query);
+    res.status(200).json(courses);
+  } catch (e) {
+    next(e);
+  }
+};
+
 const getMySingleCourse = async (req, res, next) => {
   try {
     const courseId = req.params.courseId;
@@ -439,4 +456,5 @@ module.exports = {
   getMyAllCourse,
   getMySingleCourse,
   dropDownCoursesByTeacher,
+  dropDownMyCoursesByStudent
 };

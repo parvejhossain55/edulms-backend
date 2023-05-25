@@ -159,6 +159,29 @@ const getSubmitted = async (req, res, next)=>{
         next(e)
     }
 }
+const getStudentSubmittedAssignment = async (req, res, next)=>{
+    try {
+        const {courseId} = req.params;
+        const studentId = req.auth?._id;
+
+        const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+        const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+        const searchKeyword = req.params?.keyword === ':keyword' ? '0' : req.params?.keyword;
+
+        if (!FormHelper.isIdValid(courseId)){
+            return res.status(400).json({
+                error: 'please provide a valid course'
+            })
+        }
+
+        const submittedAssignment = await assignmentServices.getStudentSubmittedAssignmentService({courseId, studentId, pageNo, perPage, keyword: searchKeyword})
+
+        res.status(200).json(submittedAssignment)
+
+    }catch (e) {
+        next(e)
+    }
+}
 
 const teacherReview = async (req, res, next)=>{
     try {
@@ -249,5 +272,6 @@ module.exports = {
     assignmentSubmit,
     getSubmitted,
     teacherReview,
-    getSubmittedAssignmentByAssignmentID
+    getSubmittedAssignmentByAssignmentID,
+    getStudentSubmittedAssignment
 }

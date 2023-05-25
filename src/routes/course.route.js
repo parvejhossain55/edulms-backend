@@ -77,5 +77,10 @@ router.get(
   authMiddleware.authVerifyMiddleware,
   courseController.dropDownCoursesByTeacher
 );
+router.get(
+  "/dropdown-courses/student",
+  authMiddleware.authVerifyMiddleware,
+  courseController.dropDownMyCoursesByStudent
+);
 
 module.exports = router;
