@@ -88,6 +88,6 @@ router.delete(
 );
 
 // // Get post by Tag
-// router.get("/posts-by-tag/:tag", PostController.getPostsByTag);
+router.get("/posts-by-tag/:tag", PostController.getPostsByTag);
 
 module.exports = router;

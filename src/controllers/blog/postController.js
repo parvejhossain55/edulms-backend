@@ -217,23 +217,42 @@ exports.getLatestPosts = async (req, res, next) => {
 };
 
 // Get posts by tag
-// exports.getPostsByTag = async (req, res, next) => {
-//   try {
-//     const { tag } = req.query;
+exports.getPostsByTag = async (req, res, next) => {
+  try {
+    // const { tag } = req.params;
 
-//     const posts = await Post.find({
-//       tags: { $in: [tag] },
-//       status: "published",
-//     })
-//       .populate("category", "name")
-//       .populate("author", "name")
-//       .sort({ createdAt: -1 });
+    // const posts = await Post.find({
+    //   tags: { $in: [tag] },
+    //   status: "published",
+    // })
+    //   .populate("category", "name")
+    //   .populate("author", "name")
+    //   .sort({ createdAt: -1 });
 
-//     res.status(200).json(posts);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
+    const { tag } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const skip = (page - 1) * limit;
+    const query = {
+      tags: { $in: [tag] },
+      status: "published",
+    };
+
+    const totalPosts = await Post.countDocuments(query);
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    const posts = await Post.find(query)
+      .populate("category", "name")
+      .populate("author", "firstName lastName picture")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({ posts, totalPosts, totalPages, pageNo: parseInt(page) });
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.searchPosts = async (req, res, next) => {
   const { query, tags } = req.query;
