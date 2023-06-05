@@ -38,11 +38,14 @@ router.get(
   PostController.getPostsforAdmin
 );
 
-// Get 5 related post in the same category
+// Get 3 related post in the same category
 router.get("/posts/:postId/related", PostController.getRelatedPosts);
 
 // Get popular post
 router.get("/posts/popular-post", PostController.getPopularPosts);
+
+// Get latest post
+router.get("/posts/latest-post", PostController.getLatestPosts);
 
 // Add comment to a specific post by ID
 router.post(
@@ -85,6 +88,6 @@ router.delete(
 );
 
 // // Get post by Tag
-// router.get("/posts/tags", PostController.getPostsByTag);
+// router.get("/posts-by-tag/:tag", PostController.getPostsByTag);
 
 module.exports = router;
