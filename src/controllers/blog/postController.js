@@ -176,7 +176,7 @@ exports.getRelatedPosts = async (req, res, next) => {
   }
 };
 
-// Get 10 popular posts
+// Get popular posts
 exports.getPopularPosts = async (req, res, next) => {
   try {
     const popularPosts = await Post.find({ status: "published" })
@@ -191,24 +191,49 @@ exports.getPopularPosts = async (req, res, next) => {
   }
 };
 
-// Get posts by tag
-exports.getPostsByTag = async (req, res, next) => {
+// Get popular posts
+exports.getLatestPosts = async (req, res, next) => {
   try {
-    const { tag } = req.query;
-
-    const posts = await Post.find({
-      tags: { $in: [tag] },
-      status: "published",
-    })
+    const latestPosts = await Post.find(
+      { status: "published" },
+      {
+        title: 1,
+        content: 1,
+        thumbnail: 1,
+        author: 1,
+        category: 1,
+        createdAt: 1,
+      }
+    )
       .populate("category", "name")
-      .populate("author", "name")
-      .sort({ createdAt: -1 });
+      .populate("author", "firstName lastName picture")
+      .sort({ createdAt: -1 })
+      .limit(3);
 
-    res.status(200).json(posts);
+    res.status(200).json(latestPosts);
   } catch (err) {
     next(err);
   }
 };
+
+// Get posts by tag
+// exports.getPostsByTag = async (req, res, next) => {
+//   try {
+//     const { tag } = req.query;
+
+//     const posts = await Post.find({
+//       tags: { $in: [tag] },
+//       status: "published",
+//     })
+//       .populate("category", "name")
+//       .populate("author", "name")
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json(posts);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 exports.searchPosts = async (req, res, next) => {
   const { query, tags } = req.query;
