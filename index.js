@@ -55,7 +55,7 @@ readdirSync("./routes").map((r) => app.use("/api/v1", require("./routes/" + r)))
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     // Multer error occurred during file upload
-    console.log("multer err", err);
+    console.error("multer err", err);
     const message = "Error uploading file";
     const status = 400; // or any appropriate status code
     res.status(status).json({ error: message });
@@ -70,8 +70,8 @@ app.use((err, req, res, next) => {
     const status = 400; // or any appropriate status code
     res.status(status).json({ error: message });
   } else {
-    console.log(err);
-    const message = err.message ? err.message : "Server Error Occurred";
+    console.error(err);
+    const message = err.status ? err.message : "Server Error Occurred";
     const status = err.status ? err.status : 500;
     res.status(status).json({
       error: status === 500 ? "Server Error Occurred" : message,
