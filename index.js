@@ -50,17 +50,7 @@ app.get("/", (req, res) => {
   );
 });
 
-// app.use('/api/v1', require('./src/routes/auth.route'));
 readdirSync("./routes").map((r) => app.use("/api/v1", require("./routes/" + r)));
-
-/*app.use((err, req, res, next) => {
-  console.log(err);
-  const message = err.message ? err.message : "Server Error Occurred";
-  const status = err.status ? err.status : 500;
-  res.status(status).json({
-    error: status === 500 ? "Server Error Occurred" : message,
-  });
-});*/
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
@@ -90,26 +80,6 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 8000;
-// DB Connection
-/*mongoose
-  // .connect(process.env.LOCAL_DB)
-  .connect(process.env.DATABASE)
-  .then(() => {
-    console.log("DB Connected");
-
-      projectRoles.map(async role => {
-          await RoleModel.updateOne({name: role.name}, {$set: {name: role.name}}, {upsert: true});
-      });
-      permissionsDocuments.map(async permission => {
-          await PermissionModel.updateOne({name: permission.name}, {$set: {name: permission.name}}, {upsert: true});
-      });
-
-    // Server Listen
-    app.listen(port, () => {
-      console.log(`Server run success on port ${port}`);
-    });
-  })
-  .catch((err) => console.log(err));*/
 
 mongoose
   .connect(process.env.DATABASE)

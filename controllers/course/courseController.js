@@ -71,15 +71,6 @@ const createCourse = async (req, res, next) => {
   }
 };
 
-// const getAllCourse = async (req, res, next) => {
-//     try {
-//         const query = {};
-//         const course = await courseService.getAllCourse(query);
-//         res.status(200).json(course);
-//     } catch (e) {
-//         next(e);
-//     }
-// };
 const getAllCourse = async (req, res, next) => {
   try {
     const query = {};
@@ -94,10 +85,8 @@ const getAllCourse = async (req, res, next) => {
 // Student my course
 const getMyAllCourse = async (req, res, next) => {
   try {
-    const pageNo =
-      req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
-    const perPage =
-      req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+    const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+    const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
 
     const query = { studentId: new objectId(req.auth?._id) };
     const course = await courseService.getMyAllCourse(pageNo, perPage, query);
@@ -106,7 +95,6 @@ const getMyAllCourse = async (req, res, next) => {
     next(e);
   }
 };
-
 
 const dropDownMyCoursesByStudent = async (req, res, next) => {
   try {
@@ -170,10 +158,7 @@ const getAllPublishedCourse = async (req, res, next) => {
   try {
     const filter = req.body;
     const query = req.query;
-    const course = await publicCourseService.getAllPublishedCourse(
-      filter,
-      query
-    );
+    const course = await publicCourseService.getAllPublishedCourse(filter, query);
     res.status(200).json(course);
   } catch (e) {
     next(e);
@@ -197,12 +182,9 @@ const getPublishedCourseByCategory = async (req, res, next) => {
 
 const getAllCourseByTeacher = async (req, res, next) => {
   try {
-    const pageNo =
-      req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
-    const perPage =
-      req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
-    const keyword =
-      req.params?.keyword === ":keyword" ? "0" : req.params?.keyword;
+    const pageNo = req.params?.pageNo === ":pageNo" ? 1 : Number(req.params?.pageNo);
+    const perPage = req.params?.perPage === ":perPage" ? 10 : Number(req.params?.perPage);
+    const keyword = req.params?.keyword === ":keyword" ? "0" : req.params?.keyword;
     const teacherId = req?.auth?._id;
 
     if (!FormHelper.isIdValid(teacherId)) {
@@ -236,10 +218,6 @@ const getSingleCourse = async (req, res, next) => {
 const checkCourseIsPurchase = async (req, res, next) => {
   try {
     const { courseId, userId } = req.params;
-    // const query = {
-    //   courseId: new objectId(id),
-    //   studentId: new objectId(userId),
-    // };
     if (!FormHelper.isIdValid(courseId)) {
       return res.status(400).json({
         error: "Provide a valid Course ID",
@@ -303,13 +281,10 @@ const teacherUpdateCourse = async (req, res, next) => {
       });
     }
     const courseName = name !== "" ? name : course.name;
-    const courseDescription =
-      description !== "" ? description : course.description;
+    const courseDescription = description !== "" ? description : course.description;
     const courseCategoryId = categoryId !== "" ? categoryId : course.categoryId;
     const courseBenefit = benefit !== "" ? benefit : course.benefit;
-    const courseThumbnail = !req?.file?.cloudinaryUrl
-      ? course.thumbnail
-      : filename;
+    const courseThumbnail = !req?.file?.cloudinaryUrl ? course.thumbnail : filename;
 
     const updateCourse = await courseService.updateCourse(
       {
@@ -365,17 +340,12 @@ const updateCourse = async (req, res, next) => {
     const courseDescription = !description ? course.description : description;
     const courseCategoryId = !categoryId ? course.categoryId : categoryId;
     const courseTeacherId = !teacherId ? course.teacherId : teacherId;
-    const courseBenefit =
-      Array.isArray(benefit) && benefit.length > 0 ? benefit : course.benefit;
-    const courseRegularPrice = !regularPrice
-      ? course.regularPrice
-      : regularPrice;
+    const courseBenefit = Array.isArray(benefit) && benefit.length > 0 ? benefit : course.benefit;
+    const courseRegularPrice = !regularPrice ? course.regularPrice : regularPrice;
     const courseSellPrice = !sellPrice ? course.sellPrice : sellPrice;
     const courseStatus = !status ? course.status : status;
     const coursesType = !courseType ? course.courseType : courseType;
-    const courseThumbnail = !req?.file?.cloudinaryUrl
-      ? course.thumbnail
-      : filename;
+    const courseThumbnail = !req?.file?.cloudinaryUrl ? course.thumbnail : filename;
 
     const updateCourse = await courseService.updateCourse(
       {
@@ -396,12 +366,6 @@ const updateCourse = async (req, res, next) => {
     res.status(200).json({
       course: updateCourse,
     });
-  } catch (e) {
-    next(e);
-  }
-};
-const deleteCourse = async (req, res, next) => {
-  try {
   } catch (e) {
     next(e);
   }
@@ -444,7 +408,6 @@ module.exports = {
   checkCourseIsPurchase,
   getSingleCourse,
   teacherUpdateCourse,
-  deleteCourse,
   getAllCourseByTeacher,
   getSingleCourseByTeacher,
   getAllPublishedCourse,
@@ -456,5 +419,5 @@ module.exports = {
   getMyAllCourse,
   getMySingleCourse,
   dropDownCoursesByTeacher,
-  dropDownMyCoursesByStudent
+  dropDownMyCoursesByStudent,
 };

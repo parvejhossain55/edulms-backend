@@ -348,8 +348,6 @@ const updateCourse = async (updateObj, query) => {
   return CourseModel.updateOne(query, { $set: updateObj });
 };
 
-const deleteCourse = async () => {};
-
 const getMyAllCourse = async (pageNo, perPage, query) => {
   try {
     const skipPage = (pageNo - 1) * perPage;
@@ -454,7 +452,6 @@ module.exports = {
   checkCourseIsPurchase,
   getSingleCourse,
   updateCourse,
-  deleteCourse,
   getAllCourseByTeacher,
   getAllCoursePagination,
   getMyAllCourse,
