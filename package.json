@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -47,6 +48,17 @@
   "devDependencies": {
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
     "prettier": "^3.9.6"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
   }
 }
