@@ -179,34 +179,35 @@ exports.passwordChange = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   let { email, otp } = req.params;
   let { password, confirmPassword } = req.body;
+
+  // Validate BEFORE starting the session to avoid leaking transactions on 400s
+  if (FormHelper.isEmpty(password)) {
+    return res.status(400).json({
+      error: "Password is required",
+    });
+  }
+  if (!FormHelper.isPasswordValid(password)) {
+    return res.status(400).json({
+      error:
+        "Password must contain at least 8 characters long, one uppercase letter, one lowercase letter, one digit and one special character",
+    });
+  }
+  if (FormHelper.isEmpty(confirmPassword)) {
+    return res.status(400).json({
+      error: "Confirm password is required",
+    });
+  }
+  if (!FormHelper.comparePassword(password, confirmPassword)) {
+    return res.status(400).json({
+      error: "Password doesn't match",
+    });
+  }
+
   const session = await mongoose.startSession();
   await session.startTransaction();
 
   try {
     const options = { session };
-
-    if (FormHelper.isEmpty(password)) {
-      return res.status(400).json({
-        error: "Password is required",
-      });
-    }
-    if (!FormHelper.isPasswordValid(password)) {
-      return res.status(400).json({
-        error:
-          "Password must contain at least 8 characters long, one uppercase letter, one lowercase letter, one digit and one special character",
-      });
-    }
-    if (FormHelper.isEmpty(confirmPassword)) {
-      return res.status(400).json({
-        error: "Confirm password is required",
-      });
-    }
-
-    if (!FormHelper.comparePassword(password, confirmPassword)) {
-      return res.status(400).json({
-        error: "Password doesn't match",
-      });
-    }
 
     const isUpdate = await authService.resetPasswordService({
       email,
@@ -231,7 +232,6 @@ exports.resetPassword = async (req, res, next) => {
   } catch (e) {
     await session.abortTransaction();
     session.endSession();
-    console.log(e);
     next(e);
   }
 };
