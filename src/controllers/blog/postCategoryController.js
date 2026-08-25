@@ -21,7 +21,7 @@ async function createCategory(req, res, next) {
 
 async function getCategories(req, res, next) {
   try {
-    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchRgx = { $regex: FormHelper.escapeRegex(req.params.searchKeyword), $options: "i" };
     let SearchArray = [{ name: SearchRgx }];
     const categories = await listService(req, PostCategory, SearchArray);
     res.status(200).json(categories);

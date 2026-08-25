@@ -35,6 +35,11 @@ class FormHelper {
   isIdValid = (id) => {
     return ObjectId.isValid(id);
   };
+
+  escapeRegex = (text) => {
+    return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
   isUrl = (url) => {
     return validator.isURL(url);
   };

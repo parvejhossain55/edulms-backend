@@ -40,7 +40,7 @@ const createContent = async (req, res, next) => {
 
 const getContent = async (req, res, next) => {
   try {
-    let SearchRgx = { $regex: req.params.searchKeyword, $options: "i" };
+    let SearchRgx = { $regex: FormHelper.escapeRegex(req.params.searchKeyword), $options: "i" };
     let SearchArray = [{ name: SearchRgx }];
     const contents = await listService(req, CourseContent, SearchArray);
     res.status(200).json(contents);

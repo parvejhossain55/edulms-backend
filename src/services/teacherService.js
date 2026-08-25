@@ -8,6 +8,7 @@ const generatePassword = require("../helpers/generatePassword");
 const emailTemplate = require("../emailTemplate/forNewTeacher");
 const sendEmail = require("../helpers/sendEmail");
 const error = require("../helpers/error");
+const FormHelper = require("../helpers/FormHelper");
 const newAccountEmailTemplate = require('../emailTemplate/newAccountEmail');
 const jwt = require("jsonwebtoken");
 const RoleModel = require("../models/Role");
@@ -127,7 +128,7 @@ exports.getAllTeacherService = async (
 
     const role = await RoleModel.findOne({ name:  'teacher'});
     const skipPage = (pageNo - 1) * perPage;
-    const searchRegex = {$regex: keyword, $options: 'ix'};
+    const searchRegex = {$regex: FormHelper.escapeRegex(keyword), $options: 'ix'};
 
     const query = keyword === '0' ? {roleId: role?._id} : {$or: [
             {firstName: searchRegex},

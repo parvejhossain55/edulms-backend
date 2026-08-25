@@ -1,11 +1,12 @@
 const RoleModel = require("../models/Role");
 const TeacherApplyModel = require("../models/TeacherApply");
+const FormHelper = require("../helpers/FormHelper");
 exports.getAllApplyTeacherService = async (
     {pageNo, perPage, keyword}
 )=>{
 
     const skipPage = (pageNo - 1) * perPage;
-    const searchRegex = {$regex: keyword, $options: 'ix'};
+    const searchRegex = {$regex: FormHelper.escapeRegex(keyword), $options: 'ix'};
 
     const query = keyword === '0' ? {} : {$or: [
             {firstName: searchRegex},

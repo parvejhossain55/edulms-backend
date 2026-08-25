@@ -3,6 +3,7 @@ const AssignmentSubmitModel = require('../../models/AssignmentSubmit');
 const PurchaseModel = require('../../models/Purchase');
 const CourseModel = require('../../models/Course');
 const error = require("../../helpers/error");
+const FormHelper = require("../../helpers/FormHelper");
 const checkAssociateService = require("../common/checkAssociateService");
 const mongoose = require('mongoose');
 const objectId = mongoose.Types.ObjectId;
@@ -143,7 +144,7 @@ const getSubmittedService = async (
         throw error("course not found. please create a course first", 400)
     }
     const skipPage = (pageNo - 1) * perPage;
-    const searchRegex = {$regex: keyword, $options: 'i'};
+    const searchRegex = {$regex: FormHelper.escapeRegex(keyword), $options: 'i'};
     /*const commonQuery = {teacherId, courseId: new objectId(courseId), courseModuleId: new objectId(moduleId)}*/
     const commonQuery = {
         'assignment.teacherId': teacherId,
@@ -277,7 +278,7 @@ const getStudentSubmittedAssignmentService = async (
 )=>{
 
     const skipPage = (pageNo - 1) * perPage;
-    const searchRegex = {$regex: keyword, $options: 'i'};
+    const searchRegex = {$regex: FormHelper.escapeRegex(keyword), $options: 'i'};
 
     const commonQuery = {
         studentId: new objectId(studentId),

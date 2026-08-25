@@ -1,6 +1,7 @@
 const UserModel = require("../../models/User");
 const userService = require("../userService");
 const error = require("../../helpers/error");
+const FormHelper = require("../../helpers/FormHelper");
 const sendEmail = require("../../helpers/sendEmail");
 const rolePermissionService = require("../rolePermissionService");
 const newUserEmailTemplate = require("../../emailTemplate/forNewUser");
@@ -17,7 +18,7 @@ const getAllEmployeeService = async ({ perPage, keyword, skipRow, auth }) => {
     return [...acc, current._id];
   }, []);
 
-  let SearchRgx = { $regex: keyword, $options: "i" };
+  let SearchRgx = { $regex: FormHelper.escapeRegex(keyword), $options: "i" };
   let SearchArray = [
     { firstName: SearchRgx },
     { lastName: SearchRgx },
