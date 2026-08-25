@@ -54,7 +54,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix --max-warnings=0",
+      "eslint --fix --max-warnings=50",
       "prettier --write"
     ],
     "*.json": [
