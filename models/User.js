@@ -45,24 +45,12 @@ const userSchema = new Schema(
       //     }),
       //   message: "Please provide a strong password",
       // },
-        default: ''
+      default: "",
     },
     picture: {
       public_id: { type: String },
       secure_url: { type: String },
     },
-    confirmPassword: {
-      type: String,
-      // required: [true, "Confirm Password is required"],
-      // validate: {
-      //   validator: function (value) {
-      //     return value === this.password;
-      //   },
-      //   message: "Password does not match",
-      // },
-        default: ''
-    },
-
     roleId: { type: Schema.Types.ObjectId, ref: "Role" },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -95,7 +83,6 @@ userSchema.pre("save", function (next) {
 
   const password = this.password;
   this.password = bcrypt.hashSync(password);
-  this.confirmPassword = undefined;
   next();
 });
 
