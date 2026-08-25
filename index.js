@@ -86,20 +86,20 @@ mongoose
   .then(async () => {
     console.log("DB Connected");
 
-    projectRoles.map(async (role) => {
-      await RoleModel.updateOne(
-        { name: role.name },
-        { $set: { name: role.name } },
-        { upsert: true }
-      );
-    });
-    permissionsDocuments.map(async (permission) => {
-      await PermissionModel.updateOne(
-        { name: permission.name },
-        { $set: { name: permission.name } },
-        { upsert: true }
-      );
-    });
+    await Promise.all(
+      projectRoles.map((role) =>
+        RoleModel.updateOne({ name: role.name }, { $set: { name: role.name } }, { upsert: true })
+      )
+    );
+    await Promise.all(
+      permissionsDocuments.map((permission) =>
+        PermissionModel.updateOne(
+          { name: permission.name },
+          { $set: { name: permission.name } },
+          { upsert: true }
+        )
+      )
+    );
     const superAdmin = {
       firstName: process.env.SUPER_ADMIN_FIRST_NAME,
       lastName: process.env.SUPER_ADMIN_LAST_NAME,
