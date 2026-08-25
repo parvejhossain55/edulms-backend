@@ -15,6 +15,7 @@ const multer = require("multer");
 const rolePermissionService = require("./services/rolePermissionService");
 const userService = require("./services/userService");
 const { employeeCreateService } = require("./services/userManage/manageUserService");
+const logger = require("./helpers/logger");
 
 // Trust the first proxy (Vercel/Heroku/Nginx) so req.ip reflects the real client IP
 app.set("trust proxy", 1);
@@ -84,7 +85,7 @@ const port = process.env.PORT || 8000;
 mongoose
   .connect(process.env.DATABASE)
   .then(async () => {
-    console.log("DB Connected");
+    logger.info("DB Connected");
 
     await Promise.all(
       projectRoles.map((role) =>
@@ -125,9 +126,9 @@ mongoose
 
     // Server Listen
     app.listen(port, () => {
-      console.log(`Server run success on port ${port}`);
+      logger.info(`Server running on port ${port}`);
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => logger.error("Failed to connect to database", err));
 
 module.exports = app;
