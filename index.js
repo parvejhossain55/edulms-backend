@@ -8,14 +8,14 @@ const morgan = require("morgan");
 const app = express();
 require("dotenv").config();
 const { readdirSync } = require("fs");
-const RoleModel = require("./src/models/Role");
-const projectRoles = require("./src/dbSeed/projectRoles");
-const PermissionModel = require("./src/models/Permission");
-const { permissionsDocuments } = require("./src/dbSeed/projectPermissions");
+const RoleModel = require("./models/Role");
+const projectRoles = require("./dbSeed/projectRoles");
+const PermissionModel = require("./models/Permission");
+const { permissionsDocuments } = require("./dbSeed/projectPermissions");
 const multer = require("multer");
-const rolePermissionService = require("./src/services/rolePermissionService");
-const userService = require('./src/services/userService');
-const {employeeCreateService} = require("./src/services/userManage/manageUserService");
+const rolePermissionService = require("./services/rolePermissionService");
+const userService = require('./services/userService');
+const {employeeCreateService} = require("./services/userManage/manageUserService");
 
 // Trust the first proxy (Vercel/Heroku/Nginx) so req.ip reflects the real client IP
 app.set("trust proxy", 1);
@@ -53,8 +53,8 @@ app.get("/", (req, res) => {
 });
 
 // app.use('/api/v1', require('./src/routes/auth.route'));
-readdirSync("./src/routes").map((r) =>
-  app.use("/api/v1", require("./src/routes/" + r))
+readdirSync("./routes").map((r) =>
+  app.use("/api/v1", require("./routes/" + r))
 );
 
 /*app.use((err, req, res, next) => {

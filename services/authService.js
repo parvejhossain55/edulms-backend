@@ -142,10 +142,6 @@ const verifyOtpService = async (email, otp, options) => {
   if (!isOtp) throw error("Invalid OTP", 400);
 
   isOtp.status = 1;
-  if (!isOtp) throw error("Invalid OTP", 400);
-
-  isOtp.status = 1;
-
   await isOtp.save(options);
 
   return userService.userUpdateService({ email }, { verified: true }, options);
