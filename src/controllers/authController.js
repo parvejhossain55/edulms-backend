@@ -91,10 +91,9 @@ exports.socialLogin = async (req, res, next) => {
 exports.sendOtp = async (req, res, next) => {
   try {
     const email = req.params?.email;
-    const otp = await authService.sendOtpService(email);
+    await authService.sendOtpService(email);
     res.status(200).json({
       message: "OTP send successfully, please check your email",
-      otp,
     });
   } catch (e) {
     next(e);

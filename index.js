@@ -17,11 +17,26 @@ const rolePermissionService = require("./src/services/rolePermissionService");
 const userService = require('./src/services/userService');
 const {employeeCreateService} = require("./src/services/userManage/manageUserService");
 
+// Trust the first proxy (Vercel/Heroku/Nginx) so req.ip reflects the real client IP
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
-app.use(cors());
+
+// Restrict CORS to known frontend origins; falls back open only when no origins are configured (local dev)
+const allowedOrigins = [process.env.FRONTEND_URL, process.env.FONTEND_URL].filter(Boolean);
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false); // no CORS headers -> browser blocks the request
+    },
+  })
+);
 app.use(xss());
 app.use(morgan("dev"));
 

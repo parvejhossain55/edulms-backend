@@ -1,8 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/bdshakil/edulms-backend
-    - /bin/cp -rf $APP_SHORTNAME/* $DEPLOYPATH/
-    - cd $DEPLOYPATH
-    - yarn install
-    - NODE_ENV=production pm2 startOrRestart ecosystem.config.js

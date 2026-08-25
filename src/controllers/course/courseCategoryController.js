@@ -32,7 +32,7 @@ const createCategory = async (req, res, next) => {
 
 const getCategories = async (req, res, next)=>{
   try {
-    let SearchRgx = {$regex: req.params.searchKeyword, $options: "i"};
+    let SearchRgx = {$regex: FormHelper.escapeRegex(req.params.searchKeyword), $options: "i"};
     let SearchArray = [
       {name: SearchRgx},
     ];
@@ -62,7 +62,7 @@ const getAllCategories = async (req, res, next) => {
 //   }
 // };
 
-//     let SearchRgx = {$regex: req.params.searchKeyword, $options: "i"};
+//     let SearchRgx = {$regex: FormHelper.escapeRegex(req.params.searchKeyword), $options: "i"};
 //     let SearchArray = [
 //       {name: SearchRgx},
 //     ];

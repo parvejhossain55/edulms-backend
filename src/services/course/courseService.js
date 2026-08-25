@@ -1,5 +1,6 @@
 const CourseModel = require("../../models/Course");
 const error = require("../../helpers/error");
+const FormHelper = require("../../helpers/FormHelper");
 const mongoose = require("mongoose");
 const Purchase = require("../../models/Purchase");
 const ObjectId = mongoose.Types.ObjectId;
@@ -50,8 +51,8 @@ const getAllCourse = async (Request, SearchArray) => {
     let matchQuery = { status: "published" };
     if (searchValue !== "0") {
       let SearchArray = [
-        { name: { $regex: searchValue, $options: "i" } },
-        { description: { $regex: searchValue, $options: "i" } },
+        { name: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
+        { description: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
       ];
       matchQuery.$or = SearchArray;
     }
@@ -125,8 +126,8 @@ const getAllCoursePagination = async (Request, SearchArray) => {
     let matchQuery = {};
     if (searchValue !== "0") {
       let SearchArray = [
-        { name: { $regex: searchValue, $options: "i" } },
-        { description: { $regex: searchValue, $options: "i" } },
+        { name: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
+        { description: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
       ];
       matchQuery.$or = SearchArray;
     }

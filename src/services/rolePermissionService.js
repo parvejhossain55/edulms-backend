@@ -1,5 +1,6 @@
 const Role = require("../models/Role");
 const error = require("../helpers/error");
+const FormHelper = require("../helpers/FormHelper");
 const PermissionModel = require("../models/Permission");
 const UserModel = require("../models/User");
 const checkAssociateService = require('./common/checkAssociateService');
@@ -21,7 +22,7 @@ const getRolesPaginationService = ({page, perPage, keyword})=>{
     const skipRow = (page - 1) * perPage;
     if (keyword  !== '0'){
         return Role.aggregate([
-            {$match: {name: {$regex: keyword, $options: 'xi'}}},
+            {$match: {name: {$regex: FormHelper.escapeRegex(keyword), $options: 'xi'}}},
             {$facet: {
                     total:[{$count: "count"}],
                     rows: [

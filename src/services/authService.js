@@ -24,7 +24,7 @@ const registerService = async ({
   if (isMatch) throw error("Email already taken", 400);
 
   const isOtp = await otpService.findOptByProperty({ email: email });
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  const otp = otpService.generateOtp();
 
   if (isOtp) {
     await otpService.updateOtp({ email, otp, status: 0 });
@@ -113,7 +113,7 @@ const sendOtpService = async (email) => {
 
   if (!isUser) throw error("Account not found", 400);
   const isOtp = await otpService.findOptByProperty({ email });
-  const otp = Math.floor(100000 + Math.random() * 900000);
+  const otp = otpService.generateOtp();
 
   if (isOtp) {
     await otpService.updateOtp({ email, otp, status: 0 });
@@ -130,7 +130,6 @@ const sendOtpService = async (email) => {
   if (send[0].statusCode !== 202) {
     throw error("Server error occurred", 5000);
   }
-  return otp?.otp;
 };
 
 const verifyOtpService = async (email, otp, options) => {

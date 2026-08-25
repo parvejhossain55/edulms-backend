@@ -263,8 +263,8 @@ exports.searchPosts = async (req, res, next) => {
       $and: [
         {
           $or: [
-            { title: { $regex: query, $options: "i" } },
-            { content: { $regex: query, $options: "i" } },
+            { title: { $regex: FormHelper.escapeRegex(query), $options: "i" } },
+            { content: { $regex: FormHelper.escapeRegex(query), $options: "i" } },
           ],
         },
         { tags: { $in: [tags] } },

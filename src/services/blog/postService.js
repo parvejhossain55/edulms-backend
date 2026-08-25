@@ -1,4 +1,5 @@
 const error = require("../../helpers/error");
+const FormHelper = require("../../helpers/FormHelper");
 const { deleteFile } = require("../../middleware/cloudinaryUpload");
 const Post = require("../../models/Post");
 const mongoose = require("mongoose");
@@ -22,7 +23,7 @@ exports.getPosts = async (query, body) => {
     const matchQuery = { status: "published" };
 
     if (searchKeyword !== "0") {
-      let SearchRgx = { $regex: searchKeyword, $options: "i" };
+      let SearchRgx = { $regex: FormHelper.escapeRegex(searchKeyword), $options: "i" };
       let SearchArray = [{ title: SearchRgx }, { content: SearchRgx }];
       matchQuery.$or = SearchArray;
     }
@@ -68,7 +69,7 @@ exports.getPostsforAdmin = async (query) => {
     const matchQuery = {};
 
     if (searchKeyword !== "0") {
-      let SearchRgx = { $regex: searchKeyword, $options: "i" };
+      let SearchRgx = { $regex: FormHelper.escapeRegex(searchKeyword), $options: "i" };
       let SearchArray = [{ title: SearchRgx }, { content: SearchRgx }];
       matchQuery.$or = SearchArray;
     }
