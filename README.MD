@@ -1,6 +1,6 @@
-# EduLMS Backend
+# OLMS Backend
 
-A production-ready RESTful API backend for an **Education Management System (EMS)**. Built with Node.js, Express, and MongoDB, it supports course management, user roles/permissions, blog posts, assignments, payments, and more.
+A production-ready RESTful API backend for an **Online Learning Management System (OLMS)**. Built with Node.js, Express, and MongoDB, it supports course management, user roles/permissions, blog posts, assignments, payments, and more.
 
 ## Table of Contents
 
