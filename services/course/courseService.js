@@ -42,15 +42,15 @@ const createCourse = async ({
 
 const getAllCourse = async (Request, SearchArray) => {
   try {
-    let pageNo = Number(Request.params.pageNo) || 1;
-    let perPage = Number(Request.params.perPage) || 10;
-    let searchValue = Request.params.searchKeyword;
+    const pageNo = Number(Request.params.pageNo) || 1;
+    const perPage = Number(Request.params.perPage) || 10;
+    const searchValue = Request.params.searchKeyword;
 
     let data;
 
-    let matchQuery = { status: "published" };
+    const matchQuery = { status: "published" };
     if (searchValue !== "0") {
-      let SearchArray = [
+      const SearchArray = [
         { name: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
         { description: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
       ];
@@ -97,9 +97,9 @@ const getAllCourse = async (Request, SearchArray) => {
           "category.name": 1,
         },
       },
+      { $sort: { createdAt: -1 } },
       { $skip: (pageNo - 1) * perPage },
       { $limit: perPage },
-      {$sort: {createdAt: -1}}
     ]);
 
     const currentPage = parseInt(pageNo);
@@ -117,15 +117,15 @@ const getAllCourse = async (Request, SearchArray) => {
 
 const getAllCoursePagination = async (Request, SearchArray) => {
   try {
-    let pageNo = Number(Request.params.pageNo) || 1;
-    let perPage = Number(Request.params.perPage) || 10;
-    let searchValue = Request.params.searchKeyword;
+    const pageNo = Number(Request.params.pageNo) || 1;
+    const perPage = Number(Request.params.perPage) || 10;
+    const searchValue = Request.params.searchKeyword;
 
     let data;
 
-    let matchQuery = {};
+    const matchQuery = {};
     if (searchValue !== "0") {
-      let SearchArray = [
+      const SearchArray = [
         { name: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
         { description: { $regex: FormHelper.escapeRegex(searchValue), $options: "i" } },
       ];
@@ -174,9 +174,9 @@ const getAllCoursePagination = async (Request, SearchArray) => {
           "category.name": 1,
         },
       },
+      { $sort: { createdAt: -1 } },
       { $skip: (pageNo - 1) * perPage },
       { $limit: perPage },
-      {$sort: {createdAt: -1}}
     ]);
 
     const currentPage = parseInt(pageNo);
@@ -192,12 +192,7 @@ const getAllCoursePagination = async (Request, SearchArray) => {
   }
 };
 
-const getAllCourseByTeacher = async ({
-  pageNo,
-  perPage,
-  keyword,
-  teacherId,
-}) => {
+const getAllCourseByTeacher = async ({ pageNo, perPage, keyword, teacherId }) => {
   const skipPage = (pageNo - 1) * perPage;
   const query = { teacherId: new ObjectId(teacherId) };
 
@@ -206,11 +201,7 @@ const getAllCourseByTeacher = async ({
     {
       $facet: {
         total: [{ $count: "count" }],
-        rows: [
-          { $skip: skipPage },
-          { $limit: perPage },
-          { $sort: { createdAt: -1 } },
-        ],
+        rows: [{ $sort: { createdAt: -1 } }, { $skip: skipPage }, { $limit: perPage }],
       },
     },
   ]);
@@ -275,11 +266,11 @@ const getSingleCourse = async (query) => {
     },
     {
       $lookup: {
-        from: 'assignments',
-        foreignField: 'courseModuleId',
-        localField: 'modules._id',
-        as: 'assignments'
-      }
+        from: "assignments",
+        foreignField: "courseModuleId",
+        localField: "modules._id",
+        as: "assignments",
+      },
     },
 
     {
@@ -307,13 +298,15 @@ const getSingleCourse = async (query) => {
               _id: "$$module._id",
               name: "$$module.title",
               moduleNo: "$$module.moduleNo",
-              assignment: {$first: {
+              assignment: {
+                $first: {
                   $filter: {
                     input: "$assignments",
                     as: "assignment",
                     cond: { $eq: ["$$assignment.courseModuleId", "$$module._id"] },
                   },
-                }},
+                },
+              },
               contents: {
                 $filter: {
                   input: "$contents",
@@ -359,7 +352,6 @@ const deleteCourse = async () => {};
 
 const getMyAllCourse = async (pageNo, perPage, query) => {
   try {
-
     const skipPage = (pageNo - 1) * perPage;
 
     const myCourses = await Purchase.aggregate([
@@ -393,9 +385,9 @@ const getMyAllCourse = async (pageNo, perPage, query) => {
           slug: "$courses.slug",
         },
       },
+      { $sort: { createdAt: -1 } },
       { $skip: skipPage },
       { $limit: perPage },
-      { $sort: { createdAt: -1 } },
       {
         $group: {
           _id: null,
@@ -419,9 +411,8 @@ const getMyAllCourse = async (pageNo, perPage, query) => {
 };
 
 const dropDownMyCourseByStudentService = async (query) => {
-
- return Purchase.aggregate([
-    { $match: query},
+  return Purchase.aggregate([
+    { $match: query },
     {
       $lookup: {
         from: "courses",
@@ -442,8 +433,6 @@ const dropDownMyCourseByStudentService = async (query) => {
     },
     { $sort: { createdAt: -1 } },
   ]);
-
-
 };
 
 const dropDownCourseByTeacherService = ({ teacherId }) => {
@@ -470,5 +459,5 @@ module.exports = {
   getAllCoursePagination,
   getMyAllCourse,
   dropDownCourseByTeacherService,
-  dropDownMyCourseByStudentService
+  dropDownMyCourseByStudentService,
 };
